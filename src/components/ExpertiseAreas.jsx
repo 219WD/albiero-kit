@@ -4,6 +4,8 @@ import './ExpertiseAreas.css';
 import { gsap } from 'gsap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import casa from '../assets/casa.jpg'
+import comercial from '../assets/comercial.jpg'
 
 const ExpertiseAreas = () => {
   const [activeIndex, setActiveIndex] = useState(0); // Inicia abierto el primero (0)
@@ -22,7 +24,7 @@ const ExpertiseAreas = () => {
         "Botón de pánico.",
         "Respuesta inmediata."
       ],
-      image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=800&fit=crop"
+      image: casa
     },
     {
       id: 2,
@@ -34,7 +36,7 @@ const ExpertiseAreas = () => {
         "Control total desde tu celular.",
         "Respuesta rápida ante cualquier evento."
       ],
-      image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=800&fit=crop"
+      image: comercial
     }
   ];
 

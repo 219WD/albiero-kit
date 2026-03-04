@@ -12,6 +12,14 @@ import {
   faLock,
   faClock
 } from '@fortawesome/free-solid-svg-icons';
+import movil from '../assets/movil.jpg'
+import guardia from '../assets/guardia.jpg'
+import atencion from '../assets/atencion.jpg'
+import atencionDos from '../assets/atencion2.jpg'
+import instalacion from '../assets/instalacion.jpg'
+import monitoreo from '../assets/monitoreo.jpg'
+import equipo from '../assets/equipo.jpg'
+import camara from '../assets/camara.jpg'
 
 const SecurityMarquee = () => {
   
@@ -21,56 +29,56 @@ const SecurityMarquee = () => {
       icon: faShieldHalved,
       title: "Seguridad real, no solo una sirena",
       description: "Cuando se activa tu alarma, la señal llega en segundos a nuestra central. Personas reales monitorean y activan protocolo inmediato.",
-      image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600&h=400&fit=crop"
+      image: monitoreo
     },
     {
       id: 2,
       icon: faVideo,
       title: "Cámaras + monitoreo en un solo sistema",
       description: "Ves tu propiedad en tiempo real desde el celular y, si algo ocurre, no dependés solo de una notificación: hay respuesta operativa.",
-      image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=600&h=400&fit=crop"
+      image: camara
     },
     {
       id: 3,
       icon: faTruck,
       title: "Móviles propios en tu zona",
       description: "No tercerizamos la reacción. Tenemos móviles recorriendo distintos puntos estratégicos de Tucumán.",
-      image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600&h=400&fit=crop"
+      image: movil
     },
     {
       id: 4,
       icon: faHandshake,
       title: "Sin comprar equipos",
       description: "Instalamos todo en comodato. Pagás únicamente el servicio mensual de monitoreo.",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop"
+      image: equipo
     },
     {
       id: 5,
       icon: faHeadset,
       title: "Atención 24/7 en español",
       description: "Central de monitoreo operando las 24 horas con personal capacitado y protocolos actualizados constantemente.",
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600&h=400&fit=crop"
+      image: atencion
     },
     {
       id: 6,
       icon: faBolt,
       title: "Respuesta en menos de 5 minutos",
       description: "Tiempo de reacción garantizado. Desde que se activa la alarma hasta que llega el móvil a tu domicilio.",
-      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600&h=400&fit=crop"
+      image: atencionDos
     },
     {
       id: 7,
       icon: faLock,
       title: "Tecnología con respaldo humano",
       description: "Sensores de última generación combinados con análisis humano para evitar falsas alarmas.",
-      image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=600&h=400&fit=crop"
+      image: guardia
     },
     {
       id: 8,
       icon: faClock,
       title: "Instalación en 48 horas",
       description: "Desde que contratás el servicio hasta que tu hogar está protegido. Sin demoras ni complicaciones.",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop"
+      image: instalacion
     }
   ];
 

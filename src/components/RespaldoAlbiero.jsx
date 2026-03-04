@@ -12,6 +12,7 @@ import {
 import useToast from '../hooks/useToast';
 // Importar Toaster
 import { Toaster } from 'react-hot-toast';
+import central from '../assets/albiero.jpg'
 
 const RespaldoAlbiero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -108,7 +109,7 @@ const RespaldoAlbiero = () => {
           <div className="albiero-right">
             <div className="albiero-image-container">
               <img
-                src="https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80"
+                src={central}
                 alt="Central de monitoreo Albiero Seguridad"
                 className={`albiero-featured-image ${imageLoaded ? 'loaded' : ''}`}
                 onLoad={() => setImageLoaded(true)}
