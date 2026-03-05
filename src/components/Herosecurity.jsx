@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSecurityHeroGsap from "../hooks/useSecurityHeroGsap";
 import "./HeroSecurity.css";
 // Importar Font Awesome
@@ -16,10 +16,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 // Importar faWhatsapp desde free-brands-svg-icons
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import useFacebookPixel from "../hooks/useFacebookPixel";
 
 const HeroSecurity = () => {
   useSecurityHeroGsap();
 
+  const { trackFormStep, trackFormComplete, trackFormAbandonment } = useFacebookPixel();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     tipo: "",
@@ -27,8 +29,43 @@ const HeroSecurity = () => {
     sistema: "",
   });
 
+  // Trackear cuando el usuario avanza de paso
+  useEffect(() => {
+    if (currentStep > 1) {
+      trackFormStep(currentStep, formData);
+    }
+  }, [currentStep, formData, trackFormStep]);
+
+  // Detectar abandono del formulario
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (currentStep < 3 || (currentStep === 3 && !formData.sistema)) {
+        trackFormAbandonment(currentStep, formData);
+      }
+    };
+    
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [currentStep, formData, trackFormAbandonment]);
+
   const handleOptionSelect = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const newData = { ...prev, [field]: value };
+      
+      // Trackear selección específica en cada paso
+      if (field === 'tipo') {
+        trackFormStep(1, { tipo: value === 'casa' ? 'Casa' : 'Comercio' });
+      } else if (field === 'ubicacion') {
+        trackFormStep(2, { ...prev, ubicacion: value });
+      } else if (field === 'sistema') {
+        trackFormStep(3, { ...prev, sistema: value });
+      }
+      
+      return newData;
+    });
 
     // Auto-avanzar al siguiente paso
     if (currentStep < 3) {
@@ -37,6 +74,9 @@ const HeroSecurity = () => {
   };
 
   const handleSubmit = () => {
+    // Trackear formulario completado en Pixel
+    trackFormComplete(formData);
+    
     // Crear el mensaje para WhatsApp con los datos del formulario
     const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
@@ -55,7 +95,7 @@ const HeroSecurity = () => {
     // Abrir WhatsApp con el mensaje
     window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
 
-    console.log("Form data enviada a WhatsApp:", formData);
+    console.log("Form data enviada a WhatsApp y Pixel:", formData);
   };
 
   return (
