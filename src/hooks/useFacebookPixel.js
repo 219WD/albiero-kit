@@ -5,7 +5,7 @@ import ReactPixel from 'react-facebook-pixel';
 const useFacebookPixel = () => {
   useEffect(() => {
     // Tu Pixel ID de Meta (reemplazá con el tuyo)
-    const pixelId = 'TU_PIXEL_ID_AQUI';
+    const pixelId = '1238813565123149';
     
     const options = {
       autoConfig: true,
