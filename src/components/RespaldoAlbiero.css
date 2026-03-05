@@ -231,7 +231,7 @@
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
   animation: albieroImageReveal 1s ease-out;
 }
-
+  
 @keyframes albieroImageReveal {
   from {
     clip-path: inset(0 100% 0 0);
