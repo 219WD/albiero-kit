@@ -4,7 +4,6 @@ import './FinalCTA.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faShieldHeart,
-  faBolt,
   faCheckCircle,
   faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
