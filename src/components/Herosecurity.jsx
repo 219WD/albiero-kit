@@ -1,7 +1,12 @@
-import { useState, useEffect } from "react";
+// HeroSecurity.jsx — con tracking granular del Pixel en cada paso
+// CAMBIOS respecto a la versión anterior:
+//   - handleOptionSelect ahora llama trackTipoSelected / trackUbicacionSelected / trackSistemaSelected
+//   - Se eliminó el useEffect de beforeunload (poco confiable, reemplazado por tracking por paso)
+//   - Se eliminó el useEffect que trackeaba currentStep (reemplazado por tracking en la selección)
+
+import { useState } from "react";
 import useSecurityHeroGsap from "../hooks/useSecurityHeroGsap";
 import "./HeroSecurity.css";
-// Importar Font Awesome
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
@@ -14,14 +19,20 @@ import {
   faClock,
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
-// Importar faWhatsapp desde free-brands-svg-icons
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useFacebookPixel from "../hooks/useFacebookPixel";
 
 const HeroSecurity = () => {
   useSecurityHeroGsap();
 
-  const { trackFormStep, trackFormComplete, trackFormAbandonment } = useFacebookPixel();
+  // ── Nueva API del hook ──────────────────────────────────────────────────────
+  const {
+    trackTipoSelected,
+    trackUbicacionSelected,
+    trackSistemaSelected,
+    trackFormComplete,
+  } = useFacebookPixel();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     tipo: "",
@@ -29,43 +40,22 @@ const HeroSecurity = () => {
     sistema: "",
   });
 
-  // Trackear cuando el usuario avanza de paso
-  useEffect(() => {
-    if (currentStep > 1) {
-      trackFormStep(currentStep, formData);
-    }
-  }, [currentStep, formData, trackFormStep]);
-
-  // Detectar abandono del formulario
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (currentStep < 3 || (currentStep === 3 && !formData.sistema)) {
-        trackFormAbandonment(currentStep, formData);
-      }
-    };
-    
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [currentStep, formData, trackFormAbandonment]);
-
+  // ── Manejo de selecciones con tracking granular ─────────────────────────────
   const handleOptionSelect = (field, value) => {
-    setFormData((prev) => {
-      const newData = { ...prev, [field]: value };
-      
-      // Trackear selección específica en cada paso
-      if (field === 'tipo') {
-        trackFormStep(1, { tipo: value === 'casa' ? 'Casa' : 'Comercio' });
-      } else if (field === 'ubicacion') {
-        trackFormStep(2, { ...prev, ubicacion: value });
-      } else if (field === 'sistema') {
-        trackFormStep(3, { ...prev, sistema: value });
-      }
-      
-      return newData;
-    });
+    const newData = { ...formData, [field]: value };
+    setFormData(newData);
+
+    if (field === "tipo") {
+      // Paso 1: trackear inmediatamente con el tipo seleccionado
+      trackTipoSelected(value);
+    } else if (field === "ubicacion") {
+      // Paso 2: trackear con tipo + ubicacion acumulados
+      trackUbicacionSelected(newData.tipo, value);
+    } else if (field === "sistema") {
+      // Paso 3: trackear con los 3 datos → evento más valioso para retargeting
+      // Aunque el usuario cierre ahora, Meta ya tiene Casa_YerbaBuena_Mediano
+      trackSistemaSelected(newData.tipo, newData.ubicacion, value);
+    }
 
     // Auto-avanzar al siguiente paso
     if (currentStep < 3) {
@@ -73,11 +63,12 @@ const HeroSecurity = () => {
     }
   };
 
+  // ── Envío del formulario ────────────────────────────────────────────────────
   const handleSubmit = () => {
-    // Trackear formulario completado en Pixel
+    // Trackear Lead completo en el Pixel
     trackFormComplete(formData);
-    
-    // Crear el mensaje para WhatsApp con los datos del formulario
+
+    // Construir mensaje de WhatsApp
     const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
       {
@@ -88,14 +79,9 @@ const HeroSecurity = () => {
       }[formData.sistema] || formData.sistema;
 
     const mensaje = `Hola! Quiero asesoramiento por el Kit de Alarma y Cámara.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
-
-    // Número de WhatsApp
     const numero = "5493813522339";
 
-    // Abrir WhatsApp con el mensaje
     window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
-
-    console.log("Form data enviada a WhatsApp y Pixel:", formData);
   };
 
   return (
