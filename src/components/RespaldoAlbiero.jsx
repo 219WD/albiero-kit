@@ -12,7 +12,6 @@ import {
 import useToast from '../hooks/useToast';
 // Importar Toaster
 import { Toaster } from 'react-hot-toast';
-import central from '../assets/albiero.jpg'
 
 const RespaldoAlbiero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
