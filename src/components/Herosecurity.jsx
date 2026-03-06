@@ -17,6 +17,20 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useFacebookPixel from "../hooks/useFacebookPixel";
 import useGoogleAnalytics from "../hooks/useGoogleAnalytics";
 
+// ─────────────────────────────────────────────────────────────
+// URLs del video en Cloudinary
+// ─────────────────────────────────────────────────────────────
+const VIDEO_MP4 =
+  "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
+
+// WebM: Cloudinary convierte automáticamente — más liviano en Chrome/Firefox
+const VIDEO_WEBM =
+  "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,vc_vp9/v1772819547/video-bg-compr_a6c1oj.webm";
+
+// Poster: thumbnail automático del frame 0, servido como imagen optimizada
+const VIDEO_POSTER =
+  "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
+
 const HeroSecurity = () => {
   useSecurityHeroGsap();
 
@@ -81,13 +95,35 @@ const HeroSecurity = () => {
 
   return (
     <section className="hero-security">
+
+      {/* ── Video de fondo ────────────────────────────────────
+          Desktop: video HTML5 nativo (sin Vimeo, sin cookies)
+          Mobile:  video oculto via CSS, solo carga el poster
+      ──────────────────────────────────────────────────────── */}
       <div className="security-video-fondo">
-        <iframe
-          src="https://player.vimeo.com/video/1170315247?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
-          frameBorder="0"
-          allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-          title="video-bg"
+        {/* Poster: imagen estática visible mientras el video carga */}
+        <img
+          src={VIDEO_POSTER}
+          alt=""
+          aria-hidden="true"
+          className="video-poster"
+          width="1280"
+          height="720"
+          fetchPriority="high"
         />
+
+        <video
+          className="video-bg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={VIDEO_POSTER}
+          aria-hidden="true"
+        >
+          <source src={VIDEO_WEBM} type="video/webm" />
+          <source src={VIDEO_MP4}  type="video/mp4"  />
+        </video>
       </div>
 
       <div className="security-overlay" />
@@ -104,10 +140,11 @@ const HeroSecurity = () => {
             monitoreo real y respuesta inmediata.
           </p>
           <p className="security-descripcion">
-            <FontAwesomeIcon icon={faShield} className="icon-desc" /> Alarma +{" "}
-            <FontAwesomeIcon icon={faCamera} className="icon-desc" /> cámaras +{" "}
-            <FontAwesomeIcon icon={faClock} className="icon-desc" /> central
-            activa 24/7 + <FontAwesomeIcon icon={faCar} className="icon-desc" />{" "}
+            <FontAwesomeIcon icon={faShield} className="icon-desc" aria-hidden="true" /> Alarma +{" "}
+            <FontAwesomeIcon icon={faCamera} className="icon-desc" aria-hidden="true" /> cámaras +{" "}
+            <FontAwesomeIcon icon={faClock}  className="icon-desc" aria-hidden="true" /> central
+            activa 24/7 +{" "}
+            <FontAwesomeIcon icon={faCar} className="icon-desc" aria-hidden="true" />{" "}
             móviles propios en tu zona.
           </p>
           <div className="security-breadcrumb">
@@ -135,14 +172,16 @@ const HeroSecurity = () => {
                   <button
                     onClick={() => handleOptionSelect("tipo", "casa")}
                     className={`opcion-btn ${formData.tipo === "casa" ? "selected" : ""}`}
+                    aria-pressed={formData.tipo === "casa"}
                   >
-                    <FontAwesomeIcon icon={faHome} className="btn-icon" /> Casa
+                    <FontAwesomeIcon icon={faHome} className="btn-icon" aria-hidden="true" /> Casa
                   </button>
                   <button
                     onClick={() => handleOptionSelect("tipo", "comercio")}
                     className={`opcion-btn ${formData.tipo === "comercio" ? "selected" : ""}`}
+                    aria-pressed={formData.tipo === "comercio"}
                   >
-                    <FontAwesomeIcon icon={faBuilding} className="btn-icon" />{" "}
+                    <FontAwesomeIcon icon={faBuilding} className="btn-icon" aria-hidden="true" />{" "}
                     Comercio
                   </button>
                 </div>
@@ -165,14 +204,19 @@ const HeroSecurity = () => {
                       key={lugar}
                       onClick={() => handleOptionSelect("ubicacion", lugar)}
                       className={`opcion-btn ${formData.ubicacion === lugar ? "selected" : ""}`}
+                      aria-pressed={formData.ubicacion === lugar}
                     >
-                      <FontAwesomeIcon icon={faLocationDot} className="btn-icon" />{" "}
+                      <FontAwesomeIcon icon={faLocationDot} className="btn-icon" aria-hidden="true" />{" "}
                       {lugar}
                     </button>
                   ))}
                 </div>
-                <button onClick={() => setCurrentStep(1)} className="btn-volver">
-                  <FontAwesomeIcon icon={faArrowLeft} /> Volver
+                <button
+                  onClick={() => setCurrentStep(1)}
+                  className="btn-volver"
+                  aria-label="Volver al paso 1"
+                >
+                  <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" /> Volver
                 </button>
               </div>
             )}
@@ -193,6 +237,7 @@ const HeroSecurity = () => {
                       key={opcion.value}
                       onClick={() => handleOptionSelect("sistema", opcion.value)}
                       className={`opcion-btn sistema ${formData.sistema === opcion.value ? "selected" : ""}`}
+                      aria-pressed={formData.sistema === opcion.value}
                     >
                       <span className="opcion-label">{opcion.label}</span>
                       {opcion.desc && (
@@ -201,8 +246,12 @@ const HeroSecurity = () => {
                     </button>
                   ))}
                 </div>
-                <button onClick={() => setCurrentStep(2)} className="btn-volver">
-                  <FontAwesomeIcon icon={faArrowLeft} /> Volver
+                <button
+                  onClick={() => setCurrentStep(2)}
+                  className="btn-volver"
+                  aria-label="Volver al paso 2"
+                >
+                  <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" /> Volver
                 </button>
               </div>
             )}
@@ -210,7 +259,7 @@ const HeroSecurity = () => {
             {currentStep === 3 && formData.sistema && (
               <div className="form-cta">
                 <button onClick={handleSubmit} className="cta-principal">
-                  <FontAwesomeIcon icon={faWhatsapp} style={{ marginRight: "10px" }} />
+                  <FontAwesomeIcon icon={faWhatsapp} aria-hidden="true" style={{ marginRight: "10px" }} />
                   Quiero asesoramiento ahora
                 </button>
                 <p className="cta-subtexto">
@@ -224,6 +273,7 @@ const HeroSecurity = () => {
         <div className="security-scroll">
           <button
             className="scroll-btn"
+            aria-label="Ver más información"
             onClick={() => {
               const element = document.getElementById("beneficios");
               if (element) {
@@ -232,7 +282,7 @@ const HeroSecurity = () => {
             }}
           >
             <span>Más Información</span>
-            <FontAwesomeIcon icon={faChevronDown} />
+            <FontAwesomeIcon icon={faChevronDown} aria-hidden="true" />
           </button>
         </div>
       </div>

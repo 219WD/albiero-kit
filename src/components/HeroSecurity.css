@@ -1,13 +1,24 @@
 /* HeroSecurity.css */
 
-@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+/* ── Google Fonts: carga sin bloquear el render ─────────────────
+   preconnect + preload evitan el render-blocking de 200ms
+   que reportaba Lighthouse. El @import bloqueaba; esto no.
+   (Si usás vite-plugin-webfont-dl podés eliminar estas líneas
+    y dejar que el plugin sirva las fonts localmente)
+──────────────────────────────────────────────────────────────── */
+/* Las siguientes líneas van en index.html, no acá:
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:...&display=swap"></noscript>
+*/
 
 :root {
   --gris-azulado: #5A6C7D;
   --negro: #1A1A1A;
   --blanco: #FFFFFF;
   --gris-claro: #F5F5F5;
-  --rojo-principal: #961C2C; /* Cambiado de verde a rojo */
+  --rojo-principal: #961C2C;
   --fuente: 'Bai Jamjuree', sans-serif;
 }
 
@@ -37,48 +48,52 @@ body {
   padding: 0;
 }
 
-/* Video de fondo */
+/* ═══════════════════════════════════
+   VIDEO FONDO — HTML5 nativo
+   (reemplaza el iframe de Vimeo)
+═══════════════════════════════════ */
 .security-video-fondo {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  margin: 0;
-  padding: 0;
 }
 
-.security-video-fondo iframe {
+/* Poster: imagen estática visible mientras el video carga */
+.video-poster {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100vw;
-  height: 100vh;
-  transform: translate(-50%, -50%);
-  border: none;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  object-position: center;
+  z-index: 0;
 }
 
-/* Para asegurar que el video cubra todo el espacio en diferentes relaciones de aspecto */
-@media (min-aspect-ratio: 16/9) {
-  .security-video-fondo iframe {
-    height: 56.25vw;
-    width: 100vw;
+/* Video nativo — desktop */
+.video-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Mobile: ocultar video, mostrar solo el poster ──────────────
+   En mobile el video consume datos y batería innecesariamente.
+   El poster cumple la misma función visual.
+──────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .video-bg {
+    display: none;
   }
 }
 
-@media (max-aspect-ratio: 16/9) {
-  .security-video-fondo iframe {
-    width: 177.78vh;
-    height: 100vh;
-  }
-}
-
-/* OVERLAY NEGRO */
+/* OVERLAY */
 .security-overlay {
   position: absolute;
   inset: 0;
@@ -90,7 +105,7 @@ body {
     rgba(0, 0, 0, 0.5) 50%,
     rgba(0, 0, 0, 0.4) 100%
   );
-  z-index: 1;
+  z-index: 2;
 }
 
 /* ═══════════════════════════════════
@@ -98,7 +113,7 @@ body {
 ═══════════════════════════════════ */
 .security-contenedor {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
@@ -152,7 +167,6 @@ body {
   margin: 0 0.1rem;
 }
 
-/* Breadcrumb */
 .security-breadcrumb {
   font-size: 0.8rem;
   font-weight: 500;
@@ -184,10 +198,9 @@ body {
   font-weight: 600;
   color: var(--negro);
   text-align: center;
-  font-family: 'Bai Jamjuree', sans-serif;
+  font-family: var(--fuente);
 }
 
-/* Indicador de pasos */
 .form-steps-indicator {
   display: flex;
   justify-content: center;
@@ -203,11 +216,10 @@ body {
 }
 
 .step-dot.active {
-  background: var(--rojo-principal); /* Cambiado a rojo */
+  background: var(--rojo-principal);
   transform: scale(1.3);
 }
 
-/* Paso del formulario */
 .form-step {
   display: flex;
   flex-direction: column;
@@ -218,10 +230,9 @@ body {
   font-size: 1rem;
   font-weight: 600;
   color: var(--negro);
-  font-family: 'Bai Jamjuree', sans-serif;
+  font-family: var(--fuente);
 }
 
-/* Opciones */
 .step-opciones {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -237,7 +248,7 @@ body {
   background: var(--gris-claro);
   border: 2px solid transparent;
   color: var(--negro);
-  font-family: 'Bai Jamjuree', sans-serif;
+  font-family: var(--fuente);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -260,7 +271,7 @@ body {
 }
 
 .opcion-btn.selected {
-  background: var(--rojo-principal); /* Cambiado a rojo */
+  background: var(--rojo-principal);
   border-color: var(--rojo-principal);
   color: var(--blanco);
   transform: translateY(-2px);
@@ -290,14 +301,13 @@ body {
   opacity: 1;
 }
 
-/* Botón volver */
 .btn-volver {
   align-self: flex-start;
   padding: 0.5rem 1rem;
   background: transparent;
   border: 1px solid var(--gris-claro);
   color: var(--negro);
-  font-family: 'Bai Jamjuree', sans-serif;
+  font-family: var(--fuente);
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -311,7 +321,6 @@ body {
   color: var(--rojo-principal);
 }
 
-/* CTA */
 .form-cta {
   display: flex;
   flex-direction: column;
@@ -322,10 +331,10 @@ body {
 .cta-principal {
   width: 100%;
   padding: 1.2rem;
-  background: var(--rojo-principal); /* Cambiado a rojo */
+  background: var(--rojo-principal);
   border: none;
   color: var(--blanco);
-  font-family: 'Bai Jamjuree', sans-serif;
+  font-family: var(--fuente);
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -335,7 +344,7 @@ body {
 }
 
 .cta-principal:hover {
-  background: #7a1724; /* Versión más oscura del rojo */
+  background: #7a1724;
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(150, 28, 44, 0.4);
 }
@@ -346,7 +355,7 @@ body {
   text-align: center;
   line-height: 1.6;
   opacity: 0.7;
-  font-family: 'Bai Jamjuree', sans-serif;
+  font-family: var(--fuente);
   font-weight: 400;
 }
 
@@ -369,7 +378,7 @@ body {
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 50px;
   color: var(--blanco);
-  font-family: 'Bai Jamjuree', sans-serif;
+  font-family: var(--fuente);
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.05em;
@@ -379,7 +388,7 @@ body {
 }
 
 .scroll-btn:hover {
-  background: var(--rojo-principal); /* Cambiado a rojo */
+  background: var(--rojo-principal);
   color: var(--blanco);
   border-color: var(--rojo-principal);
 }
@@ -433,7 +442,7 @@ body {
   }
 }
 
-/* Estilo para el icono de WhatsApp en el botón */
+/* WhatsApp pulse en CTA */
 .cta-principal svg {
   margin-right: 8px;
   font-size: 1.1rem;
@@ -442,5 +451,5 @@ body {
 
 @keyframes whatsappPulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  50%       { transform: scale(1.1); }
 }
