@@ -17,7 +17,6 @@ import logo from "../assets/logo.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-
   return (
     <footer className="footer">
       <div className="footer-main" id="contacto">
@@ -41,7 +40,11 @@ const Footer = () => {
           <div className="footer-col">
             <h4 className="footer-title">Contacto</h4>
             <div className="footer-contact-item">
-              <FontAwesomeIcon icon={faPhone} className="footer-contact-icon" />
+              <FontAwesomeIcon
+                icon={faPhone}
+                className="footer-contact-icon"
+                aria-hidden="true"
+              />
               <a href="tel:+543814531300" className="footer-contact-link">
                 0381 453 1300
               </a>
@@ -50,6 +53,7 @@ const Footer = () => {
               <FontAwesomeIcon
                 icon={faEnvelope}
                 className="footer-contact-icon"
+                aria-hidden="true"
               />
               <a
                 href="mailto:info@albiero.com.ar"
@@ -67,6 +71,7 @@ const Footer = () => {
               <FontAwesomeIcon
                 icon={faMapMarkerAlt}
                 className="footer-address-icon"
+                aria-hidden="true"
               />
               <span>Catamarca 479 - San Miguel de Tucumán</span>
             </div>
@@ -74,6 +79,7 @@ const Footer = () => {
               <FontAwesomeIcon
                 icon={faMapMarkerAlt}
                 className="footer-address-icon"
+                aria-hidden="true"
               />
               <span>Av. Aconquija 364 - Yerba Buena</span>
             </div>
@@ -81,6 +87,7 @@ const Footer = () => {
               <FontAwesomeIcon
                 icon={faMapMarkerAlt}
                 className="footer-address-icon"
+                aria-hidden="true"
               />
               <span>Av. Calchaquí S/N - Tafí del Valle</span>
             </div>
@@ -95,39 +102,43 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"
+                aria-label="Seguinos en Instagram"
               >
-                <FontAwesomeIcon icon={faInstagram} />
+                <FontAwesomeIcon icon={faInstagram} aria-hidden="true" />
               </a>
               <a
                 href="https://wa.me/5493813522339?text=Quiero%20asesoramiento%20por%20el%20Kit%20de%20Alarma%20y%20Cámara"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"
+                aria-label="Contactanos por WhatsApp"
               >
-                <FontAwesomeIcon icon={faWhatsapp} />
+                <FontAwesomeIcon icon={faWhatsapp} aria-hidden="true" />
               </a>
               <a
                 href="https://facebook.com/albieroseguridad.tuc/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"
+                aria-label="Seguinos en Facebook"
               >
-                <FontAwesomeIcon icon={faFacebookF} />
+                <FontAwesomeIcon icon={faFacebookF} aria-hidden="true" />
               </a>
               <a
                 href="https://linkedin.com/company/albiero-sistemas-de-seguridad/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-social-link"
+                aria-label="Seguinos en LinkedIn"
               >
-                <FontAwesomeIcon icon={faLinkedinIn} />
+                <FontAwesomeIcon icon={faLinkedinIn} aria-hidden="true" />
               </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Barra inferior de copyright - MISMO COLOR que el footer principal */}
+      {/* Barra inferior de copyright */}
       <div className="footer-bottom">
         <div className="footer-container">
           <p className="footer-copyright">
@@ -137,7 +148,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Barra de créditos - GRIS MÁS OSCURO */}
+      {/* Barra de créditos */}
       <div className="footer-credits">
         <p className="footer-credits-text">
           Página web hecha con ♥ por 219Labs
