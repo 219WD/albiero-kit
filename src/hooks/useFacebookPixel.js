@@ -175,7 +175,7 @@ const useFacebookPixel = () => {
   const trackFormAbandonment = () => {
     // Ya no es necesario: el tracking en cada paso reemplaza este evento.
     // Los datos ya están en Meta desde el momento de la selección.
-    // Dejamos la función vacía para no romper la interfaz existente.
+    // Dejamos la función vacía para no romper la interfaz existente. Test pro
   };
 
   return {
