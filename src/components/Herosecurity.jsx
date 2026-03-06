@@ -1,9 +1,3 @@
-// HeroSecurity.jsx — con tracking granular del Pixel en cada paso
-// CAMBIOS respecto a la versión anterior:
-//   - handleOptionSelect ahora llama trackTipoSelected / trackUbicacionSelected / trackSistemaSelected
-//   - Se eliminó el useEffect de beforeunload (poco confiable, reemplazado por tracking por paso)
-//   - Se eliminó el useEffect que trackeaba currentStep (reemplazado por tracking en la selección)
-
 import { useState } from "react";
 import useSecurityHeroGsap from "../hooks/useSecurityHeroGsap";
 import "./HeroSecurity.css";
@@ -21,17 +15,24 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useFacebookPixel from "../hooks/useFacebookPixel";
+import useGoogleAnalytics from "../hooks/useGoogleAnalytics";
 
 const HeroSecurity = () => {
   useSecurityHeroGsap();
 
-  // ── Nueva API del hook ──────────────────────────────────────────────────────
   const {
     trackTipoSelected,
     trackUbicacionSelected,
     trackSistemaSelected,
     trackFormComplete,
   } = useFacebookPixel();
+
+  const {
+    trackTipoSelectedGA4,
+    trackUbicacionSelectedGA4,
+    trackSistemaSelectedGA4,
+    trackLeadGA4,
+  } = useGoogleAnalytics();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -40,35 +41,30 @@ const HeroSecurity = () => {
     sistema: "",
   });
 
-  // ── Manejo de selecciones con tracking granular ─────────────────────────────
   const handleOptionSelect = (field, value) => {
     const newData = { ...formData, [field]: value };
     setFormData(newData);
 
     if (field === "tipo") {
-      // Paso 1: trackear inmediatamente con el tipo seleccionado
       trackTipoSelected(value);
+      trackTipoSelectedGA4(value);
     } else if (field === "ubicacion") {
-      // Paso 2: trackear con tipo + ubicacion acumulados
       trackUbicacionSelected(newData.tipo, value);
+      trackUbicacionSelectedGA4(newData.tipo, value);
     } else if (field === "sistema") {
-      // Paso 3: trackear con los 3 datos → evento más valioso para retargeting
-      // Aunque el usuario cierre ahora, Meta ya tiene Casa_YerbaBuena_Mediano
       trackSistemaSelected(newData.tipo, newData.ubicacion, value);
+      trackSistemaSelectedGA4(newData.tipo, newData.ubicacion, value);
     }
 
-    // Auto-avanzar al siguiente paso
     if (currentStep < 3) {
       setTimeout(() => setCurrentStep(currentStep + 1), 300);
     }
   };
 
-  // ── Envío del formulario ────────────────────────────────────────────────────
   const handleSubmit = () => {
-    // Trackear Lead completo en el Pixel
     trackFormComplete(formData);
+    trackLeadGA4(formData);
 
-    // Construir mensaje de WhatsApp
     const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
       {
@@ -80,13 +76,11 @@ const HeroSecurity = () => {
 
     const mensaje = `Hola! Quiero asesoramiento por el Kit de Alarma y Cámara.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
     const numero = "5493813522339";
-
     window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
   };
 
   return (
     <section className="hero-security">
-      {/* Video de fondo de Vimeo */}
       <div className="security-video-fondo">
         <iframe
           src="https://player.vimeo.com/video/1170315247?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
@@ -96,24 +90,19 @@ const HeroSecurity = () => {
         />
       </div>
 
-      {/* Overlay */}
       <div className="security-overlay" />
 
-      {/* Contenido */}
       <div className="security-contenedor">
-        {/* Columna izquierda: Títulos */}
         <div className="security-izquierda">
           <h1 className="security-titulo">
             Albiero Seguridad
             <br />
             Alarma+Cámara.
           </h1>
-
           <p className="security-subtitulo">
             Protegé tu casa o negocio con <br />
             monitoreo real y respuesta inmediata.
           </p>
-
           <p className="security-descripcion">
             <FontAwesomeIcon icon={faShield} className="icon-desc" /> Alarma +{" "}
             <FontAwesomeIcon icon={faCamera} className="icon-desc" /> cámaras +{" "}
@@ -121,19 +110,15 @@ const HeroSecurity = () => {
             activa 24/7 + <FontAwesomeIcon icon={faCar} className="icon-desc" />{" "}
             móviles propios en tu zona.
           </p>
-
-          {/* Breadcrumb */}
           <div className="security-breadcrumb">
             <span>+40</span> Años de experiencia en seguridad en Tucumán
           </div>
         </div>
 
-        {/* Columna derecha: Formulario */}
         <div className="security-derecha">
           <div className="security-form">
             <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
 
-            {/* Indicador de pasos */}
             <div className="form-steps-indicator">
               {[1, 2, 3].map((step) => (
                 <div
@@ -143,7 +128,6 @@ const HeroSecurity = () => {
               ))}
             </div>
 
-            {/* Paso 1: Tipo */}
             {currentStep === 1 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 1: ¿Es para?</h4>
@@ -165,7 +149,6 @@ const HeroSecurity = () => {
               </div>
             )}
 
-            {/* Paso 2: Ubicación */}
             {currentStep === 2 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 2: ¿Dónde querés instalar?</h4>
@@ -183,24 +166,17 @@ const HeroSecurity = () => {
                       onClick={() => handleOptionSelect("ubicacion", lugar)}
                       className={`opcion-btn ${formData.ubicacion === lugar ? "selected" : ""}`}
                     >
-                      <FontAwesomeIcon
-                        icon={faLocationDot}
-                        className="btn-icon"
-                      />{" "}
+                      <FontAwesomeIcon icon={faLocationDot} className="btn-icon" />{" "}
                       {lugar}
                     </button>
                   ))}
                 </div>
-                <button
-                  onClick={() => setCurrentStep(1)}
-                  className="btn-volver"
-                >
+                <button onClick={() => setCurrentStep(1)} className="btn-volver">
                   <FontAwesomeIcon icon={faArrowLeft} /> Volver
                 </button>
               </div>
             )}
 
-            {/* Paso 3: Sistema */}
             {currentStep === 3 && (
               <div className="form-step">
                 <h4 className="step-titulo">
@@ -208,32 +184,14 @@ const HeroSecurity = () => {
                 </h4>
                 <div className="step-opciones vertical">
                   {[
-                    {
-                      value: "chico",
-                      label: "Kit Chico",
-                      desc: "(ambientes reducidos)",
-                    },
-                    {
-                      value: "mediano",
-                      label: "Kit Mediano",
-                      desc: "(propiedad estándar)",
-                    },
-                    {
-                      value: "grande",
-                      label: "Kit Grande",
-                      desc: "(propiedad amplia)",
-                    },
-                    {
-                      value: "personalizado",
-                      label: "Necesito asesoramiento personalizado",
-                      desc: "",
-                    },
+                    { value: "chico",        label: "Kit Chico",    desc: "(ambientes reducidos)" },
+                    { value: "mediano",       label: "Kit Mediano",  desc: "(propiedad estándar)"  },
+                    { value: "grande",        label: "Kit Grande",   desc: "(propiedad amplia)"    },
+                    { value: "personalizado", label: "Necesito asesoramiento personalizado", desc: "" },
                   ].map((opcion) => (
                     <button
                       key={opcion.value}
-                      onClick={() =>
-                        handleOptionSelect("sistema", opcion.value)
-                      }
+                      onClick={() => handleOptionSelect("sistema", opcion.value)}
                       className={`opcion-btn sistema ${formData.sistema === opcion.value ? "selected" : ""}`}
                     >
                       <span className="opcion-label">{opcion.label}</span>
@@ -243,35 +201,26 @@ const HeroSecurity = () => {
                     </button>
                   ))}
                 </div>
-                <button
-                  onClick={() => setCurrentStep(2)}
-                  className="btn-volver"
-                >
+                <button onClick={() => setCurrentStep(2)} className="btn-volver">
                   <FontAwesomeIcon icon={faArrowLeft} /> Volver
                 </button>
               </div>
             )}
 
-            {/* Botón CTA */}
             {currentStep === 3 && formData.sistema && (
               <div className="form-cta">
                 <button onClick={handleSubmit} className="cta-principal">
-                  <FontAwesomeIcon
-                    icon={faWhatsapp}
-                    style={{ marginRight: "10px" }}
-                  />
+                  <FontAwesomeIcon icon={faWhatsapp} style={{ marginRight: "10px" }} />
                   Quiero asesoramiento ahora
                 </button>
                 <p className="cta-subtexto">
-                  Instalación sin costo • Sistema en comodato • Más de 40 años
-                  en Tucumán
+                  Instalación sin costo • Sistema en comodato • Más de 40 años en Tucumán
                 </p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Scroll indicator */}
         <div className="security-scroll">
           <button
             className="scroll-btn"
