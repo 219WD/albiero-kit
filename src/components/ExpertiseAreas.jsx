@@ -4,13 +4,13 @@ import './ExpertiseAreas.css';
 import { gsap } from 'gsap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import casa from '../assets/casa.jpg'
-import comercial from '../assets/comercial.jpg'
 
 const ExpertiseAreas = () => {
   const [activeIndex, setActiveIndex] = useState(0); // Inicia abierto el primero (0)
   const contentRefs = useRef([]);
   const imageRef = useRef(null);
+  const casa = "https://res.cloudinary.com/dtxdv136u/image/upload/v1772815812/casa_zjuefv.jpg";
+  const comercial = "https://res.cloudinary.com/dtxdv136u/image/upload/v1772815811/comercial_xrbkz2.jpg";
 
   // Actualizado con solo 2 opciones y los textos personalizados
   const expertiseData = [

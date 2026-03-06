@@ -17,6 +17,7 @@ import central from '../assets/albiero.jpg'
 const RespaldoAlbiero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { showToast } = useToast(); // Usar el custom hook
+  const central = "https://res.cloudinary.com/dtxdv136u/image/upload/v1772815811/albiero_inwcia.jpg";
 
   const albieroFeatures = [
     {
