@@ -1,16 +1,21 @@
 // ExpertiseAreas.jsx
-import React, { useState, useRef, useEffect } from 'react';
-import './ExpertiseAreas.css';
-import { gsap } from 'gsap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useRef, useEffect } from "react";
+import "./ExpertiseAreas.css";
+import { gsap } from "gsap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronDown,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 const ExpertiseAreas = () => {
   const [activeIndex, setActiveIndex] = useState(0); // Inicia abierto el primero (0)
   const contentRefs = useRef([]);
   const imageRef = useRef(null);
-  const casa = "https://res.cloudinary.com/dtxdv136u/image/upload/v1772815812/casa_zjuefv.jpg";
-  const comercial = "https://res.cloudinary.com/dtxdv136u/image/upload/v1772815811/comercial_xrbkz2.jpg";
+  const casa =
+    "https://res.cloudinary.com/dtxdv136u/image/upload/w_665,h_665,c_fill,f_auto,q_auto/v1772815812/casa_zjuefv.jpg";
+  const comercial =
+    "https://res.cloudinary.com/dtxdv136u/image/upload/w_665,h_665,c_fill,f_auto,q_auto/v1772815811/comercial_xrbkz2.jpg";
 
   // Actualizado con solo 2 opciones y los textos personalizados
   const expertiseData = [
@@ -18,33 +23,35 @@ const ExpertiseAreas = () => {
       id: 1,
       title: "RESIDENCIAL",
       shortTitle: "Para Casa",
-      description: "Dormí tranquilo aunque oscurezca antes. Protegé a tu familia, incluso cuando no estás.",
+      description:
+        "Dormí tranquilo aunque oscurezca antes. Protegé a tu familia, incluso cuando no estás.",
       details: [
         "Alertas en tiempo real.",
         "Botón de pánico.",
-        "Respuesta inmediata."
+        "Respuesta inmediata.",
       ],
-      image: casa
+      image: casa,
     },
     {
       id: 2,
       title: "COMERCIO",
       shortTitle: "Para Comercio",
-      description: "Reducí riesgo de robo fuera de horario. Protegé mercadería y equipamiento.",
+      description:
+        "Reducí riesgo de robo fuera de horario. Protegé mercadería y equipamiento.",
       details: [
         "Monitoreo activo nocturno.",
         "Control total desde tu celular.",
-        "Respuesta rápida ante cualquier evento."
+        "Respuesta rápida ante cualquier evento.",
       ],
-      image: comercial
-    }
+      image: comercial,
+    },
   ];
 
   useEffect(() => {
     // Asegurar que el primer dropdown esté abierto al montar el componente
     if (contentRefs.current[0]) {
       const firstContent = contentRefs.current[0];
-      gsap.set(firstContent, { height: 'auto', opacity: 1 });
+      gsap.set(firstContent, { height: "auto", opacity: 1 });
       setActiveIndex(0);
     }
   }, []);
@@ -60,13 +67,13 @@ const ExpertiseAreas = () => {
         height: 0,
         opacity: 0,
         duration: 0.4,
-        ease: 'power2.inOut'
+        ease: "power2.inOut",
       });
     }
 
     if (isOpening) {
       // Abrir el nuevo
-      gsap.set(content, { height: 'auto' });
+      gsap.set(content, { height: "auto" });
       const height = content.offsetHeight;
       gsap.fromTo(
         content,
@@ -75,8 +82,8 @@ const ExpertiseAreas = () => {
           height: height,
           opacity: 1,
           duration: 0.5,
-          ease: 'power3.out'
-        }
+          ease: "power3.out",
+        },
       );
 
       // Animar cambio de imagen
@@ -84,15 +91,15 @@ const ExpertiseAreas = () => {
         opacity: 0,
         scale: 0.95,
         duration: 0.3,
-        ease: 'power2.in',
+        ease: "power2.in",
         onComplete: () => {
           gsap.to(imageRef.current, {
             opacity: 1,
             scale: 1,
             duration: 0.5,
-            ease: 'power2.out'
+            ease: "power2.out",
           });
-        }
+        },
       });
 
       setActiveIndex(index);
@@ -104,22 +111,26 @@ const ExpertiseAreas = () => {
 
   return (
     <section className="expertise-areas-container">
-      <div className="expertise-content" id='soluciones'>
-        
+      <div className="expertise-content" id="soluciones">
         {/* Lado Izquierdo - Opciones */}
         <div className="expertise-left">
-          <h2 className="expertise-main-title">SOLUCIONES<br />A MEDIDA</h2>
+          <h2 className="expertise-main-title">
+            SOLUCIONES
+            <br />A MEDIDA
+          </h2>
 
           <div className="expertise-options">
             {expertiseData.map((item, index) => (
               <div key={item.id} className="expertise-option">
                 <button
-                  className={`expertise-button ${activeIndex === index ? 'active' : ''}`}
+                  className={`expertise-button ${activeIndex === index ? "active" : ""}`}
                   onClick={() => handleToggle(index)}
                 >
                   <span className="expertise-title">{item.title}</span>
-                  <FontAwesomeIcon 
-                    icon={activeIndex === index ? faChevronDown : faChevronRight}
+                  <FontAwesomeIcon
+                    icon={
+                      activeIndex === index ? faChevronDown : faChevronRight
+                    }
                     className="expertise-icon"
                   />
                 </button>
@@ -127,7 +138,11 @@ const ExpertiseAreas = () => {
                 <div
                   ref={(el) => (contentRefs.current[index] = el)}
                   className="expertise-dropdown"
-                  style={{ height: index === 0 ? 'auto' : 0, opacity: index === 0 ? 1 : 0, overflow: 'hidden' }}
+                  style={{
+                    height: index === 0 ? "auto" : 0,
+                    opacity: index === 0 ? 1 : 0,
+                    overflow: "hidden",
+                  }}
                 >
                   <div className="dropdown-content">
                     <h3 className="dropdown-short-title">{item.shortTitle}</h3>
@@ -148,24 +163,31 @@ const ExpertiseAreas = () => {
         <div className="expertise-right">
           <div className="expertise-header-text">
             <p className="expertise-subtitle">
-              MÁS DE 40 AÑOS DE EXPERIENCIA EN<br />
+              MÁS DE 40 AÑOS DE EXPERIENCIA EN
+              <br />
               SEGURIDAD EN TUCUMÁN
             </p>
           </div>
 
-          <div 
-            ref={imageRef}
-            className="expertise-image-container"
-          >
-            <img 
-              src={activeIndex !== null ? expertiseData[activeIndex].image : expertiseData[0].image}
-              alt={activeIndex !== null ? expertiseData[activeIndex].title : "Expertise"}
+          <div ref={imageRef} className="expertise-image-container">
+            <img
+              src={
+                activeIndex !== null
+                  ? expertiseData[activeIndex].image
+                  : expertiseData[0].image
+              }
+              alt={
+                activeIndex !== null
+                  ? expertiseData[activeIndex].title
+                  : "Expertise"
+              }
+              width="665"
+              height="665"
               className="expertise-image"
             />
             <div className="image-overlay"></div>
           </div>
         </div>
-
       </div>
     </section>
   );

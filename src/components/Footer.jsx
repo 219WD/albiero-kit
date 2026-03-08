@@ -27,6 +27,8 @@ const Footer = () => {
               <img
                 src={logo}
                 alt="Albiero Seguridad"
+                width="175"
+                height="147"
                 className="footer-logo-img"
               />
             </div>
