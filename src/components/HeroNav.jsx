@@ -21,7 +21,7 @@ const HeroNav = () => {
   };
 
   const navLinks = [
-    { name: 'Configurar Sistema',     section: 'hero-formulario',       icon: null },
+    { name: 'Configurar Sistema',     section: 'hero-security',       icon: null },
     { name: 'Beneficios',             section: 'beneficios',             icon: null },
     { name: 'Soluciones',             section: 'soluciones',             icon: null },
     { name: 'Acerca de',              section: 'acerca-de',              icon: null },
