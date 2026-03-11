@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './HeroNav.css';
+import './HeroNavHome.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPhone,
@@ -9,7 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import LogoGrande from '../../assets/logo-grande.png';
 
-const HeroNav = () => {
+const HeroNavHome = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
 
@@ -170,4 +170,4 @@ const HeroNav = () => {
   );
 };
 
-export default HeroNav;
+export default HeroNavHome;

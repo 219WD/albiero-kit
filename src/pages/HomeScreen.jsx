@@ -7,14 +7,14 @@ import HowItWorksHome from "../components/HomeScreen/HowItWorksHome.jsx";
 import CoberturaZonas from "../components/HomeScreen/CoberturaZonas.jsx";
 import FAQ from "../components/HomeScreen/FAQ.jsx";
 import FinalCTA from "../components/HomeScreen/FinalCTA.jsx";
-import HeroNav from "../components/HomeScreen/HeroNav.jsx";
+import HeroNavHome from "../components/HomeScreen/HeroNavHome.jsx";
 import WorkWithUs from '../components/HomeScreen/WorkWithUs.jsx'
 import Footer from "../components/Footer.jsx";
 
 export default function HomeScreen() {
   return (
     <div className="homeScreen-container">
-      <HeroNav />
+      <HeroNavHome />
       <HeroBranding />
       <SecurityMarqueeHome />
       <ServiciosPrincipales />
