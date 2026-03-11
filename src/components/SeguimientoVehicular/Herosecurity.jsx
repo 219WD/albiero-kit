@@ -15,8 +15,8 @@ import {
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import useFacebookPixel from "../../hooks/useFacebookPixel";
-import useGoogleAnalytics from "../../hooks/useGoogleAnalytics";
+import useFacebookPixelGPS from "../../hooks/useFacebookPixelGPS";
+import useGoogleAnalyticsGPS from "../../hooks/useGoogleAnalyticsGPS";
 
 // ─────────────────────────────────────────────────────────────
 // URLs del video en Cloudinary
@@ -38,14 +38,14 @@ const HeroSecurity = () => {
     trackUbicacionSelected,
     trackSistemaSelected,
     trackFormComplete,
-  } = useFacebookPixel();
+  } = useFacebookPixelGPS();
 
   const {
     trackTipoSelectedGA4,
     trackUbicacionSelectedGA4,
     trackSistemaSelectedGA4,
     trackLeadGA4,
-  } = useGoogleAnalytics();
+  } = useGoogleAnalyticsGPS();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
