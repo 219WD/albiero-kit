@@ -468,3 +468,317 @@
   .hn__mobile { width: 260px; padding: 2rem 1rem; }
   .hn__mobile-link { font-size: 1rem; padding: 0.8rem; }
 }
+
+/* ===== ICONOS EN DROPDOWN ===== */
+
+.hn__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+}
+
+.hn__dropdown-item-icon {
+  font-size: 1rem;
+  color: var(--nav-primary);
+  width: 20px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.hn__dropdown-item:hover .hn__dropdown-item-icon {
+  transform: scale(1.1);
+  color: var(--nav-primary-hover);
+}
+
+/* ===== ICONOS EN SUB-LINKS MÓVIL ===== */
+
+.hn__sub-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 12px 24px;
+}
+
+.hn__sub-link-icon {
+  font-size: 0.95rem;
+  color: var(--nav-primary);
+  width: 18px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.hn__sub-link:hover .hn__sub-link-icon {
+  transform: scale(1.1);
+  color: white;
+}
+
+/* ===== ICONOS EN LINKS GENERALES ===== */
+
+.hn__link-icon {
+  font-size: 0.85rem;
+  transition: transform 0.2s ease;
+}
+
+.hn__link:hover .hn__link-icon {
+  transform: scale(1.1);
+}
+
+.hn__mobile-link-icon {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.hn__mobile-link:hover .hn__mobile-link-icon {
+  transform: scale(1.1);
+}
+
+/* ===== EFECTOS ESPECIALES PARA ICONOS ===== */
+
+/* Icono de estrella para "¿Por qué Albiero?" */
+.hn__link-icon.fa-star {
+  color: #FFD700;
+}
+
+/* Icono de ubicación para "Cobertura" */
+.hn__link-icon.fa-map-marker-alt {
+  color: #4CAF50;
+}
+
+/* Icono de escudo para "Protege tu Hogar" */
+.hn__link-icon.fa-shield-heart {
+  color: #ff6b6b;
+}
+
+/* Icono de teléfono para "Contacto" */
+.hn__link-icon.fa-phone {
+  color: #4CAF50;
+}
+
+/* Mantener colores en hover */
+.hn__link:hover .hn__link-icon.fa-star,
+.hn__link:hover .hn__link-icon.fa-map-marker-alt,
+.hn__link:hover .hn__link-icon.fa-shield-heart,
+.hn__link:hover .hn__link-icon.fa-phone {
+  color: white;
+}
+
+/* ===== ICONOS EN MODO HIGHLIGHT ===== */
+
+.hn__link--highlight .hn__link-icon {
+  color: white !important;
+}
+
+.hn__mobile-link--highlight .hn__mobile-link-icon {
+  color: white !important;
+}
+
+/* ===== ANIMACIONES EXTRA ===== */
+
+/* Efecto de latido para iconos importantes */
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.hn__link--highlight .hn__link-icon {
+  animation: heartbeat 2s ease infinite;
+}
+
+/* Efecto de rebote suave para el chevron */
+.hn__chevron {
+  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ===== MEJORAS EN EL DROPDOWN ===== */
+
+/* Añadir separadores visuales entre icono y texto */
+.hn__dropdown-item {
+  border-left: 3px solid transparent;
+}
+
+.hn__dropdown-item:hover {
+  border-left-color: var(--nav-primary);
+}
+
+/* Efecto de brillo en los iconos al hacer hover */
+.hn__dropdown-item:hover .hn__dropdown-item-icon {
+  filter: drop-shadow(0 0 5px rgba(150, 28, 44, 0.5));
+}
+
+/* ===== AJUSTES RESPONSIVE PARA ICONOS ===== */
+
+@media (max-width: 1200px) {
+  .hn__link-icon {
+    font-size: 0.75rem;
+  }
+  
+  .hn__dropdown-item-icon {
+    font-size: 0.9rem;
+    width: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hn__mobile-link-icon {
+    font-size: 1rem;
+  }
+  
+  .hn__sub-link-icon {
+    font-size: 0.9rem;
+    width: 16px;
+  }
+}
+
+/* ===== ESTILOS PARA NUEVOS ICONOS ===== */
+
+/* Icono de reproducción para "Cómo Funciona" */
+.hn__link-icon.fa-play-circle {
+  color: #4ECDC4;
+  animation: pulse 2s ease infinite;
+}
+
+/* Icono de pregunta para "Preguntas Frecuentes" */
+.hn__link-icon.fa-question-circle {
+  color: #FFB347;
+}
+
+/* Animación de pulso para el icono de Cómo Funciona */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* ===== REORGANIZACIÓN PARA MÁS LINKS ===== */
+
+/* Ajuste para desktop con más links */
+@media (min-width: 1025px) {
+  .hn__links {
+    gap: 0.2rem;
+  }
+  
+  .hn__link {
+    font-size: 0.8rem;
+    padding: 0.35rem 0.6rem;
+  }
+  
+  .hn__link-icon {
+    font-size: 0.75rem;
+  }
+}
+
+/* Ajuste específico para pantallas grandes */
+@media (min-width: 1400px) {
+  .hn__link {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+/* ===== MEJORAS EN LOS EFECTOS ===== */
+
+/* Efecto especial para Cómo Funciona */
+.hn__link:hover .fa-play-circle {
+  color: #6EE7E0;
+  filter: drop-shadow(0 0 5px rgba(78, 205, 196, 0.5));
+}
+
+/* Efecto especial para Preguntas Frecuentes */
+.hn__link:hover .fa-question-circle {
+  color: #FFC56E;
+  filter: drop-shadow(0 0 5px rgba(255, 179, 71, 0.5));
+}
+
+/* ===== SEPARADORES VISUALES ===== */
+
+/* Agregar un separador sutil entre grupos */
+.hn__link:nth-child(5) {
+  position: relative;
+  margin-left: 5px;
+}
+
+.hn__link:nth-child(5)::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== AJUSTES MÓVIL PARA MÁS LINKS ===== */
+
+@media (max-width: 1024px) {
+  .hn__mobile-links {
+    gap: 0.3rem;
+  }
+  
+  .hn__mobile-link {
+    font-size: 1rem;
+    padding: 0.9rem;
+  }
+  
+  .hn__mobile-link-icon {
+    font-size: 1rem;
+  }
+  
+  /* El acordeón de servicios se ve bien, pero ajustamos el espaciado */
+  .hn__accordion-panel {
+    margin-left: 0.8rem;
+  }
+  
+  .hn__sub-link {
+    padding: 10px 14px 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hn__mobile-link {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+  
+  .hn__mobile-link-icon {
+    font-size: 0.95rem;
+  }
+  
+  .hn__sub-link {
+    padding: 8px 12px 8px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ===== ORDEN DE LOS ICONOS EN MÓVIL ===== */
+
+/* Asegurar que los highlights se vean bien al final */
+.hn__mobile-link--highlight:last-of-type {
+  margin-bottom: 1rem;
+}
+
+/* ===== ANIMACIONES MEJORADAS ===== */
+
+/* Animación de rebote para el icono de play */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.hn__link:hover .fa-play-circle {
+  animation: bounce 0.5s ease infinite;
+}
+
+/* Animación de vibración suave para pregunta */
+@keyframes shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(5deg); }
+  75% { transform: rotate(-5deg); }
+}
+
+.hn__link:hover .fa-question-circle {
+  animation: shake 0.3s ease;
+}

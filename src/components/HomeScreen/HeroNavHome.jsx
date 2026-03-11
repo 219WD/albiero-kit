@@ -6,6 +6,15 @@ import {
   faTimes,
   faShieldHeart,
   faChevronDown,
+  faShieldAlt,
+  faVideo,
+  faHome,
+  faCar,
+  faQuestionCircle,
+  faMapMarkerAlt,
+  faStar,
+  faPlayCircle,
+  faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
 import LogoGrande from '../../assets/logo-grande.png';
 
@@ -28,18 +37,22 @@ const HeroNavHome = () => {
     setMobileServicesOpen(false);
   };
 
+  // Servicios CON ICONOS
   const serviceLinks = [
-    { name: 'Alarmas',               path: '/alarmas' },
-    { name: 'Cámaras',               path: '/camaras' },
-    { name: 'Kit Alarma + Cámara',   path: '/kit-alarma-camara' },
-    { name: 'Seguimiento Vehicular', path: '/seguimiento-vehicular' },
+    { name: 'Alarmas', path: '/alarmas', icon: faShieldAlt },
+    { name: 'Cámaras', path: '/camaras', icon: faVideo },
+    { name: 'Kit Alarma + Cámara', path: '/kit-alarma-camara', icon: faHome },
+    { name: 'Seguimiento Vehicular', path: '/seguimiento-vehicular', icon: faCar },
   ];
 
+  // Links de navegación CON ICONOS (AHORA CON CÓMO FUNCIONA Y PREGUNTAS FRECUENTES)
   const navLinks = [
-    { name: '¿Por qué Albiero?', type: 'hash', hash: '#por-que-albiero' },
-    { name: 'Cobertura',         type: 'hash', hash: '#cobertura' },
-    { name: 'Protege tu Hogar',  type: 'hash', hash: '#protege-tu-hogar', icon: faShieldHeart, highlight: true },
-    { name: 'Contacto',          type: 'hash', hash: '#contacto',         icon: faPhone,       highlight: true },
+    { name: '¿Por qué Albiero?', type: 'hash', hash: '#por-que-albiero', icon: faStar },
+    { name: 'Cobertura', type: 'hash', hash: '#cobertura', icon: faMapMarkerAlt },
+    { name: 'Cómo Funciona', type: 'hash', hash: '#como-funciona', icon: faPlayCircle },
+    { name: 'Preguntas Frecuentes', type: 'hash', hash: '#preguntas-frecuentes', icon: faQuestionCircle },
+    { name: 'Protege tu Hogar', type: 'hash', hash: '#protege-tu-hogar', icon: faShieldHeart, highlight: true },
+    { name: 'Contacto', type: 'hash', hash: '#contacto', icon: faPhone, highlight: true },
   ];
 
   return (
@@ -61,7 +74,7 @@ const HeroNavHome = () => {
         {/* Desktop Navigation */}
         <div className="hn__links">
 
-          {/* Dropdown Servicios — controlado 100% por CSS :hover */}
+          {/* Dropdown Servicios con iconos */}
           <div className="hn__dropdown">
             <button className="hn__link hn__link--dropdown">
               <span>Servicios</span>
@@ -75,13 +88,14 @@ const HeroNavHome = () => {
                   className="hn__dropdown-item"
                   onClick={() => navigateTo(service.path)}
                 >
-                  {service.name}
+                  <FontAwesomeIcon icon={service.icon} className="hn__dropdown-item-icon" />
+                  <span>{service.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Links normales */}
+          {/* Links normales con iconos (AHORA CON 6 LINKS) */}
           {navLinks.map((link, index) => (
             <button
               key={index}
@@ -120,7 +134,7 @@ const HeroNavHome = () => {
 
         <div className="hn__mobile-links">
 
-          {/* Acordeón Servicios - VERSIÓN CORREGIDA */}
+          {/* Acordeón Servicios con iconos */}
           <div className="hn__accordion">
             <button
               className={`hn__mobile-link hn__accordion-trigger${mobileServicesOpen ? ' open' : ''}`}
@@ -147,13 +161,14 @@ const HeroNavHome = () => {
                   className="hn__sub-link" 
                   onClick={() => navigateTo(service.path)}
                 >
-                  {service.name}
+                  <FontAwesomeIcon icon={service.icon} className="hn__sub-link-icon" />
+                  <span>{service.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Resto de links */}
+          {/* Resto de links con iconos (AHORA CON 6 LINKS) */}
           {navLinks.map((link, index) => (
             <button
               key={index}

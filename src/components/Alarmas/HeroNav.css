@@ -350,3 +350,60 @@
 .hero-nav-mobile {
   will-change: transform, background-color;
 }
+
+/* Añadir estos estilos al final de tu HeroNav.css existente */
+
+/* Iconos en dropdown items */
+.hn__dropdown-item-icon {
+  margin-right: 10px;
+  font-size: 0.9rem;
+  color: var(--nav-primary);
+  width: 18px;
+  text-align: center;
+}
+
+.hn__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Iconos en sub-links móvil */
+.hn__sub-link-icon {
+  margin-right: 8px;
+  font-size: 0.85rem;
+  color: var(--nav-primary);
+  width: 16px;
+  text-align: center;
+}
+
+.hn__sub-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Separador visual para secciones específicas */
+.hn__link--section-divider {
+  position: relative;
+  margin-left: 10px;
+  padding-left: 15px;
+}
+
+.hn__link--section-divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .hn__link--section-divider::before {
+    display: none;
+  }
+}
