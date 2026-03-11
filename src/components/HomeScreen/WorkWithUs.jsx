@@ -1,4 +1,3 @@
-// WorkWithUs.jsx
 import React from 'react';
 import './WorkWithUs.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,7 +5,8 @@ import { faEnvelope, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 const WorkWithUs = () => {
   const handleSendCV = () => {
-    window.location.href = 'mailto:rrhh@albiero.com.ar?subject=CV - Postulación Albiero';
+    // Abre el cliente de correo predeterminado con Gmail, Outlook, etc.
+    window.location.href = 'mailto:rrhh@albiero.com.ar?subject=CV%20-%20Postulación%20Albiero&body=Hola%2C%20adjunto%20mi%20CV%20para%20ser%20parte%20del%20equipo%20de%20Albiero.';
   };
 
   return (
@@ -26,11 +26,20 @@ const WorkWithUs = () => {
           </div>
 
           <div className="work-with-us-cta">
-            <a href="mailto:rrhh@albiero.com.ar" className="work-email-link">
+            <a 
+              href="mailto:rrhh@albiero.com.ar?subject=CV%20-%20Postulación%20Albiero" 
+              className="work-email-link"
+              aria-label="Enviar email a rrhh@albiero.com.ar"
+            >
               <FontAwesomeIcon icon={faEnvelope} className="work-email-icon" />
               <span>rrhh@albiero.com.ar</span>
             </a>
-            <button className="work-cta-button" onClick={handleSendCV}>
+            
+            <button 
+              className="work-cta-button" 
+              onClick={handleSendCV}
+              aria-label="Enviar CV por email"
+            >
               <FontAwesomeIcon icon={faPaperPlane} className="work-btn-icon" />
               <span>Enviar CV</span>
             </button>
