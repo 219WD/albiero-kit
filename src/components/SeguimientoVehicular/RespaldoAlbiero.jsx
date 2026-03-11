@@ -4,42 +4,40 @@ import "./RespaldoAlbiero.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
-  faClock,
-  faTruck,
-  faMapLocationDot,
+  faServer,
+  faWrench,
+  faMobileScreen,
 } from "@fortawesome/free-solid-svg-icons";
-// Importar el custom hook
-import useToast from "../hooks/useToast";
-// Importar Toaster
+import useToast from "../../hooks/useToast";
 import { Toaster } from "react-hot-toast";
 
 const RespaldoAlbiero = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { showToast } = useToast(); // Usar el custom hook
+  const { showToast } = useToast();
   const central =
     "https://res.cloudinary.com/dtxdv136u/image/upload/w_665,h_998,c_fill,f_auto,q_auto/v1772815811/albiero_inwcia.jpg";
 
   const albieroFeatures = [
     {
       id: 1,
-      icon: faClock,
-      title: "Central 24/7",
+      icon: faServer,
+      title: "Infraestructura confiable",
       description:
-        "Central de monitoreo activa las 24 horas, los 365 días del año.",
+        "Tecnología GPS estable y probada, con disponibilidad 24/7 y respaldo ante cualquier falla.",
     },
     {
       id: 2,
-      icon: faTruck,
-      title: "Móviles Propios",
+      icon: faWrench,
+      title: "Instalación especializada",
       description:
-        "Móviles propios recorriendo la ciudad para respuesta inmediata.",
+        "Técnicos propios realizan la instalación y configuración de cada equipo sin complicaciones.",
     },
     {
       id: 3,
-      icon: faMapLocationDot,
-      title: "Cobertura Total",
+      icon: faMobileScreen,
+      title: "Plataforma fácil de usar",
       description:
-        "Yerba Buena, San Miguel, Tafí Viejo, Tafí del Valle y El Mollar.",
+        "Accedé a toda la información desde tu celular. Simple, clara y disponible cuando la necesitás.",
     },
   ];
 
@@ -51,19 +49,18 @@ const RespaldoAlbiero = () => {
   };
 
   const handleButtonClick = () => {
-    showToast(); // Mostrar el toast
-    scrollToHero(); // Hacer scroll al hero
+    showToast();
+    scrollToHero();
   };
 
   return (
     <section className="albiero-respaldo-section">
-      {/* Toaster component */}
       <Toaster />
 
       <div className="albiero-respaldo-container" id="acerca-de">
         {/* Badge */}
         <div className="albiero-badge">
-          <span>RESPALDO ALBIERO</span>
+          <span>DIFERENCIAL ALBIERO</span>
         </div>
 
         <div className="albiero-content">
@@ -71,24 +68,24 @@ const RespaldoAlbiero = () => {
           <div className="albiero-left">
             <h2 className="albiero-title">
               Más de <span className="albiero-gradient-highlight">40 años</span>{" "}
-              protegiendo Tucumán.
+              brindando soluciones tecnológicas.
             </h2>
 
             <p className="albiero-subtitle">
-              Central de monitoreo activa 24/7.
+              Infraestructura tecnológica confiable.
               <br />
-              Móviles propios recorriendo la ciudad.
+              Equipos instalados por técnicos especializados.
               <br />
-              Cobertura en Yerba Buena, San Miguel, Tafí y alrededores.
+              Plataforma estable y fácil de usar.
             </p>
 
             <p className="albiero-quote">
               <span className="albiero-quote-line">
-                La diferencia no es que suene.
+                No es solo un dispositivo GPS.
               </span>
               <br />
               <span className="albiero-quote-highlight">
-                La diferencia es que alguien responda.
+                Es la información que necesitás, cuando la necesitás.
               </span>
             </p>
 
@@ -109,9 +106,9 @@ const RespaldoAlbiero = () => {
               ))}
             </div>
 
-            {/* CTA Button - MODIFICADO con toast */}
+            {/* CTA Button */}
             <button className="albiero-cta" onClick={handleButtonClick}>
-              <span>Configurá tu Sistema</span>
+              <span>Configurá tu Servicio</span>
               <FontAwesomeIcon
                 icon={faArrowRight}
                 className="albiero-cta-arrow"
@@ -124,7 +121,7 @@ const RespaldoAlbiero = () => {
             <div className="albiero-image-container">
               <img
                 src={central}
-                alt="Central de monitoreo Albiero Seguridad"
+                alt="Albiero Seguridad - Monitoreo GPS Tucumán"
                 width="665"
                 height="998"
                 className={`albiero-featured-image ${imageLoaded ? "loaded" : ""}`}
@@ -138,7 +135,7 @@ const RespaldoAlbiero = () => {
                   </div>
                   <div className="albiero-stat-item">
                     <span className="albiero-stat-number">24/7</span>
-                    <span className="albiero-stat-label">Monitoreo</span>
+                    <span className="albiero-stat-label">Soporte</span>
                   </div>
                   <div className="albiero-stat-item">
                     <span className="albiero-stat-number">5</span>

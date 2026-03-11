@@ -7,7 +7,7 @@ import {
   faTimes,
   faShieldHeart
 } from '@fortawesome/free-solid-svg-icons';
-import LogoGrande from '../assets/logo-grande.png';
+import LogoGrande from '../../assets/logo-grande.png';
 
 const HeroNav = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

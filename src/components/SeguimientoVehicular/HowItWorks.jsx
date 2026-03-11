@@ -2,52 +2,50 @@ import React, { useState } from 'react';
 import './HowItWorks.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faToolbox,
-  faSatelliteDish,
+  faWrench,
+  faSatellite,
   faMobileAlt,
-  faBolt,
+  faMapLocationDot,
 } from '@fortawesome/free-solid-svg-icons';
-// Importar el custom hook
-import useToast from '../hooks/useToast';
-// Importar Toaster
+import useToast from '../../hooks/useToast';
 import { Toaster } from 'react-hot-toast';
 
 const HowItWorks = () => {
   const [activeStep, setActiveStep] = useState(null);
-  const { showToast } = useToast(); // Usar el custom hook
+  const { showToast } = useToast();
 
   const steps = [
     {
       id: 1,
       number: '01',
-      icon: faToolbox,
+      icon: faWrench,
       title: 'Instalación',
-      description: 'Instalamos el sistema en tu propiedad sin compra de equipos',
+      description: 'Instalamos el equipo GPS en tu vehículo sin compra de equipos. Todo queda listo en menos de una hora.',
       highlight: 'Sin inversión inicial'
     },
     {
       id: 2,
       number: '02',
-      icon: faSatelliteDish,
-      title: 'Conexión',
-      description: 'Conectamos alarma y cámaras a nuestra central 24/7',
-      highlight: 'Conexión profesional'
+      icon: faSatellite,
+      title: 'Transmisión',
+      description: 'El dispositivo transmite información en tiempo real desde el momento en que el vehículo se pone en marcha.',
+      highlight: 'Datos en tiempo real'
     },
     {
       id: 3,
       number: '03',
       icon: faMobileAlt,
-      title: 'Control',
-      description: 'Recibís alertas en tiempo real en tu celular y panel web',
-      highlight: 'Monitoreo en Tiempo Real'
+      title: 'Acceso',
+      description: 'Accedés desde tu celular o computadora a la plataforma de monitoreo, en cualquier momento y desde cualquier lugar.',
+      highlight: 'Desde cualquier dispositivo'
     },
     {
       id: 4,
       number: '04',
-      icon: faBolt,
-      title: 'Respuesta',
-      description: 'Activamos protocolo y enviamos móvil propio al instante',
-      highlight: 'Acción inmediata'
+      icon: faMapLocationDot,
+      title: 'Control total',
+      description: 'Visualizás ubicación, recorridos, alertas y reportes completos. Todo en una sola aplicación simple de usar.',
+      highlight: 'Todo en una app'
     }
   ];
 
@@ -59,13 +57,12 @@ const HowItWorks = () => {
   };
 
   const handleButtonClick = () => {
-    showToast(); // Mostrar el toast
-    scrollToHero(); // Hacer scroll al hero
+    showToast();
+    scrollToHero();
   };
 
   return (
     <section className="how-it-works">
-      {/* Toaster component */}
       <Toaster />
       
       <div className="how-it-works-wrapper" id='como-funciona'>
@@ -76,7 +73,7 @@ const HowItWorks = () => {
               Cómo <span className="gradient-text">Funciona</span>
             </h2>
             <p className="section-subtitle">
-              Cuatro pasos simples hacia la seguridad total de tu propiedad
+              Cuatro pasos simples para tener el control total de tu vehículo
             </p>
           </div>
         </div>
@@ -129,13 +126,13 @@ const HowItWorks = () => {
           </div>
         </div>
 
-        {/* CTA Section - MODIFICADO con toast */}
+        {/* CTA Section */}
         <div className="cta-section">
           <div className="cta-content">
-            <h3 className="cta-title">¿Listo para proteger tu hogar?</h3>
-            <p className="cta-subtitle">Comienza tu instalación hoy, sin compromiso</p>
+            <h3 className="cta-title">¿Listo para tener el control de tu vehículo?</h3>
+            <p className="cta-subtitle">Instalación sin cargo, sin compromiso</p>
             <button className="cta-button" onClick={handleButtonClick}>
-              <span>Solicitar Cotización</span>
+              <span>Quiero información ahora</span>
               <svg className="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round"/>
               </svg>

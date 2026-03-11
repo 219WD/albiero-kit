@@ -9,7 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 // Importar el custom hook
-import useToast from '../hooks/useToast';
+import useToast from '../../hooks/useToast';
 // Importar Toaster
 import { Toaster } from 'react-hot-toast';
 
