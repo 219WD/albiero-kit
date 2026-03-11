@@ -6,13 +6,13 @@ import RespaldoAlbiero from '../components/SeguimientoVehicular/RespaldoAlbiero.
 import FAQ from '../components/SeguimientoVehicular/FAQ.jsx'
 import FinalCTA from '../components/SeguimientoVehicular/FinalCTA.jsx'
 import Footer from '../components/Footer.jsx'
-import HeroNav from '../components/SeguimientoVehicular/HeroNav.jsx'
+import HeroNavGps from '../components/SeguimientoVehicular/HeroNavGps.jsx'
 import ComodatoBeneficios from '../components/SeguimientoVehicular/ComodatoBeneficios.jsx';
 
 export default function HomeScreen() {
     return (
         <div className='homeScreen-container'>
-            <HeroNav />
+            <HeroNavGps />
             <Herosecurity />
             <SecurityMarquee />
             <ExpertiseAreas />
