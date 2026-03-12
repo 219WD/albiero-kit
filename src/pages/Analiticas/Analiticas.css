@@ -1,0 +1,317 @@
+/* Analiticas.css */
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@300;400;500;600;700&display=swap');
+
+.an-page {
+  min-height: 100vh;
+  background: #0d0d0d;
+  padding: 2.5rem 2rem;
+  font-family: 'Bai Jamjuree', sans-serif;
+  color: #fff;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.an-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.an-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0 0 0.25rem 0;
+  color: #fff;
+}
+
+.an-subtitle {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.4);
+  margin: 0;
+}
+
+/* ── Range selector ─────────────────────────────────────────────────────────── */
+.an-range-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.an-range-btn {
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+  font-family: 'Bai Jamjuree', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.an-range-btn:hover,
+.an-range-btn.active {
+  background: rgba(150, 28, 44, 0.2);
+  border-color: #961C2C;
+  color: #fff;
+}
+
+.an-date-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+}
+
+.an-date-input {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-size: 0.85rem;
+}
+
+.an-apply-btn {
+  padding: 0.45rem 1.2rem;
+  border-radius: 50px;
+  border: none;
+  background: #961C2C;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Bai Jamjuree', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.an-apply-btn:hover { background: #b52236; }
+
+/* ── Stats grid ─────────────────────────────────────────────────────────────── */
+.an-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.an-stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: border-color 0.2s;
+}
+
+.an-stat-card:hover { border-color: rgba(150,28,44,0.4); }
+
+.an-stat-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin: 0 0 0.5rem 0;
+}
+
+.an-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.25rem 0;
+  letter-spacing: -1px;
+}
+
+.an-stat-sub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+}
+
+/* ── Cards ──────────────────────────────────────────────────────────────────── */
+.an-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.an-card-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin: 0 0 1.5rem 0;
+}
+
+.an-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.an-two-col .an-card { margin-bottom: 0; }
+
+/* ── Producto tabs ───────────────────────────────────────────────────────────── */
+.an-prod-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.an-prod-tab {
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.75rem;
+  font-family: 'Bai Jamjuree', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.an-prod-tab:hover,
+.an-prod-tab.active {
+  background: rgba(150,28,44,0.2);
+  border-color: #961C2C;
+  color: #fff;
+}
+
+/* ── Tooltip ─────────────────────────────────────────────────────────────────── */
+.an-tooltip {
+  background: #1a1a1a;
+  border: 1px solid rgba(150,28,44,0.4);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+}
+
+.an-tooltip-label {
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  margin: 0 0 0.4rem 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Loading / error ─────────────────────────────────────────────────────────── */
+.an-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  padding: 3rem 0;
+  font-size: 0.9rem;
+}
+
+.an-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(150,28,44,0.3);
+  border-top-color: #961C2C;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.an-error {
+  background: rgba(150,28,44,0.1);
+  border: 1px solid rgba(150,28,44,0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: #e8687a;
+  font-size: 0.9rem;
+}
+
+.an-empty {
+  color: rgba(255,255,255,0.25);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .an-stats-grid  { grid-template-columns: repeat(2, 1fr); }
+  .an-two-col     { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .an-page        { padding: 1.5rem 1rem; }
+  .an-header      { flex-direction: column; }
+  .an-stats-grid  { grid-template-columns: 1fr 1fr; }
+  .an-stat-value  { font-size: 1.5rem; }
+  .an-title       { font-size: 1.5rem; }
+}
+
+/* ── Desglose table ──────────────────────────────────────────────────────────── */
+.an-desglose {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.an-desglose-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 80px;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.an-desglose-label {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.an-desglose-bar-wrap {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.an-desglose-bar {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+  min-width: 2px;
+}
+
+.an-desglose-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: right;
+}
+
+.an-desglose-pct {
+  font-weight: 400;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.75rem;
+}
+
+.an-card-sub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.3);
+  margin: -1rem 0 1rem 0;
+}

@@ -4,6 +4,7 @@ import KitAlarmaCamara from './pages/KitAlarmaCamara.jsx';
 import SeguimientoVehicular from './pages/SeguimientoVehicular.jsx';
 import Alarmas from './pages/Alarmas.jsx'
 import Camaras from './pages/Camaras.jsx'
+import Analiticas from './pages/Analiticas/Analiticas';
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Route path="/camaras" element={<Camaras />} />
                 <Route path="/kit-alarma-camara" element={<KitAlarmaCamara />} />
                 <Route path="/seguimiento-vehicular" element={<SeguimientoVehicular />} />
+                <Route path="/analiticas" element={<Analiticas />} />
             </Routes>
         </Router>
     );

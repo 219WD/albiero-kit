@@ -39,7 +39,7 @@ body {
 .hero-security {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -423,6 +423,10 @@ body {
 }
 
 @media (max-width: 768px) {
+  .hero-security {
+    padding-top: 5rem !important;
+    height: 100% !important;
+  }
   .security-form {
     padding: 1.8rem;
   }

@@ -14,15 +14,17 @@
 */
 
 :root {
-  --gris-azulado: #5A6C7D;
-  --negro: #1A1A1A;
-  --blanco: #FFFFFF;
-  --gris-claro: #F5F5F5;
-  --rojo-principal: #961C2C;
-  --fuente: 'Bai Jamjuree', sans-serif;
+  --gris-azulado: #5a6c7d;
+  --negro: #1a1a1a;
+  --blanco: #ffffff;
+  --gris-claro: #f5f5f5;
+  --rojo-principal: #961c2c;
+  --fuente: "Bai Jamjuree", sans-serif;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -265,7 +267,7 @@ body {
 }
 
 .opcion-btn:hover {
-  background: #E8E8E8;
+  background: #e8e8e8;
   transform: translateY(-2px);
   border-color: var(--rojo-principal);
 }
@@ -423,6 +425,10 @@ body {
 }
 
 @media (max-width: 768px) {
+  .hero-security {
+    padding-top: 5rem !important;
+    height: 100% !important;
+  }
   .security-form {
     padding: 1.8rem;
   }
@@ -450,6 +456,11 @@ body {
 }
 
 @keyframes whatsappPulse {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
