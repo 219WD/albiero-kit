@@ -15,7 +15,8 @@ import {
   faStar,
   faPlayCircle,
   faInfoCircle,
-  faUser
+  faUser,
+  faFileInvoiceDollar
 } from '@fortawesome/free-solid-svg-icons';
 import LogoGrande from '../../assets/logo-grande.png';
 
@@ -44,6 +45,12 @@ const HeroNavHome = () => {
     setMobileServicesOpen(false);
   };
 
+  const openPayBill = () => {
+    window.open('https://albiero.com.ar/paga-tu-factura/', '_blank');
+    setMobileMenuOpen(false);
+    setMobileServicesOpen(false);
+  };
+
   // Servicios CON ICONOS
   const serviceLinks = [
     { name: 'Alarmas', path: '/alarmas', icon: faShieldAlt },
@@ -52,13 +59,14 @@ const HeroNavHome = () => {
     { name: 'Seguimiento Vehicular', path: '/seguimiento-vehicular', icon: faCar },
   ];
 
-  // Links de navegación CON ICONOS (AHORA CON ACCESO A CLIENTES)
+  // Links de navegación CON ICONOS (AHORA CON ACCESO A CLIENTES Y PAGA TU FACTURA)
   const navLinks = [
     { name: '¿Por qué Albiero?', type: 'hash', hash: '#por-que-albiero', icon: faStar },
     { name: 'Cobertura', type: 'hash', hash: '#cobertura', icon: faMapMarkerAlt },
     { name: 'Cómo Funciona', type: 'hash', hash: '#como-funciona', icon: faPlayCircle },
     { name: 'Preguntas Frecuentes', type: 'hash', hash: '#preguntas-frecuentes', icon: faQuestionCircle },
     { name: 'Acceso a Clientes', type: 'external', icon: faUser, highlight: true, action: openClientAccess },
+    { name: 'Paga tu factura', type: 'external', icon: faFileInvoiceDollar, highlight: true, action: openPayBill },
     { name: 'Contacto', type: 'hash', hash: '#contacto', icon: faPhone, highlight: true },
   ];
 
