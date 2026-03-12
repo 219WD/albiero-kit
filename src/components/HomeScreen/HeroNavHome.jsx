@@ -14,7 +14,8 @@ import {
   faMapMarkerAlt,
   faStar,
   faPlayCircle,
-  faInfoCircle
+  faInfoCircle,
+  faUser
 } from '@fortawesome/free-solid-svg-icons';
 import LogoGrande from '../../assets/logo-grande.png';
 
@@ -37,6 +38,12 @@ const HeroNavHome = () => {
     setMobileServicesOpen(false);
   };
 
+  const openClientAccess = () => {
+    window.open('https://clientes.albieroseguridad.com.ar:14443/welcome.php', '_blank');
+    setMobileMenuOpen(false);
+    setMobileServicesOpen(false);
+  };
+
   // Servicios CON ICONOS
   const serviceLinks = [
     { name: 'Alarmas', path: '/alarmas', icon: faShieldAlt },
@@ -45,13 +52,13 @@ const HeroNavHome = () => {
     { name: 'Seguimiento Vehicular', path: '/seguimiento-vehicular', icon: faCar },
   ];
 
-  // Links de navegación CON ICONOS (AHORA CON CÓMO FUNCIONA Y PREGUNTAS FRECUENTES)
+  // Links de navegación CON ICONOS (AHORA CON ACCESO A CLIENTES)
   const navLinks = [
     { name: '¿Por qué Albiero?', type: 'hash', hash: '#por-que-albiero', icon: faStar },
     { name: 'Cobertura', type: 'hash', hash: '#cobertura', icon: faMapMarkerAlt },
     { name: 'Cómo Funciona', type: 'hash', hash: '#como-funciona', icon: faPlayCircle },
     { name: 'Preguntas Frecuentes', type: 'hash', hash: '#preguntas-frecuentes', icon: faQuestionCircle },
-    { name: 'Protege tu Hogar', type: 'hash', hash: '#protege-tu-hogar', icon: faShieldHeart, highlight: true },
+    { name: 'Acceso a Clientes', type: 'external', icon: faUser, highlight: true, action: openClientAccess },
     { name: 'Contacto', type: 'hash', hash: '#contacto', icon: faPhone, highlight: true },
   ];
 
@@ -95,12 +102,12 @@ const HeroNavHome = () => {
             </div>
           </div>
 
-          {/* Links normales con iconos (AHORA CON 6 LINKS) */}
+          {/* Links normales con iconos */}
           {navLinks.map((link, index) => (
             <button
               key={index}
               className={`hn__link${link.highlight ? ' hn__link--highlight' : ''}`}
-              onClick={() => scrollToHash(link.hash)}
+              onClick={() => link.type === 'external' ? link.action() : scrollToHash(link.hash)}
             >
               {link.icon && <FontAwesomeIcon icon={link.icon} className="hn__link-icon" aria-hidden="true" />}
               <span>{link.name}</span>
@@ -168,12 +175,12 @@ const HeroNavHome = () => {
             </div>
           </div>
 
-          {/* Resto de links con iconos (AHORA CON 6 LINKS) */}
+          {/* Resto de links con iconos */}
           {navLinks.map((link, index) => (
             <button
               key={index}
               className={`hn__mobile-link${link.highlight ? ' hn__mobile-link--highlight' : ''}`}
-              onClick={() => scrollToHash(link.hash)}
+              onClick={() => link.type === 'external' ? link.action() : scrollToHash(link.hash)}
             >
               {link.icon && <FontAwesomeIcon icon={link.icon} className="hn__mobile-link-icon" aria-hidden="true" />}
               <span>{link.name}</span>
