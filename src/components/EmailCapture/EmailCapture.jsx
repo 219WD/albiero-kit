@@ -1,77 +1,69 @@
+// components/EmailCapture/EmailCapture.jsx
+//
+// ¿Cómo usarlo? Simplemente importalo y ponelo ANTES del <footer> en Footer.jsx:
+//
+//   import EmailCapture from "./EmailCapture/EmailCapture";
+//
+//   const Footer = () => (
+//     <>
+//       <EmailCapture />       ← acá, una sola línea
+//       <footer className="footer">
+//         ...
+//       </footer>
+//     </>
+//   );
+//
+// ================================================================
+
 import React, { useState, useEffect, useCallback } from "react";
 import "./EmailCapture.css";
 
 // ── ⚠️  PEGÁ AQUÍ LA URL DE TU GOOGLE APPS SCRIPT DEPLOYMENT ──
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwrSLDW9LH8nwapAxoY2DnCU7TbaZzl7XAOkNj8gweD_MhTlPnYtaoS9hZ3GCF8RCZC/exec";
+  "https://script.google.com/macros/s/REEMPLAZAR_CON_TU_URL/exec";
 // ──────────────────────────────────────────────────────────────
 
 const MODAL_DELAY = 9000; // milisegundos hasta que aparece el modal (9s)
 
 // ─── Función que llama al Google Apps Script ──────────────────
-// Usamos un <form> oculto que hace submit a un <iframe> invisible.
-// Esto evita el bloqueo CORS del browser con Google Apps Script.
-// El email se guarda en el Sheet y nosotros generamos el código localmente.
-function enviarEmailViaForm({ email, nombre = "", tipo }) {
-  return new Promise((resolve) => {
-    const iframeId = "ec-hidden-iframe-" + Date.now();
-    const formId = "ec-hidden-form-" + Date.now();
-
-    // Crear iframe invisible
-    const iframe = document.createElement("iframe");
-    iframe.name = iframeId;
-    iframe.id = iframeId;
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-
-    // Crear form invisible que apunta al iframe
-    const form = document.createElement("form");
-    form.id = formId;
-    form.method = "POST";
-    form.action = APPS_SCRIPT_URL;
-    form.target = iframeId;
-    form.style.display = "none";
-
-    // Campos del formulario
-    const fields = { email, nombre, tipo };
-    Object.entries(fields).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-
-    // Limpiar después de 5 segundos
-    const cleanup = () => {
-      try { document.body.removeChild(form); } catch {}
-      try { document.body.removeChild(iframe); } catch {}
-    };
-
-    iframe.onload = () => {
-      setTimeout(cleanup, 1000);
-    };
-    setTimeout(cleanup, 5000);
-
-    // Submit
-    form.submit();
-
-    // Generamos el código localmente (el script también lo genera en el Sheet)
-    const codigo =
-      tipo === "descuento"
-        ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
-        : null;
-
-    // Resolvemos inmediatamente (no podemos leer la respuesta cross-origin)
-    setTimeout(() => resolve({ ok: true, codigo }), 800);
-  });
-}
-
-// Alias para mantener compatibilidad con el resto del código
+// Usamos fetch con mode: "no-cors" + FormData.
+// Con no-cors el browser no puede leer la respuesta (opaque response)
+// pero el POST SÍ llega al servidor y el email SE GUARDA en el Sheet.
+// El código de descuento lo generamos localmente.
 async function enviarEmail({ email, nombre = "", tipo }) {
-  return enviarEmailViaForm({ email, nombre, tipo });
+  // En desarrollo local solo simulamos (Google bloquea iframes/frames desde localhost)
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    console.log("📧 [DEV] Simulando envío:", { email, nombre, tipo });
+    await new Promise(r => setTimeout(r, 700));
+    return {
+      ok: true,
+      codigo: tipo === "descuento"
+        ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
+        : null,
+    };
+  }
+
+  // En producción: enviamos con FormData + no-cors
+  // El Apps Script recibe los datos via e.parameter (form fields)
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("nombre", nombre || "");
+  formData.append("tipo", tipo);
+
+  // no-cors: el fetch no lanza error aunque Google redirija,
+  // y el script igual procesa el POST
+  await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: formData,
+  });
+
+  return {
+    ok: true,
+    codigo: tipo === "descuento"
+      ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
+      : null,
+  };
 }
 
 // ─── Validador de email ───────────────────────────────────────
