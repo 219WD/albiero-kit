@@ -1,51 +1,45 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./EmailCapture.css";
 
-// ── ⚠️  PEGÁ AQUÍ LA URL DE TU GOOGLE APPS SCRIPT DEPLOYMENT ──
+// ── ⚠️  URL DE TU GOOGLE APPS SCRIPT DEPLOYMENT ──
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbyzqWyB4AnowjEJgeFdYpDEDxbI0Umd-gRZF6DKYGklJM2JcJ1ILXj2GSsmqgY0dE4Ofg/exec";
-// ──────────────────────────────────────────────────────────────
 
-const MODAL_DELAY = 9000; // milisegundos hasta que aparece el modal (9s)
+const MODAL_DELAY = 9000;
 
-// ─── Función que llama al Google Apps Script ──────────────────
-// Usamos fetch con mode: "no-cors" + FormData.
-// Con no-cors el browser no puede leer la respuesta (opaque response)
-// pero el POST SÍ llega al servidor y el email SE GUARDA en el Sheet.
-// El código de descuento lo generamos localmente.
+// ─── Envío al Google Apps Script ─────────────────────────────
 async function enviarEmail({ email, nombre = "", tipo }) {
-  // En desarrollo local solo simulamos (Google bloquea iframes/frames desde localhost)
-  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+  // En localhost solo simulamos
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  ) {
     console.log("📧 [DEV] Simulando envío:", { email, nombre, tipo });
-    await new Promise(r => setTimeout(r, 700));
+    await new Promise((r) => setTimeout(r, 700));
     return {
       ok: true,
-      codigo: tipo === "descuento"
-        ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
-        : null,
+      codigo:
+        tipo === "descuento"
+          ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
+          : null,
     };
   }
 
-  // En producción: enviamos con FormData + no-cors
-  // El Apps Script recibe los datos via e.parameter (form fields)
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("nombre", nombre || "");
-  formData.append("tipo", tipo);
-
-  // no-cors: el fetch no lanza error aunque Google redirija,
-  // y el script igual procesa el POST
+  // En producción: text/plain + JSON en el body
+  // Con no-cors no podemos leer la respuesta pero el script SÍ recibe los datos
   await fetch(APPS_SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",
-    body: formData,
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify({ email, nombre, tipo }),
   });
 
   return {
     ok: true,
-    codigo: tipo === "descuento"
-      ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
-      : null,
+    codigo:
+      tipo === "descuento"
+        ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
+        : null,
   };
 }
 
@@ -56,7 +50,7 @@ function esEmailValido(email) {
 
 // ─── MODAL DE DESCUENTO ───────────────────────────────────────
 function DiscountModal({ onClose }) {
-  const [step, setStep] = useState("form"); // "form" | "success"
+  const [step, setStep] = useState("form");
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
   const [loading, setLoading] = useState(false);
@@ -66,7 +60,6 @@ function DiscountModal({ onClose }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Pequeño delay para que la animación de entrada sea suave
     const t = setTimeout(() => setVisible(true), 30);
     return () => clearTimeout(t);
   }, []);
@@ -119,7 +112,6 @@ function DiscountModal({ onClose }) {
           ✕
         </button>
 
-        {/* Panel izquierdo */}
         <div className="ec-modal__left">
           <span className="ec-modal__badge">OFERTA EXCLUSIVA</span>
           <div className="ec-modal__circle">
@@ -136,7 +128,6 @@ function DiscountModal({ onClose }) {
           </ul>
         </div>
 
-        {/* Panel derecho */}
         <div className="ec-modal__right">
           {step === "form" ? (
             <>
@@ -183,11 +174,7 @@ function DiscountModal({ onClose }) {
                   className="ec-btn ec-btn--primary"
                   disabled={loading}
                 >
-                  {loading ? (
-                    <span className="ec-spinner" />
-                  ) : (
-                    "QUIERO MI DESCUENTO →"
-                  )}
+                  {loading ? <span className="ec-spinner" /> : "QUIERO MI DESCUENTO →"}
                 </button>
                 <p className="ec-disclaimer">
                   Sin spam. Podés darte de baja cuando quieras.
@@ -208,13 +195,9 @@ function DiscountModal({ onClose }) {
                 </button>
               </div>
               <p className="ec-success__note">
-                Guardalo o mostráselo a nuestro equipo al momento de la
-                instalación.
+                Guardalo o mostráselo a nuestro equipo al momento de la instalación.
               </p>
-              <button
-                className="ec-btn ec-btn--ghost"
-                onClick={cerrar}
-              >
+              <button className="ec-btn ec-btn--ghost" onClick={cerrar}>
                 Cerrar
               </button>
             </div>
@@ -225,10 +208,10 @@ function DiscountModal({ onClose }) {
   );
 }
 
-// ─── SECCIÓN NEWSLETTER ───────────────────────────────────────
+// ─── NEWSLETTER BAR ───────────────────────────────────────────
 function NewsletterBar({ onOpenModal }) {
   const [email, setEmail] = useState("");
-  const [step, setStep] = useState("idle"); // "idle" | "loading" | "done" | "error"
+  const [step, setStep] = useState("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e) => {
@@ -265,7 +248,6 @@ function NewsletterBar({ onOpenModal }) {
 
   return (
     <div className="nl-bar">
-      {/* Texto */}
       <div className="nl-bar__text">
         <span className="nl-bar__tag">📧 Newsletter</span>
         <h3 className="nl-bar__title">Ofertas y novedades exclusivas</h3>
@@ -274,13 +256,8 @@ function NewsletterBar({ onOpenModal }) {
         </p>
       </div>
 
-      {/* Formulario + botón descuento */}
       <div className="nl-bar__actions">
-        <form
-          className="nl-bar__form"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="nl-bar__form" onSubmit={handleSubmit} noValidate>
           <div className="nl-bar__input-row">
             <input
               type="email"
@@ -312,7 +289,6 @@ function NewsletterBar({ onOpenModal }) {
           <p className="nl-bar__disclaimer">Sin spam. Baja cuando quieras.</p>
         </form>
 
-        {/* Botón para abrir el modal de descuento */}
         <button className="nl-bar__discount-btn" onClick={onOpenModal}>
           🎁 Obtené 10% OFF en tu primera instalación
         </button>
@@ -325,9 +301,7 @@ function NewsletterBar({ onOpenModal }) {
 export default function EmailCapture() {
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Mostrar el modal automáticamente tras MODAL_DELAY ms
   useEffect(() => {
-    // No mostrar si ya se suscribió o si ya vio el modal en esta sesión
     const yaSuscripto = localStorage.getItem("albiero_subscribed");
     const yaVioModal = sessionStorage.getItem("albiero_modal_shown");
     if (yaSuscripto || yaVioModal) return;
