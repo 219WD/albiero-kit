@@ -3,7 +3,7 @@ import "./EmailCapture.css";
 
 // ── ⚠️  PEGÁ AQUÍ LA URL DE TU GOOGLE APPS SCRIPT DEPLOYMENT ──
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbwrSLDW9LH8nwapAxoY2DnCU7TbaZzl7XAOkNj8gweD_MhTlPnYtaoS9hZ3GCF8RCZC/exec";
+  "https://script.google.com/macros/s/AKfycbyzqWyB4AnowjEJgeFdYpDEDxbI0Umd-gRZF6DKYGklJM2JcJ1ILXj2GSsmqgY0dE4Ofg/exec";
 // ──────────────────────────────────────────────────────────────
 
 const MODAL_DELAY = 9000; // milisegundos hasta que aparece el modal (9s)
