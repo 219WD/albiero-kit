@@ -1,26 +1,9 @@
-// components/EmailCapture/EmailCapture.jsx
-//
-// ¿Cómo usarlo? Simplemente importalo y ponelo ANTES del <footer> en Footer.jsx:
-//
-//   import EmailCapture from "./EmailCapture/EmailCapture";
-//
-//   const Footer = () => (
-//     <>
-//       <EmailCapture />       ← acá, una sola línea
-//       <footer className="footer">
-//         ...
-//       </footer>
-//     </>
-//   );
-//
-// ================================================================
-
 import React, { useState, useEffect, useCallback } from "react";
 import "./EmailCapture.css";
 
 // ── ⚠️  PEGÁ AQUÍ LA URL DE TU GOOGLE APPS SCRIPT DEPLOYMENT ──
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/REEMPLAZAR_CON_TU_URL/exec";
+  "https://script.google.com/macros/s/AKfycbwrSLDW9LH8nwapAxoY2DnCU7TbaZzl7XAOkNj8gweD_MhTlPnYtaoS9hZ3GCF8RCZC/exec";
 // ──────────────────────────────────────────────────────────────
 
 const MODAL_DELAY = 9000; // milisegundos hasta que aparece el modal (9s)
