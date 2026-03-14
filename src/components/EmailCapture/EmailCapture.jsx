@@ -6,7 +6,7 @@ const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tsp
 const ENTRY_EMAIL  = "entry.150801547";
 const ENTRY_NOMBRE = "entry.586312181";
 
-const MODAL_DELAY = 9000;
+const MODAL_DELAY = 500;
 
 async function enviarEmail({ email, nombre = "", tipo }) {
   const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&submit=Submit`;

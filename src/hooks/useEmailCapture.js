@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 // ⚠️ REEMPLAZAR con la URL de tu Google Apps Script deployment
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/TU_DEPLOYMENT_ID/exec";
 
-const MODAL_DELAY_MS = 8000; // 8 segundos antes de mostrar el modal
+const MODAL_DELAY_MS = 500; // 8 segundos antes de mostrar el modal
 const STORAGE_KEY_MODAL = "albiero_modal_shown";
 const STORAGE_KEY_SUBSCRIBED = "albiero_subscribed";
 
