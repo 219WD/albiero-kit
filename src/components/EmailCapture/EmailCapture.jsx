@@ -1,38 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./EmailCapture.css";
 
-// ── ⚠️  URL DE TU GOOGLE APPS SCRIPT DEPLOYMENT ──
-const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbz5KsySYVQ3YssfzgEJB6RYeLGtjfSk0td7e0FTGSKcmD6TDylDqlKoJvMwIGxylkS0rg/exec";
+// ─── Google Forms — no necesita Apps Script ni deploy ─────────
+const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
+const ENTRY_EMAIL  = "entry.150801547";
+const ENTRY_NOMBRE = "entry.586312181";
 
 const MODAL_DELAY = 9000;
 
-// ─── Envío al Google Apps Script ─────────────────────────────
 async function enviarEmail({ email, nombre = "", tipo }) {
-  // En localhost solo simulamos
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-  ) {
-    console.log("📧 [DEV] Simulando envío:", { email, nombre, tipo });
-    await new Promise((r) => setTimeout(r, 700));
-    return {
-      ok: true,
-      codigo:
-        tipo === "descuento"
-          ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
-          : null,
-    };
-  }
+  const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&submit=Submit`;
 
-  // En producción: text/plain + JSON en el body
-  // Con no-cors no podemos leer la respuesta pero el script SÍ recibe los datos
-  await fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify({ email, nombre, tipo }),
-  });
+  await fetch(url, { method: "POST", mode: "no-cors" });
 
   return {
     ok: true,
@@ -43,7 +22,6 @@ async function enviarEmail({ email, nombre = "", tipo }) {
   };
 }
 
-// ─── Validador de email ───────────────────────────────────────
 function esEmailValido(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
