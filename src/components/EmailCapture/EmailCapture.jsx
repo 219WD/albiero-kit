@@ -10,9 +10,7 @@ const MODAL_DELAY = 500;
 
 async function enviarEmail({ email, nombre = "", tipo }) {
   const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&submit=Submit`;
-
   await fetch(url, { method: "POST", mode: "no-cors" });
-
   return {
     ok: true,
     codigo:
@@ -49,6 +47,11 @@ function DiscountModal({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Nombre obligatorio
+    if (!nombre.trim()) {
+      setError("Ingresá tu nombre.");
+      return;
+    }
     if (!esEmailValido(email)) {
       setError("Ingresá un email válido.");
       return;
@@ -91,41 +94,45 @@ function DiscountModal({ onClose }) {
         </button>
 
         <div className="ec-modal__left">
-          <span className="ec-modal__badge">OFERTA EXCLUSIVA</span>
+          <span className="ec-modal__badge">BENEFICIO EXCLUSIVO</span>
           <div className="ec-modal__circle">
             <span className="ec-modal__percent">10%</span>
             <span className="ec-modal__off">OFF</span>
           </div>
           <p className="ec-modal__offer-text">
-            en tu primera instalación de alarma o sistema de cámaras
+            Aprovechá este beneficio en la instalación de tu sistema de seguridad.
           </p>
           <ul className="ec-modal__features">
-            <li>✓ Sin costo de visita técnica</li>
-            <li>✓ Garantía 12 meses</li>
-            <li>✓ +40 años de experiencia</li>
+            <li>✓ Instalación profesional sin costo</li>
+            <li>✓ Equipos confiables y garantía oficial</li>
+            <li>✓ Más de 40 años protegiendo Tucumán</li>
           </ul>
         </div>
 
         <div className="ec-modal__right">
           {step === "form" ? (
             <>
-              <h2 className="ec-modal__title">¡Obtené tu descuento!</h2>
+              <h2 className="ec-modal__title">¡Accedé a tu beneficio ahora!</h2>
               <p className="ec-modal__subtitle">
-                Dejanos tu email y te enviamos el código al instante.
+                Completá tus datos y recibí tu código exclusivo para la instalación.
               </p>
               <form className="ec-modal__form" onSubmit={handleSubmit} noValidate>
                 <div className="ec-field">
                   <label htmlFor="dm-nombre" className="ec-label">
-                    Nombre <span className="ec-optional">(opcional)</span>
+                    Nombre *
                   </label>
                   <input
                     id="dm-nombre"
                     type="text"
-                    className="ec-input"
+                    className={`ec-input ${error === "Ingresá tu nombre." ? "ec-input--error" : ""}`}
                     placeholder="Tu nombre"
                     value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
+                    onChange={(e) => {
+                      setNombre(e.target.value);
+                      if (error) setError("");
+                    }}
                     autoComplete="given-name"
+                    required
                   />
                 </div>
                 <div className="ec-field">
@@ -135,7 +142,7 @@ function DiscountModal({ onClose }) {
                   <input
                     id="dm-email"
                     type="email"
-                    className={`ec-input ${error ? "ec-input--error" : ""}`}
+                    className={`ec-input ${error === "Ingresá un email válido." ? "ec-input--error" : ""}`}
                     placeholder="tu@email.com"
                     value={email}
                     onChange={(e) => {
@@ -145,26 +152,26 @@ function DiscountModal({ onClose }) {
                     required
                     autoComplete="email"
                   />
-                  {error && <span className="ec-error-msg">{error}</span>}
                 </div>
+                {error && <span className="ec-error-msg">{error}</span>}
                 <button
                   type="submit"
                   className="ec-btn ec-btn--primary"
                   disabled={loading}
                 >
-                  {loading ? <span className="ec-spinner" /> : "QUIERO MI DESCUENTO →"}
+                  {loading ? <span className="ec-spinner" /> : "QUIERO MI BENEFICIO AHORA →"}
                 </button>
                 <p className="ec-disclaimer">
-                  Sin spam. Podés darte de baja cuando quieras.
+                  Tus datos están protegidos. Solo te contactaremos por tu consulta.
                 </p>
               </form>
             </>
           ) : (
             <div className="ec-success">
               <div className="ec-success__icon">🎉</div>
-              <h3 className="ec-success__title">¡Tu código está listo!</h3>
+              <h3 className="ec-success__title">¡Listo. Tu beneficio ya está activo.!</h3>
               <p className="ec-success__sub">
-                Usá este código en tu próxima consulta:
+                Guardá este código y utilizalo al momento de coordinar la instalación.
               </p>
               <div className="ec-code-box">
                 <span className="ec-code">{codigo}</span>
@@ -173,7 +180,7 @@ function DiscountModal({ onClose }) {
                 </button>
               </div>
               <p className="ec-success__note">
-                Guardalo o mostráselo a nuestro equipo al momento de la instalación.
+                Este beneficio es personal y válido para nuevas instalaciones.
               </p>
               <button className="ec-btn ec-btn--ghost" onClick={cerrar}>
                 Cerrar
@@ -187,89 +194,22 @@ function DiscountModal({ onClose }) {
 }
 
 // ─── NEWSLETTER BAR ───────────────────────────────────────────
+// Solo muestra el botón que abre el modal — no hay form de email suelto
 function NewsletterBar({ onOpenModal }) {
-  const [email, setEmail] = useState("");
-  const [step, setStep] = useState("idle");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!esEmailValido(email)) {
-      setStep("error");
-      setErrorMsg("Ingresá un email válido.");
-      return;
-    }
-    setStep("loading");
-    try {
-      await enviarEmail({ email, tipo: "newsletter" });
-      localStorage.setItem("albiero_subscribed", "1");
-      setStep("done");
-    } catch {
-      setStep("error");
-      setErrorMsg("Error al conectar. Intentá de nuevo.");
-    }
-  };
-
-  if (step === "done") {
-    return (
-      <div className="nl-bar nl-bar--success">
-        <div className="nl-success-check">✓</div>
-        <div>
-          <strong className="nl-success-title">¡Ya estás suscripto!</strong>
-          <p className="nl-success-text">
-            Te avisaremos de todas las ofertas y novedades.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="nl-bar">
       <div className="nl-bar__text">
-        <span className="nl-bar__tag">📧 Newsletter</span>
-        <h3 className="nl-bar__title">Ofertas y novedades exclusivas</h3>
+        <span className="nl-bar__tag">📧 Beneficios y novedades de seguridad</span>
+        <h3 className="nl-bar__title">Accedé a promociones y consejos para proteger tu propiedad</h3>
         <p className="nl-bar__subtitle">
-          Suscribite y recibí promociones, nuevos equipos y consejos de seguridad.
+          Recibí información sobre sistemas de seguridad, nuevos equipos y beneficios exclusivos.
         </p>
       </div>
-
       <div className="nl-bar__actions">
-        <form className="nl-bar__form" onSubmit={handleSubmit} noValidate>
-          <div className="nl-bar__input-row">
-            <input
-              type="email"
-              className="nl-bar__input"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (step === "error") setStep("idle");
-              }}
-              required
-              aria-label="Email para newsletter"
-            />
-            <button
-              type="submit"
-              className="nl-bar__btn"
-              disabled={step === "loading"}
-            >
-              {step === "loading" ? (
-                <span className="ec-spinner ec-spinner--sm" />
-              ) : (
-                "Suscribirme"
-              )}
-            </button>
-          </div>
-          {step === "error" && (
-            <span className="ec-error-msg ec-error-msg--nl">{errorMsg}</span>
-          )}
-          <p className="nl-bar__disclaimer">Sin spam. Baja cuando quieras.</p>
-        </form>
-
-        <button className="nl-bar__discount-btn" onClick={onOpenModal}>
-          🎁 Obtené 10% OFF en tu primera instalación
+        <button className="nl-bar__main-btn" onClick={onOpenModal}>
+          🎁 Solicitar beneficio ahora
         </button>
+        <p className="nl-bar__disclaimer">Podés darte de baja cuando quieras.</p>
       </div>
     </div>
   );

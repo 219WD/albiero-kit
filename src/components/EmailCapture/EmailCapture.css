@@ -69,13 +69,35 @@
   line-height: 1.55;
 }
 
-/* Acciones: formulario + botón descuento */
+/* Acciones */
 .nl-bar__actions {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.65rem;
   flex: 0 0 auto;
-  width: 340px;
+  width: 280px;
+}
+
+.nl-bar__main-btn {
+  width: 100%;
+  background: #961C2C;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.85rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  font-family: 'Bai Jamjuree', sans-serif;
+  transition: background 0.2s, transform 0.15s;
+  text-align: center;
+}
+
+.nl-bar__main-btn:hover {
+  background: #7a1622;
+  transform: translateY(-2px);
 }
 
 .nl-bar__form {
@@ -252,9 +274,9 @@
   top: 12px;
   right: 14px;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(150, 28, 44, 0.25);
   border: none;
-  color: white;
+  color: #961C2C;
   font-size: 0.9rem;
   width: 30px;
   height: 30px;
@@ -269,7 +291,7 @@
 }
 
 .ec-modal__close:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(150, 28, 44, 0.45);
 }
 
 /* ── Panel izquierdo (oferta) ─────────────────────────────────── */
