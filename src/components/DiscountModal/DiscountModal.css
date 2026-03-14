@@ -1,0 +1,430 @@
+/* components/DiscountModal/DiscountModal.css */
+
+/* ─── Variables ─────────────────────────────────────────── */
+:root {
+  --dm-primary: #c8102e;
+  --dm-primary-dark: #a00d24;
+  --dm-dark: #0f0f1a;
+  --dm-dark-2: #1a1a2e;
+  --dm-gold: #f5a623;
+  --dm-text: #1a1a1a;
+  --dm-text-light: #666;
+  --dm-border: #e8e8e8;
+  --dm-radius: 20px;
+  --dm-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Overlay ────────────────────────────────────────────── */
+.dm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dm-overlay--visible {
+  opacity: 1;
+}
+
+/* ─── Modal ──────────────────────────────────────────────── */
+.dm-modal {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 760px;
+  min-height: 480px;
+  border-radius: var(--dm-radius);
+  overflow: hidden;
+  box-shadow: var(--dm-shadow);
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.dm-modal--visible {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ─── Botón cerrar ───────────────────────────────────────── */
+.dm-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  font-size: 1rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.dm-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Lado izquierdo ─────────────────────────────────────── */
+.dm-left {
+  flex: 0 0 44%;
+  background: linear-gradient(155deg, #1a1a2e 0%, #c8102e 100%);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.dm-left::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  top: -80px;
+  left: -80px;
+}
+
+.dm-left::after {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  bottom: -60px;
+  right: -60px;
+}
+
+.dm-badge {
+  background: var(--dm-gold);
+  color: #1a1a1a;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  padding: 0.3rem 0.9rem;
+  border-radius: 100px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+.dm-discount-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  animation: pulse-circle 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse-circle {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.4); }
+  50% { box-shadow: 0 0 0 16px rgba(245, 166, 35, 0); }
+}
+
+.dm-percent {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.dm-off {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dm-gold);
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.dm-left-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-width: 200px;
+  position: relative;
+  z-index: 1;
+}
+
+.dm-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+  z-index: 1;
+}
+
+.dm-feature {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.78rem;
+  text-align: left;
+}
+
+/* ─── Lado derecho ───────────────────────────────────────── */
+.dm-right {
+  flex: 1;
+  background: white;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dm-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--dm-text);
+  margin: 0 0 0.4rem;
+  line-height: 1.2;
+}
+
+.dm-subtitle {
+  color: var(--dm-text-light);
+  font-size: 0.88rem;
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+}
+
+/* ─── Formulario ─────────────────────────────────────────── */
+.dm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dm-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--dm-text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dm-input {
+  border: 1.5px solid var(--dm-border);
+  border-radius: 10px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--dm-text);
+  background: #fafafa;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  font-family: inherit;
+}
+
+.dm-input:focus {
+  border-color: var(--dm-primary);
+  background: white;
+}
+
+.dm-error {
+  font-size: 0.8rem;
+  color: var(--dm-primary);
+  margin: -0.3rem 0;
+}
+
+.dm-btn {
+  background: var(--dm-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-family: inherit;
+}
+
+.dm-btn:hover:not(:disabled) {
+  background: var(--dm-primary-dark);
+  transform: translateY(-1px);
+}
+
+.dm-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.dm-btn--secondary {
+  background: #f0f0f0;
+  color: var(--dm-text);
+  margin-top: 0.5rem;
+}
+
+.dm-btn--secondary:hover {
+  background: #e0e0e0;
+}
+
+.dm-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dm-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.dm-disclaimer {
+  font-size: 0.72rem;
+  color: var(--dm-text-light);
+  text-align: center;
+  margin: -0.3rem 0 0;
+}
+
+/* ─── Estado éxito ───────────────────────────────────────── */
+.dm-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.8rem;
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dm-success-icon {
+  font-size: 3rem;
+}
+
+.dm-success-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--dm-text);
+  margin: 0;
+}
+
+.dm-success-subtitle {
+  color: var(--dm-text-light);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.dm-code-box {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #f4f4f4;
+  border: 2px dashed var(--dm-primary);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+}
+
+.dm-code {
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--dm-primary);
+  font-family: monospace;
+}
+
+.dm-copy-btn {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--dm-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.dm-copy-btn:hover {
+  background: var(--dm-primary-dark);
+}
+
+.dm-success-note {
+  font-size: 0.8rem;
+  color: var(--dm-text-light);
+  margin: 0;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .dm-modal {
+    flex-direction: column;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .dm-left {
+    flex: none;
+    padding: 1.8rem 1.5rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+  }
+
+  .dm-discount-circle {
+    width: 90px;
+    height: 90px;
+  }
+
+  .dm-percent {
+    font-size: 2rem;
+  }
+
+  .dm-features {
+    display: none;
+  }
+
+  .dm-right {
+    padding: 1.5rem;
+  }
+
+  .dm-title {
+    font-size: 1.2rem;
+  }
+}

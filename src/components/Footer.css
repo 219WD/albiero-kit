@@ -304,3 +304,31 @@
 .footer-contact-item {
   will-change: transform;
 }
+
+/* Agregar al final de tu Footer.css existente */
+
+/* ─── Botón de descuento en footer ──────────────────────── */
+.footer-discount-btn {
+  margin-top: 1rem;
+  background: transparent;
+  border: 1.5px solid rgba(200, 16, 46, 0.6);
+  color: #ff6b84;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.footer-discount-btn:hover {
+  background: rgba(200, 16, 46, 0.15);
+  border-color: #c8102e;
+  color: white;
+  transform: translateY(-1px);
+}

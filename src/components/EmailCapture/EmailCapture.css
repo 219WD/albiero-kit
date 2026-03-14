@@ -1,0 +1,698 @@
+/* components/EmailCapture/EmailCapture.css
+   Usa la misma fuente Bai Jamjuree y colores del footer existente */
+
+/* ──────────────────────────────────────────────────────────────
+   VARIABLES (compatibles con Footer.css)
+   ────────────────────────────────────────────────────────────── */
+.nl-bar,
+.ec-overlay {
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NEWSLETTER BAR
+   ══════════════════════════════════════════════════════════════ */
+.nl-bar {
+  background: #1f1f1f;
+  border-top: 3px solid #961C2C;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 2.2rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  max-width: 100%;
+}
+
+/* Contenedor interno centrado */
+.nl-bar > * {
+  max-width: 1200px;
+}
+
+/* Wrapper para centrar igual que el footer */
+.nl-bar {
+  justify-content: center;
+}
+
+.nl-bar__text {
+  flex: 1;
+  min-width: 0;
+  max-width: 440px;
+}
+
+.nl-bar__tag {
+  display: inline-block;
+  background: rgba(150, 28, 44, 0.2);
+  color: #e0697a;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.75rem;
+  border-radius: 100px;
+  border: 1px solid rgba(150, 28, 44, 0.5);
+  margin-bottom: 0.55rem;
+  display: inline-block;
+}
+
+.nl-bar__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.35rem;
+  line-height: 1.25;
+}
+
+.nl-bar__subtitle {
+  font-size: 0.83rem;
+  color: rgba(255, 255, 255, 0.58);
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* Acciones: formulario + botón descuento */
+.nl-bar__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex: 0 0 auto;
+  width: 340px;
+}
+
+.nl-bar__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.nl-bar__input-row {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  transition: border-color 0.2s;
+}
+
+.nl-bar__input-row:focus-within {
+  border-color: rgba(150, 28, 44, 0.8);
+}
+
+.nl-bar__input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  padding: 0.65rem 1rem;
+  font-size: 0.875rem;
+  color: white;
+  outline: none;
+  font-family: 'Bai Jamjuree', sans-serif;
+  min-width: 0;
+}
+
+.nl-bar__input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.nl-bar__btn {
+  background: #961C2C;
+  color: white;
+  border: none;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Bai Jamjuree', sans-serif;
+  transition: background 0.2s;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 105px;
+}
+
+.nl-bar__btn:hover:not(:disabled) {
+  background: #7a1622;
+}
+
+.nl-bar__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.nl-bar__disclaimer {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0;
+}
+
+/* Botón para abrir el modal de descuento */
+.nl-bar__discount-btn {
+  background: transparent;
+  border: 1.5px solid rgba(150, 28, 44, 0.55);
+  color: #e0697a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Bai Jamjuree', sans-serif;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.nl-bar__discount-btn:hover {
+  background: rgba(150, 28, 44, 0.18);
+  border-color: #961C2C;
+  color: #fff;
+}
+
+/* Estado éxito del newsletter */
+.nl-bar--success {
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.8rem 2rem;
+}
+
+.nl-success-check {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: white;
+  font-weight: 800;
+  animation: ec-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nl-success-title {
+  font-size: 1rem;
+  color: white;
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.nl-success-text {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MODAL OVERLAY
+   ══════════════════════════════════════════════════════════════ */
+.ec-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.ec-overlay--in {
+  opacity: 1;
+}
+
+/* ── Modal container ──────────────────────────────────────────── */
+.ec-modal {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 720px;
+  min-height: 460px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255,255,255,0.06);
+  transform: scale(0.9) translateY(18px);
+  opacity: 0;
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.28s ease;
+}
+
+.ec-modal--in {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ── Botón cerrar ─────────────────────────────────────────────── */
+.ec-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  line-height: 1;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+.ec-modal__close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Panel izquierdo (oferta) ─────────────────────────────────── */
+.ec-modal__left {
+  flex: 0 0 42%;
+  background: linear-gradient(150deg, #1a1a2e 0%, #961C2C 100%);
+  padding: 2.5rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.9rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Círculos decorativos */
+.ec-modal__left::before,
+.ec-modal__left::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+.ec-modal__left::before {
+  width: 260px;
+  height: 260px;
+  top: -90px;
+  left: -90px;
+}
+.ec-modal__left::after {
+  width: 180px;
+  height: 180px;
+  bottom: -60px;
+  right: -60px;
+}
+
+.ec-modal__badge {
+  background: #f5a623;
+  color: #1a1a1a;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  padding: 0.28rem 0.9rem;
+  border-radius: 100px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+.ec-modal__circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2.5px solid rgba(255, 255, 255, 0.28);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  animation: ec-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes ec-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.4); }
+  50%       { box-shadow: 0 0 0 14px rgba(245, 166, 35, 0); }
+}
+
+.ec-modal__percent {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.ec-modal__off {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f5a623;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.ec-modal__offer-text {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  max-width: 190px;
+  position: relative;
+  z-index: 1;
+}
+
+.ec-modal__features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  position: relative;
+  z-index: 1;
+}
+
+.ec-modal__features li {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.76rem;
+  text-align: left;
+}
+
+/* ── Panel derecho (formulario) ───────────────────────────────── */
+.ec-modal__right {
+  flex: 1;
+  background: #ffffff;
+  padding: 2.4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ec-modal__title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 0.35rem;
+  line-height: 1.2;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+.ec-modal__subtitle {
+  color: #666;
+  font-size: 0.86rem;
+  margin: 0 0 1.4rem;
+  line-height: 1.5;
+}
+
+/* ── Formulario ───────────────────────────────────────────────── */
+.ec-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.ec-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ec-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+.ec-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #999;
+  font-size: 0.72rem;
+}
+
+.ec-input {
+  border: 1.5px solid #e2e2e2;
+  border-radius: 8px;
+  padding: 0.62rem 0.9rem;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  background: #fafafa;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+.ec-input:focus {
+  border-color: #961C2C;
+  background: white;
+}
+
+.ec-input--error {
+  border-color: #961C2C;
+}
+
+.ec-error-msg {
+  font-size: 0.76rem;
+  color: #961C2C;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+.ec-error-msg--nl {
+  display: block;
+  margin-top: -0.1rem;
+}
+
+/* ── Botones ──────────────────────────────────────────────────── */
+.ec-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.78rem 1.2rem;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-family: 'Bai Jamjuree', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.ec-btn--primary {
+  background: #961C2C;
+  color: white;
+}
+
+.ec-btn--primary:hover:not(:disabled) {
+  background: #7a1622;
+  transform: translateY(-1px);
+}
+
+.ec-btn--primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ec-btn--ghost {
+  background: #f0f0f0;
+  color: #333;
+  margin-top: 0.5rem;
+}
+
+.ec-btn--ghost:hover {
+  background: #e2e2e2;
+}
+
+.ec-disclaimer {
+  font-size: 0.7rem;
+  color: #aaa;
+  text-align: center;
+  margin: -0.2rem 0 0;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+/* ── Spinner ──────────────────────────────────────────────────── */
+.ec-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: ec-spin 0.65s linear infinite;
+}
+
+.ec-spinner--sm {
+  width: 13px;
+  height: 13px;
+}
+
+@keyframes ec-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Estado éxito del modal ───────────────────────────────────── */
+.ec-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  animation: ec-fadein 0.35s ease;
+}
+
+@keyframes ec-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ec-success__icon { font-size: 3rem; }
+
+.ec-success__title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+.ec-success__sub {
+  color: #666;
+  font-size: 0.84rem;
+  margin: 0;
+}
+
+.ec-code-box {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fdf2f4;
+  border: 2px dashed #961C2C;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+}
+
+.ec-code {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #961C2C;
+  font-family: 'Courier New', monospace;
+}
+
+.ec-copy-btn {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #961C2C;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.28rem 0.65rem;
+  cursor: pointer;
+  font-family: 'Bai Jamjuree', sans-serif;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.ec-copy-btn:hover { background: #7a1622; }
+
+.ec-success__note {
+  font-size: 0.78rem;
+  color: #888;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ── Animación pop ────────────────────────────────────────────── */
+@keyframes ec-pop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+
+/* Newsletter bar: tablet */
+@media (max-width: 860px) {
+  .nl-bar {
+    flex-direction: column;
+    gap: 1.4rem;
+    padding: 2rem 1.5rem;
+    align-items: flex-start;
+  }
+
+  .nl-bar__text {
+    max-width: 100%;
+  }
+
+  .nl-bar__actions {
+    width: 100%;
+  }
+}
+
+/* Newsletter bar: mobile */
+@media (max-width: 480px) {
+  .nl-bar {
+    padding: 1.8rem 1rem;
+  }
+
+  .nl-bar__input-row {
+    flex-direction: column;
+    border-radius: 8px;
+  }
+
+  .nl-bar__input {
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .nl-bar__btn {
+    border-radius: 0 0 8px 8px;
+    padding: 0.7rem;
+  }
+}
+
+/* Modal: mobile */
+@media (max-width: 580px) {
+  .ec-modal {
+    flex-direction: column;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 14px;
+  }
+
+  .ec-modal__left {
+    flex: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 1.5rem 1.2rem;
+    gap: 0.7rem;
+    justify-content: center;
+  }
+
+  .ec-modal__circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .ec-modal__percent { font-size: 1.8rem; }
+
+  .ec-modal__features { display: none; }
+
+  .ec-modal__right {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .ec-modal__title { font-size: 1.2rem; }
+}
