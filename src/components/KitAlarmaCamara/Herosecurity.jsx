@@ -87,6 +87,7 @@ const HeroSecurity = () => {
     const FORM_URL =
       "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
     const codigo =
+      localStorage.getItem("albiero_codigo") ||
       "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
     const params = new URLSearchParams({
       "entry.150801547": email,

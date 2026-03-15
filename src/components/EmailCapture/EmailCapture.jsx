@@ -69,6 +69,7 @@ function DiscountModal({ onClose }) {
       // Guardar en localStorage para cruzar con otros formularios
       localStorage.setItem("albiero_email", email);
       localStorage.setItem("albiero_nombre", nombre);
+      localStorage.setItem("albiero_codigo", res.codigo); // ← AGREGAR
       setStep("success");
     } catch {
       setError("Error al conectar. Intentá de nuevo.");
