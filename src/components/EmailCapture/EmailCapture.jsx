@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./EmailCapture.css";
 
 // ─── Google Forms ─────────────────────────────────────────────
-const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
-const ENTRY_EMAIL  = "entry.150801547";
+const FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
+const ENTRY_EMAIL = "entry.150801547";
 const ENTRY_NOMBRE = "entry.586312181";
 const ENTRY_CODIGO = "entry.1712587123"; // ← nuevo campo código
 
@@ -65,6 +66,9 @@ function DiscountModal({ onClose }) {
       const res = await enviarEmail({ email, nombre, tipo: "descuento" });
       setCodigo(res.codigo);
       localStorage.setItem("albiero_subscribed", "1");
+      // Guardar en localStorage para cruzar con otros formularios
+      localStorage.setItem("albiero_email", email);
+      localStorage.setItem("albiero_nombre", nombre);
       setStep("success");
     } catch {
       setError("Error al conectar. Intentá de nuevo.");
@@ -92,7 +96,11 @@ function DiscountModal({ onClose }) {
         aria-modal="true"
         aria-label="Oferta de descuento"
       >
-        <button className="ec-modal__close" onClick={cerrar} aria-label="Cerrar">
+        <button
+          className="ec-modal__close"
+          onClick={cerrar}
+          aria-label="Cerrar"
+        >
           ✕
         </button>
 
@@ -103,7 +111,8 @@ function DiscountModal({ onClose }) {
             <span className="ec-modal__off">OFF</span>
           </div>
           <p className="ec-modal__offer-text">
-            Aprovechá este beneficio en la instalación de tu sistema de seguridad.
+            Aprovechá este beneficio en la instalación de tu sistema de
+            seguridad.
           </p>
           <ul className="ec-modal__features">
             <li>✓ Instalación profesional sin costo</li>
@@ -117,50 +126,77 @@ function DiscountModal({ onClose }) {
             <>
               <h2 className="ec-modal__title">¡Accedé a tu beneficio ahora!</h2>
               <p className="ec-modal__subtitle">
-                Completá tus datos y recibí tu código exclusivo para la instalación.
+                Completá tus datos y recibí tu código exclusivo para la
+                instalación.
               </p>
-              <form className="ec-modal__form" onSubmit={handleSubmit} noValidate>
+              <form
+                className="ec-modal__form"
+                onSubmit={handleSubmit}
+                noValidate
+              >
                 <div className="ec-field">
-                  <label htmlFor="dm-nombre" className="ec-label">Nombre *</label>
+                  <label htmlFor="dm-nombre" className="ec-label">
+                    Nombre *
+                  </label>
                   <input
                     id="dm-nombre"
                     type="text"
                     className={`ec-input ${error === "Ingresá tu nombre." ? "ec-input--error" : ""}`}
                     placeholder="Tu nombre"
                     value={nombre}
-                    onChange={(e) => { setNombre(e.target.value); if (error) setError(""); }}
+                    onChange={(e) => {
+                      setNombre(e.target.value);
+                      if (error) setError("");
+                    }}
                     autoComplete="given-name"
                     required
                   />
                 </div>
                 <div className="ec-field">
-                  <label htmlFor="dm-email" className="ec-label">Email *</label>
+                  <label htmlFor="dm-email" className="ec-label">
+                    Email *
+                  </label>
                   <input
                     id="dm-email"
                     type="email"
                     className={`ec-input ${error === "Ingresá un email válido." ? "ec-input--error" : ""}`}
                     placeholder="tu@email.com"
                     value={email}
-                    onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (error) setError("");
+                    }}
                     required
                     autoComplete="email"
                   />
                 </div>
                 {error && <span className="ec-error-msg">{error}</span>}
-                <button type="submit" className="ec-btn ec-btn--primary" disabled={loading}>
-                  {loading ? <span className="ec-spinner" /> : "QUIERO MI BENEFICIO AHORA →"}
+                <button
+                  type="submit"
+                  className="ec-btn ec-btn--primary"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="ec-spinner" />
+                  ) : (
+                    "QUIERO MI BENEFICIO AHORA →"
+                  )}
                 </button>
                 <p className="ec-disclaimer">
-                  Tus datos están protegidos. Solo te contactaremos por tu consulta.
+                  Tus datos están protegidos. Solo te contactaremos por tu
+                  consulta.
                 </p>
               </form>
             </>
           ) : (
             <div className="ec-success">
               <div className="ec-success__icon">🎉</div>
-              <h3 className="ec-success__title">¡Listo. Tu beneficio ya está activo!</h3>
+              <h3 className="ec-success__title">
+                ¡Listo. Tu beneficio ya está activo!
+              </h3>
               <p className="ec-success__sub">
-                Guardá este código y utilizalo al momento de coordinar la instalación.
+                Guardá este código y utilizalo al momento de coordinar la
+                instalación.
               </p>
               <div className="ec-code-box">
                 <span className="ec-code">{codigo}</span>
@@ -171,7 +207,9 @@ function DiscountModal({ onClose }) {
               <p className="ec-success__note">
                 Este beneficio es personal y válido para nuevas instalaciones.
               </p>
-              <button className="ec-btn ec-btn--ghost" onClick={cerrar}>Cerrar</button>
+              <button className="ec-btn ec-btn--ghost" onClick={cerrar}>
+                Cerrar
+              </button>
             </div>
           )}
         </div>
@@ -185,17 +223,24 @@ function NewsletterBar({ onOpenModal }) {
   return (
     <div className="nl-bar">
       <div className="nl-bar__text">
-        <span className="nl-bar__tag">📧 Beneficios y novedades de seguridad</span>
-        <h3 className="nl-bar__title">Accedé a promociones y consejos para proteger tu propiedad</h3>
+        <span className="nl-bar__tag">
+          📧 Beneficios y novedades de seguridad
+        </span>
+        <h3 className="nl-bar__title">
+          Accedé a promociones y consejos para proteger tu propiedad
+        </h3>
         <p className="nl-bar__subtitle">
-          Recibí información sobre sistemas de seguridad, nuevos equipos y beneficios exclusivos.
+          Recibí información sobre sistemas de seguridad, nuevos equipos y
+          beneficios exclusivos.
         </p>
       </div>
       <div className="nl-bar__actions">
         <button className="nl-bar__main-btn" onClick={onOpenModal}>
           🎁 Solicitar beneficio ahora
         </button>
-        <p className="nl-bar__disclaimer">Podés darte de baja cuando quieras.</p>
+        <p className="nl-bar__disclaimer">
+          Podés darte de baja cuando quieras.
+        </p>
       </div>
     </div>
   );
