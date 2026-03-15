@@ -96,6 +96,7 @@ const HeroSecurity = () => {
       "entry.918807836": formData.tipo,
       "entry.101350454": formData.ubicacion,
       "entry.865536607": formData.sistema,
+      "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "", // ← AGREGAR
       submit: "Submit",
     });
     fetch(`${FORM_URL}?${params.toString()}`, {
