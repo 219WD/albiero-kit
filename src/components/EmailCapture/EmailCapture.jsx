@@ -1,23 +1,27 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./EmailCapture.css";
 
-// ─── Google Forms — no necesita Apps Script ni deploy ─────────
+// ─── Google Forms ─────────────────────────────────────────────
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
 const ENTRY_EMAIL  = "entry.150801547";
 const ENTRY_NOMBRE = "entry.586312181";
+const ENTRY_CODIGO = "entry.1712587123"; // ← nuevo campo código
 
 const MODAL_DELAY = 500;
 
+function generarCodigo() {
+  return "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+}
+
 async function enviarEmail({ email, nombre = "", tipo }) {
-  const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&submit=Submit`;
+  // Generamos el código acá para poder enviarlo al form
+  const codigo = tipo === "descuento" ? generarCodigo() : null;
+
+  const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&${ENTRY_CODIGO}=${encodeURIComponent(codigo || "-")}&submit=Submit`;
+
   await fetch(url, { method: "POST", mode: "no-cors" });
-  return {
-    ok: true,
-    codigo:
-      tipo === "descuento"
-        ? "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase()
-        : null,
-  };
+
+  return { ok: true, codigo };
 }
 
 function esEmailValido(email) {
@@ -47,7 +51,6 @@ function DiscountModal({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Nombre obligatorio
     if (!nombre.trim()) {
       setError("Ingresá tu nombre.");
       return;
@@ -118,47 +121,33 @@ function DiscountModal({ onClose }) {
               </p>
               <form className="ec-modal__form" onSubmit={handleSubmit} noValidate>
                 <div className="ec-field">
-                  <label htmlFor="dm-nombre" className="ec-label">
-                    Nombre *
-                  </label>
+                  <label htmlFor="dm-nombre" className="ec-label">Nombre *</label>
                   <input
                     id="dm-nombre"
                     type="text"
                     className={`ec-input ${error === "Ingresá tu nombre." ? "ec-input--error" : ""}`}
                     placeholder="Tu nombre"
                     value={nombre}
-                    onChange={(e) => {
-                      setNombre(e.target.value);
-                      if (error) setError("");
-                    }}
+                    onChange={(e) => { setNombre(e.target.value); if (error) setError(""); }}
                     autoComplete="given-name"
                     required
                   />
                 </div>
                 <div className="ec-field">
-                  <label htmlFor="dm-email" className="ec-label">
-                    Email *
-                  </label>
+                  <label htmlFor="dm-email" className="ec-label">Email *</label>
                   <input
                     id="dm-email"
                     type="email"
                     className={`ec-input ${error === "Ingresá un email válido." ? "ec-input--error" : ""}`}
                     placeholder="tu@email.com"
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (error) setError("");
-                    }}
+                    onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
                     required
                     autoComplete="email"
                   />
                 </div>
                 {error && <span className="ec-error-msg">{error}</span>}
-                <button
-                  type="submit"
-                  className="ec-btn ec-btn--primary"
-                  disabled={loading}
-                >
+                <button type="submit" className="ec-btn ec-btn--primary" disabled={loading}>
                   {loading ? <span className="ec-spinner" /> : "QUIERO MI BENEFICIO AHORA →"}
                 </button>
                 <p className="ec-disclaimer">
@@ -169,7 +158,7 @@ function DiscountModal({ onClose }) {
           ) : (
             <div className="ec-success">
               <div className="ec-success__icon">🎉</div>
-              <h3 className="ec-success__title">¡Listo. Tu beneficio ya está activo.!</h3>
+              <h3 className="ec-success__title">¡Listo. Tu beneficio ya está activo!</h3>
               <p className="ec-success__sub">
                 Guardá este código y utilizalo al momento de coordinar la instalación.
               </p>
@@ -182,9 +171,7 @@ function DiscountModal({ onClose }) {
               <p className="ec-success__note">
                 Este beneficio es personal y válido para nuevas instalaciones.
               </p>
-              <button className="ec-btn ec-btn--ghost" onClick={cerrar}>
-                Cerrar
-              </button>
+              <button className="ec-btn ec-btn--ghost" onClick={cerrar}>Cerrar</button>
             </div>
           )}
         </div>
@@ -194,7 +181,6 @@ function DiscountModal({ onClose }) {
 }
 
 // ─── NEWSLETTER BAR ───────────────────────────────────────────
-// Solo muestra el botón que abre el modal — no hay form de email suelto
 function NewsletterBar({ onOpenModal }) {
   return (
     <div className="nl-bar">
