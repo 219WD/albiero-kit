@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './HeroNavHome.css';
+import './HeroNavIncendio.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPhone,
@@ -10,23 +10,26 @@ import {
   faVideo,
   faHome,
   faCar,
-  faQuestionCircle,
-  faMapMarkerAlt,
-  faStar,
-  faPlayCircle,
+  faCog,
+  faChartLine,
+  faBuilding,
   faInfoCircle,
-  faUser,
-  faFileInvoiceDollar,
-  faFireFlameCurved
+  faPlayCircle,
+  faQuestionCircle,
+  faStar,
+  faMapMarkerAlt,
+  faCamera,
+  faFilm,
+  faDesktop
 } from '@fortawesome/free-solid-svg-icons';
 import LogoGrande from '../../assets/logo-grande.png';
 
-const HeroNavHome = () => {
+const HeroNavIncendio = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
 
-  const scrollToHash = (hash) => {
-    const element = document.querySelector(hash);
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -40,36 +43,24 @@ const HeroNavHome = () => {
     setMobileServicesOpen(false);
   };
 
-  const openClientAccess = () => {
-    window.open('https://clientes.albieroseguridad.com.ar:14443/welcome.php', '_blank');
-    setMobileMenuOpen(false);
-    setMobileServicesOpen(false);
-  };
-
-  const openPayBill = () => {
-    window.open('https://albiero.com.ar/paga-tu-factura/', '_blank');
-    setMobileMenuOpen(false);
-    setMobileServicesOpen(false);
-  };
-
   // Servicios CON ICONOS
   const serviceLinks = [
     { name: 'Alarmas', path: '/alarmas', icon: faShieldAlt },
     { name: 'Cámaras', path: '/camaras', icon: faVideo },
     { name: 'Kit Alarma + Cámara', path: '/kit-alarma-camara', icon: faHome },
     { name: 'Seguimiento Vehicular', path: '/seguimiento-vehicular', icon: faCar },
-    { name: 'Deteccion de Incendios', path: '/deteccion-incendios', icon: faFireFlameCurved },
   ];
 
-  // Links de navegación CON ICONOS (AHORA CON ACCESO A CLIENTES Y PAGA TU FACTURA)
+  // Links de navegación específicos de Cámaras CON ICONOS
   const navLinks = [
-    { name: '¿Por qué Albiero?', type: 'hash', hash: '#por-que-albiero', icon: faStar },
-    { name: 'Cobertura', type: 'hash', hash: '#cobertura', icon: faMapMarkerAlt },
-    { name: 'Cómo Funciona', type: 'hash', hash: '#como-funciona', icon: faPlayCircle },
-    { name: 'Preguntas Frecuentes', type: 'hash', hash: '#preguntas-frecuentes', icon: faQuestionCircle },
-    { name: 'Acceso a Clientes', type: 'external', icon: faUser, highlight: true, action: openClientAccess },
-    { name: 'Paga tu factura', type: 'external', icon: faFileInvoiceDollar, highlight: true, action: openPayBill },
-    { name: 'Contacto', type: 'hash', hash: '#contacto', icon: faPhone, highlight: true },
+    { name: 'Configurar Sistema', section: 'hero-security', icon: faCog },
+    { name: 'Beneficios', section: 'beneficios', icon: faChartLine },
+    { name: 'Soluciones', section: 'soluciones', icon: faBuilding },
+    { name: 'Acerca de', section: 'acerca-de', icon: faInfoCircle },
+    { name: 'Cómo Funciona', section: 'como-funciona', icon: faPlayCircle },
+    { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    { name: 'Protege tu Hogar', section: 'protege-tu-hogar', icon: faShieldHeart, highlight: true },
+    { name: 'Contacto', section: 'contacto', icon: faPhone, highlight: true },
   ];
 
   return (
@@ -112,12 +103,12 @@ const HeroNavHome = () => {
             </div>
           </div>
 
-          {/* Links normales con iconos */}
+          {/* Links específicos de Cámaras con iconos */}
           {navLinks.map((link, index) => (
             <button
               key={index}
               className={`hn__link${link.highlight ? ' hn__link--highlight' : ''}`}
-              onClick={() => link.type === 'external' ? link.action() : scrollToHash(link.hash)}
+              onClick={() => scrollToSection(link.section)}
             >
               {link.icon && <FontAwesomeIcon icon={link.icon} className="hn__link-icon" aria-hidden="true" />}
               <span>{link.name}</span>
@@ -185,12 +176,12 @@ const HeroNavHome = () => {
             </div>
           </div>
 
-          {/* Resto de links con iconos */}
+          {/* Links específicos de Cámaras en móvil */}
           {navLinks.map((link, index) => (
             <button
               key={index}
               className={`hn__mobile-link${link.highlight ? ' hn__mobile-link--highlight' : ''}`}
-              onClick={() => link.type === 'external' ? link.action() : scrollToHash(link.hash)}
+              onClick={() => scrollToSection(link.section)}
             >
               {link.icon && <FontAwesomeIcon icon={link.icon} className="hn__mobile-link-icon" aria-hidden="true" />}
               <span>{link.name}</span>
@@ -202,4 +193,4 @@ const HeroNavHome = () => {
   );
 };
 
-export default HeroNavHome;
+export default HeroNavIncendio;

@@ -87,7 +87,7 @@ const servicios = [
       "Sistemas de detección y prevención diseñados para proteger instalaciones ante eventos de incendio.",
     detail: "Sensores, alarmas y sistemas de detección temprana.",
     cta: "Ver sistemas contra incendios",
-    href: "#incendio",
+    href: "deteccion-incendios",
   },
 ];
 
