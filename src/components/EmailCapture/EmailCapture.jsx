@@ -18,7 +18,7 @@ async function enviarEmail({ email, nombre = "", tipo }) {
   // Generamos el código acá para poder enviarlo al form
   const codigo = tipo === "descuento" ? generarCodigo() : null;
 
-  const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&${ENTRY_CODIGO}=${encodeURIComponent(codigo || "-")}&entry.1390851687=Si&submit=Submit`;
+  const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&${ENTRY_CODIGO}=${encodeURIComponent(codigo || "-")}&entry.1390851687=&submit=Submit`;
 
 
   await fetch(url, { method: "POST", mode: "no-cors" });
