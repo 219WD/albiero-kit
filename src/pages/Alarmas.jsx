@@ -6,12 +6,12 @@ import RespaldoAlbiero from '../components/Alarmas/RespaldoAlbiero.jsx';
 import FAQAlarmas from '../components/Alarmas/FAQAlarmas.jsx'
 import FinalCTA from '../components/Alarmas/FinalCTA.jsx'
 import Footer from '../components/Footer.jsx'
-import HeroNav from '../components/Alarmas/HeroNav.jsx'
+import HeroNavAlarmas from '../components/Alarmas/HeroNavAlarmas.jsx'
 
 export default function KitAlarmaCamara() {
     return (
         <div className='homeScreen-container'>
-            <HeroNav />
+            <HeroNavAlarmas />
             <HerosecurityAlarmas />
             <SecurityMarquee />
             <ExpertiseAreasAlarmas />

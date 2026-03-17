@@ -23,6 +23,9 @@ const VIDEO_WEBM =
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
 
+const FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
+
 const HerosecurityIncendio = () => {
   useSecurityHeroGsap();
 
@@ -71,7 +74,32 @@ const HerosecurityIncendio = () => {
     trackFormComplete(formData);
     trackLeadGA4(formData);
 
-    const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
+    // ── Envío silencioso a Google Sheets ────────────────────────────────────
+    const email  = localStorage.getItem("albiero_email")  || "-";
+    const nombre = localStorage.getItem("albiero_nombre") || "-";
+    const codigo =
+      localStorage.getItem("albiero_codigo") ||
+      "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+
+    const params = new URLSearchParams({
+      "entry.150801547":  email,
+      "entry.586312181":  nombre,
+      "entry.1712587123": codigo,
+      "entry.918807836":  formData.tipo,
+      "entry.101350454":  formData.ubicacion,
+      "entry.865536607":  formData.sistema,
+      "entry.633861612":  "Incendio",
+      "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "",
+      submit: "Submit",
+    });
+
+    fetch(`${FORM_URL}?${params.toString()}`, {
+      method: "POST",
+      mode:   "no-cors",
+    });
+    // ── Fin envío Sheet ──────────────────────────────────────────────────────
+
+    const tipoTexto    = formData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
       {
         chico:         "Kit Chico (espacios reducidos)",
@@ -81,13 +109,11 @@ const HerosecurityIncendio = () => {
       }[formData.sistema] || formData.sistema;
 
     const mensaje = `Hola! Quiero asesoramiento por el sistema de detección de incendios.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
-    const numero = "5493813522339";
-    window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
+    window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
   };
 
   return (
     <section className="hero-security">
-      {/* Video de fondo */}
       <div className="security-video-fondo">
         <img
           src={VIDEO_POSTER}
@@ -140,6 +166,7 @@ const HerosecurityIncendio = () => {
         <div className="security-derecha">
           <div className="security-form">
             <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
+
             <div className="form-steps-indicator">
               {[1, 2, 3].map((step) => (
                 <div
@@ -149,7 +176,6 @@ const HerosecurityIncendio = () => {
               ))}
             </div>
 
-            {/* Paso 1 */}
             {currentStep === 1 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 1: ¿Es para?</h4>
@@ -172,7 +198,6 @@ const HerosecurityIncendio = () => {
               </div>
             )}
 
-            {/* Paso 2 */}
             {currentStep === 2 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 2: ¿Dónde querés instalar?</h4>
@@ -205,16 +230,15 @@ const HerosecurityIncendio = () => {
               </div>
             )}
 
-            {/* Paso 3 */}
             {currentStep === 3 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 3: ¿Qué tipo de sistema buscás?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    { value: "chico",        label: "Kit Chico",   desc: "(espacios reducidos)" },
-                    { value: "mediano",      label: "Kit Mediano", desc: "(propiedad estándar)"  },
-                    { value: "grande",       label: "Kit Grande",  desc: "(propiedad amplia)"    },
-                    { value: "personalizado", label: "Necesito asesoramiento personalizado", desc: "" },
+                    { value: "chico",         label: "Kit Chico",   desc: "(espacios reducidos)" },
+                    { value: "mediano",        label: "Kit Mediano", desc: "(propiedad estándar)"  },
+                    { value: "grande",         label: "Kit Grande",  desc: "(propiedad amplia)"    },
+                    { value: "personalizado",  label: "Necesito asesoramiento personalizado", desc: "" },
                   ].map((opcion) => (
                     <button
                       key={opcion.value}

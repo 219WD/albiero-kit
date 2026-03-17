@@ -1,20 +1,22 @@
 import { useState } from "react";
 import useSecurityHeroGsap from "../../hooks/useSecurityHeroGsap";
-import "./HerosecurityAlarmas.css";
+import "./HeroSecurityGps.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHome,
-  faBuilding,
+  faMotorcycle,
+  faCar,
+  faTruck,
   faLocationDot,
   faArrowLeft,
   faShield,
-  faCar,
-  faClock,
+  faRoute,
+  faGauge,
   faChevronDown,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import useFacebookPixel from "../../hooks/useFacebookPixelAlarmas.js";
-import useGoogleAnalytics from "../../hooks/useGoogleAnalyticsAlarmas.js";
+import useFacebookPixelGPS from "../../hooks/useFacebookPixelGPS";
+import useGoogleAnalyticsGPS from "../../hooks/useGoogleAnalyticsGPS";
 
 const VIDEO_MP4 =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
@@ -26,7 +28,7 @@ const VIDEO_POSTER =
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
 
-const HerosecurityAlarmas = () => {
+const HeroSecurityGps = () => {
   useSecurityHeroGsap();
 
   const {
@@ -34,14 +36,14 @@ const HerosecurityAlarmas = () => {
     trackUbicacionSelected,
     trackSistemaSelected,
     trackFormComplete,
-  } = useFacebookPixel();
+  } = useFacebookPixelGPS();
 
   const {
     trackTipoSelectedGA4,
     trackUbicacionSelectedGA4,
     trackSistemaSelectedGA4,
     trackLeadGA4,
-  } = useGoogleAnalytics();
+  } = useGoogleAnalyticsGPS();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -88,7 +90,7 @@ const HerosecurityAlarmas = () => {
       "entry.918807836":  formData.tipo,
       "entry.101350454":  formData.ubicacion,
       "entry.865536607":  formData.sistema,
-      "entry.633861612":  "Alarmas",
+      "entry.633861612":  "GPS",
       "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "",
       submit: "Submit",
     });
@@ -99,21 +101,28 @@ const HerosecurityAlarmas = () => {
     });
     // ── Fin envío Sheet ──────────────────────────────────────────────────────
 
-    const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
+    const tipoTexto =
+      {
+        moto:  "Moto",
+        auto:  "Auto / Camioneta",
+        flota: "Flota de vehículos",
+      }[formData.tipo] || formData.tipo;
+
     const sistemaTexto =
       {
-        chico:         "Kit Chico (ambientes reducidos)",
-        mediano:       "Kit Mediano (propiedad estándar)",
-        grande:        "Kit Grande (propiedad amplia)",
-        personalizado: "Asesoramiento personalizado",
+        ubicacion:    "Ubicación y seguridad del vehículo",
+        control:      "Control de uso y recorridos",
+        gestion:      "Gestión de flota y eficiencia",
+        personalizado:"Asesoramiento personalizado",
       }[formData.sistema] || formData.sistema;
 
-    const mensaje = `Hola! Quiero asesoramiento por el sistema de alarmas monitoreadas.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
+    const mensaje = `Hola! Quiero información sobre el servicio de monitoreo GPS.%0A%0A📋 *Mi consulta:*%0A• Vehículo: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Necesidad: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
     window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
   };
 
   return (
     <section className="hero-security">
+
       <div className="security-video-fondo">
         <img
           src={VIDEO_POSTER}
@@ -142,21 +151,19 @@ const HerosecurityAlarmas = () => {
 
       <div className="security-contenedor">
         <div className="security-izquierda">
-          <h2 className="security-titulo-alarmas">
-            Protegé tu casa o comercio
+          <h2 className="security-titulo">
+            Seguimiento Vehicular
             <br />
-            con alarmas monitoreadas
-            <br />
-            y respuesta inmediata.
+            Satelital.
           </h2>
           <p className="security-subtitulo">
-            Sistema de alarma conectado a central activa 24/7<br />
-            con móviles propios en tu zona.
+            Controlá tu vehículo o flota con <br />
+            seguimiento en tiempo real 24/7.
           </p>
           <p className="security-descripcion">
-            <FontAwesomeIcon icon={faShield} className="icon-desc" aria-hidden="true" /> Alarma monitoreada +{" "}
-            <FontAwesomeIcon icon={faClock}  className="icon-desc" aria-hidden="true" /> central activa 24/7 +{" "}
-            <FontAwesomeIcon icon={faCar}    className="icon-desc" aria-hidden="true" /> móviles propios en tu zona.
+            <FontAwesomeIcon icon={faShield} className="icon-desc" aria-hidden="true" /> Rastreo GPS +{" "}
+            <FontAwesomeIcon icon={faRoute}  className="icon-desc" aria-hidden="true" /> historial de recorridos +{" "}
+            <FontAwesomeIcon icon={faGauge}  className="icon-desc" aria-hidden="true" /> control de velocidad y conducción
           </p>
           <div className="security-breadcrumb">
             <span>+40</span> Años de experiencia en seguridad en Tucumán
@@ -165,7 +172,7 @@ const HerosecurityAlarmas = () => {
 
         <div className="security-derecha">
           <div className="security-form">
-            <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
+            <h3 className="form-titulo">Configurá tu Servicio en 3 Pasos</h3>
 
             <div className="form-steps-indicator">
               {[1, 2, 3].map((step) => (
@@ -178,21 +185,30 @@ const HerosecurityAlarmas = () => {
 
             {currentStep === 1 && (
               <div className="form-step">
-                <h4 className="step-titulo">Paso 1: ¿Es para?</h4>
+                <h4 className="step-titulo">Paso 1: ¿Qué vehículo querés monitorear?</h4>
                 <div className="step-opciones">
                   <button
-                    onClick={() => handleOptionSelect("tipo", "casa")}
-                    className={`opcion-btn ${formData.tipo === "casa" ? "selected" : ""}`}
-                    aria-pressed={formData.tipo === "casa"}
+                    onClick={() => handleOptionSelect("tipo", "moto")}
+                    className={`opcion-btn ${formData.tipo === "moto" ? "selected" : ""}`}
+                    aria-pressed={formData.tipo === "moto"}
                   >
-                    <FontAwesomeIcon icon={faHome} className="btn-icon" aria-hidden="true" /> Casa
+                    <FontAwesomeIcon icon={faMotorcycle} className="btn-icon" aria-hidden="true" /> Moto
                   </button>
                   <button
-                    onClick={() => handleOptionSelect("tipo", "comercio")}
-                    className={`opcion-btn ${formData.tipo === "comercio" ? "selected" : ""}`}
-                    aria-pressed={formData.tipo === "comercio"}
+                    onClick={() => handleOptionSelect("tipo", "auto")}
+                    className={`opcion-btn ${formData.tipo === "auto" ? "selected" : ""}`}
+                    aria-pressed={formData.tipo === "auto"}
                   >
-                    <FontAwesomeIcon icon={faBuilding} className="btn-icon" aria-hidden="true" /> Comercio
+                    <FontAwesomeIcon icon={faCar} className="btn-icon" aria-hidden="true" />{" "}
+                    Auto / Camioneta
+                  </button>
+                  <button
+                    onClick={() => handleOptionSelect("tipo", "flota")}
+                    className={`opcion-btn ${formData.tipo === "flota" ? "selected" : ""}`}
+                    aria-pressed={formData.tipo === "flota"}
+                  >
+                    <FontAwesomeIcon icon={faTruck} className="btn-icon" aria-hidden="true" />{" "}
+                    Flota de vehículos
                   </button>
                 </div>
               </div>
@@ -200,13 +216,12 @@ const HerosecurityAlarmas = () => {
 
             {currentStep === 2 && (
               <div className="form-step">
-                <h4 className="step-titulo">Paso 2: ¿Dónde querés instalar?</h4>
+                <h4 className="step-titulo">Paso 2: ¿Dónde se utiliza principalmente?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    "San Miguel de Tucumán",
                     "Yerba Buena",
-                    "Tafí Viejo",
-                    "Tafí del Valle / El Mollar",
+                    "San Miguel de Tucumán",
+                    "Tafí / El Mollar",
                     "Otra zona",
                   ].map((lugar) => (
                     <button
@@ -232,13 +247,13 @@ const HerosecurityAlarmas = () => {
 
             {currentStep === 3 && (
               <div className="form-step">
-                <h4 className="step-titulo">Paso 3: ¿Qué tipo de sistema buscás?</h4>
+                <h4 className="step-titulo">Paso 3: ¿Qué querés controlar principalmente?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    { value: "chico",         label: "Kit Chico",    desc: "(ambientes reducidos)" },
-                    { value: "mediano",        label: "Kit Mediano",  desc: "(propiedad estándar)"  },
-                    { value: "grande",         label: "Kit Grande",   desc: "(propiedad amplia)"    },
-                    { value: "personalizado",  label: "Necesito asesoramiento personalizado", desc: "" },
+                    { value: "ubicacion",     label: "Ubicación y seguridad del vehículo",  desc: "" },
+                    { value: "control",       label: "Control de uso y recorridos",          desc: "" },
+                    { value: "gestion",       label: "Gestión de flota y eficiencia",        desc: "" },
+                    { value: "personalizado", label: "Necesito asesoramiento personalizado", desc: "" },
                   ].map((opcion) => (
                     <button
                       key={opcion.value}
@@ -265,10 +280,10 @@ const HerosecurityAlarmas = () => {
               <div className="form-cta">
                 <button onClick={handleSubmit} className="cta-principal">
                   <FontAwesomeIcon icon={faWhatsapp} aria-hidden="true" style={{ marginRight: "10px" }} />
-                  Quiero asesoramiento ahora
+                  Quiero información ahora
                 </button>
                 <p className="cta-subtexto">
-                  Instalación sin costo • Sistema en comodato • Más de 40 años en Tucumán
+                  Instalación sin cargo • Equipos en comodato • Más de 40 años de trayectoria
                 </p>
               </div>
             )}
@@ -293,4 +308,4 @@ const HerosecurityAlarmas = () => {
   );
 };
 
-export default HerosecurityAlarmas;
+export default HeroSecurityGps;

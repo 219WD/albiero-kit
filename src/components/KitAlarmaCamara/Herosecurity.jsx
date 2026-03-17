@@ -17,19 +17,15 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useFacebookPixel from "../../hooks/useFacebookPixel";
 import useGoogleAnalytics from "../../hooks/useGoogleAnalytics";
 
-// ─────────────────────────────────────────────────────────────
-// URLs del video en Cloudinary
-// ─────────────────────────────────────────────────────────────
 const VIDEO_MP4 =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
-
-// WebM: Cloudinary convierte automáticamente — más liviano en Chrome/Firefox
 const VIDEO_WEBM =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,vc_vp9/v1772819547/video-bg-compr_a6c1oj.webm";
-
-// Poster: thumbnail automático del frame 0, servido como imagen optimizada
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
+
+const FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
 
 const HeroSecurity = () => {
   useSecurityHeroGsap();
@@ -79,38 +75,35 @@ const HeroSecurity = () => {
     trackFormComplete(formData);
     trackLeadGA4(formData);
 
-    // Tomar email y nombre del localStorage si el usuario ya se registró
-    const email = localStorage.getItem("albiero_email") || "-";
+    const email  = localStorage.getItem("albiero_email")  || "-";
     const nombre = localStorage.getItem("albiero_nombre") || "-";
-
-    // Guardar silenciosamente en el Sheet
-    const FORM_URL =
-      "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
     const codigo =
       localStorage.getItem("albiero_codigo") ||
       "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+
     const params = new URLSearchParams({
-      "entry.150801547": email,
-      "entry.586312181": nombre,
+      "entry.150801547":  email,
+      "entry.586312181":  nombre,
       "entry.1712587123": codigo,
-      "entry.918807836": formData.tipo,
-      "entry.101350454": formData.ubicacion,
-      "entry.865536607": formData.sistema,
-      "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "", // ← AGREGAR
+      "entry.918807836":  formData.tipo,
+      "entry.101350454":  formData.ubicacion,
+      "entry.865536607":  formData.sistema,
+      "entry.633861612":  "KitAlarmaCamara",
+      "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "",
       submit: "Submit",
     });
+
     fetch(`${FORM_URL}?${params.toString()}`, {
       method: "POST",
-      mode: "no-cors",
+      mode:   "no-cors",
     });
 
-    // Abrir WhatsApp igual que antes
     const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
       {
-        chico: "Kit Chico (ambientes reducidos)",
-        mediano: "Kit Mediano (propiedad estándar)",
-        grande: "Kit Grande (propiedad amplia)",
+        chico:         "Kit Chico (ambientes reducidos)",
+        mediano:       "Kit Mediano (propiedad estándar)",
+        grande:        "Kit Grande (propiedad amplia)",
         personalizado: "Asesoramiento personalizado",
       }[formData.sistema] || formData.sistema;
 
@@ -120,12 +113,7 @@ const HeroSecurity = () => {
 
   return (
     <section className="hero-security">
-      {/* ── Video de fondo ────────────────────────────────────
-          Desktop: video HTML5 nativo (sin Vimeo, sin cookies)
-          Mobile:  video oculto via CSS, solo carga el poster
-      ──────────────────────────────────────────────────────── */}
       <div className="security-video-fondo">
-        {/* Poster: imagen estática visible mientras el video carga */}
         <img
           src={VIDEO_POSTER}
           alt=""
@@ -135,7 +123,6 @@ const HeroSecurity = () => {
           height="720"
           fetchPriority="high"
         />
-
         <video
           className="video-bg"
           autoPlay
@@ -146,7 +133,7 @@ const HeroSecurity = () => {
           aria-hidden="true"
         >
           <source src={VIDEO_WEBM} type="video/webm" />
-          <source src={VIDEO_MP4} type="video/mp4" />
+          <source src={VIDEO_MP4}  type="video/mp4"  />
         </video>
       </div>
 
@@ -164,29 +151,13 @@ const HeroSecurity = () => {
             monitoreo real y respuesta inmediata.
           </p>
           <p className="security-descripcion">
-            <FontAwesomeIcon
-              icon={faShield}
-              className="icon-desc"
-              aria-hidden="true"
-            />{" "}
+            <FontAwesomeIcon icon={faShield} className="icon-desc" aria-hidden="true" />{" "}
             Alarma +{" "}
-            <FontAwesomeIcon
-              icon={faCamera}
-              className="icon-desc"
-              aria-hidden="true"
-            />{" "}
+            <FontAwesomeIcon icon={faCamera} className="icon-desc" aria-hidden="true" />{" "}
             cámaras +{" "}
-            <FontAwesomeIcon
-              icon={faClock}
-              className="icon-desc"
-              aria-hidden="true"
-            />{" "}
+            <FontAwesomeIcon icon={faClock}  className="icon-desc" aria-hidden="true" />{" "}
             central activa 24/7 +{" "}
-            <FontAwesomeIcon
-              icon={faCar}
-              className="icon-desc"
-              aria-hidden="true"
-            />{" "}
+            <FontAwesomeIcon icon={faCar}    className="icon-desc" aria-hidden="true" />{" "}
             móviles propios en tu zona.
           </p>
           <div className="security-breadcrumb">
@@ -216,24 +187,14 @@ const HeroSecurity = () => {
                     className={`opcion-btn ${formData.tipo === "casa" ? "selected" : ""}`}
                     aria-pressed={formData.tipo === "casa"}
                   >
-                    <FontAwesomeIcon
-                      icon={faHome}
-                      className="btn-icon"
-                      aria-hidden="true"
-                    />{" "}
-                    Casa
+                    <FontAwesomeIcon icon={faHome} className="btn-icon" aria-hidden="true" />{" "}Casa
                   </button>
                   <button
                     onClick={() => handleOptionSelect("tipo", "comercio")}
                     className={`opcion-btn ${formData.tipo === "comercio" ? "selected" : ""}`}
                     aria-pressed={formData.tipo === "comercio"}
                   >
-                    <FontAwesomeIcon
-                      icon={faBuilding}
-                      className="btn-icon"
-                      aria-hidden="true"
-                    />{" "}
-                    Comercio
+                    <FontAwesomeIcon icon={faBuilding} className="btn-icon" aria-hidden="true" />{" "}Comercio
                   </button>
                 </div>
               </div>
@@ -257,11 +218,7 @@ const HeroSecurity = () => {
                       className={`opcion-btn ${formData.ubicacion === lugar ? "selected" : ""}`}
                       aria-pressed={formData.ubicacion === lugar}
                     >
-                      <FontAwesomeIcon
-                        icon={faLocationDot}
-                        className="btn-icon"
-                        aria-hidden="true"
-                      />{" "}
+                      <FontAwesomeIcon icon={faLocationDot} className="btn-icon" aria-hidden="true" />{" "}
                       {lugar}
                     </button>
                   ))}
@@ -271,52 +228,29 @@ const HeroSecurity = () => {
                   className="btn-volver"
                   aria-label="Volver al paso 1"
                 >
-                  <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />{" "}
-                  Volver
+                  <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />{" "}Volver
                 </button>
               </div>
             )}
 
             {currentStep === 3 && (
               <div className="form-step">
-                <h4 className="step-titulo">
-                  Paso 3: ¿Qué tipo de sistema buscás?
-                </h4>
+                <h4 className="step-titulo">Paso 3: ¿Qué tipo de sistema buscás?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    {
-                      value: "chico",
-                      label: "Kit Chico",
-                      desc: "(ambientes reducidos)",
-                    },
-                    {
-                      value: "mediano",
-                      label: "Kit Mediano",
-                      desc: "(propiedad estándar)",
-                    },
-                    {
-                      value: "grande",
-                      label: "Kit Grande",
-                      desc: "(propiedad amplia)",
-                    },
-                    {
-                      value: "personalizado",
-                      label: "Necesito asesoramiento personalizado",
-                      desc: "",
-                    },
+                    { value: "chico",         label: "Kit Chico",    desc: "(ambientes reducidos)" },
+                    { value: "mediano",        label: "Kit Mediano",  desc: "(propiedad estándar)"  },
+                    { value: "grande",         label: "Kit Grande",   desc: "(propiedad amplia)"    },
+                    { value: "personalizado",  label: "Necesito asesoramiento personalizado", desc: "" },
                   ].map((opcion) => (
                     <button
                       key={opcion.value}
-                      onClick={() =>
-                        handleOptionSelect("sistema", opcion.value)
-                      }
+                      onClick={() => handleOptionSelect("sistema", opcion.value)}
                       className={`opcion-btn sistema ${formData.sistema === opcion.value ? "selected" : ""}`}
                       aria-pressed={formData.sistema === opcion.value}
                     >
                       <span className="opcion-label">{opcion.label}</span>
-                      {opcion.desc && (
-                        <span className="opcion-desc">{opcion.desc}</span>
-                      )}
+                      {opcion.desc && <span className="opcion-desc">{opcion.desc}</span>}
                     </button>
                   ))}
                 </div>
@@ -325,8 +259,7 @@ const HeroSecurity = () => {
                   className="btn-volver"
                   aria-label="Volver al paso 2"
                 >
-                  <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />{" "}
-                  Volver
+                  <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />{" "}Volver
                 </button>
               </div>
             )}
@@ -334,16 +267,11 @@ const HeroSecurity = () => {
             {currentStep === 3 && formData.sistema && (
               <div className="form-cta">
                 <button onClick={handleSubmit} className="cta-principal">
-                  <FontAwesomeIcon
-                    icon={faWhatsapp}
-                    aria-hidden="true"
-                    style={{ marginRight: "10px" }}
-                  />
+                  <FontAwesomeIcon icon={faWhatsapp} aria-hidden="true" style={{ marginRight: "10px" }} />
                   Quiero asesoramiento ahora
                 </button>
                 <p className="cta-subtexto">
-                  Instalación sin costo • Sistema en comodato • Más de 40 años
-                  en Tucumán
+                  Instalación sin costo • Sistema en comodato • Más de 40 años en Tucumán
                 </p>
               </div>
             )}
@@ -356,9 +284,7 @@ const HeroSecurity = () => {
             aria-label="Ver más información"
             onClick={() => {
               const element = document.getElementById("beneficios");
-              if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
+              if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
           >
             <span>Más Información</span>

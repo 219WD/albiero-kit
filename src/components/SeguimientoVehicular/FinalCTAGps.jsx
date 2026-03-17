@@ -1,6 +1,6 @@
-// FinalCTA.jsx
+// FinalCTAGps.jsx
 import React from 'react';
-import './FinalCTA.css';
+import './FinalCTAGps.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faLocationDot,
@@ -11,7 +11,7 @@ import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import useToast from '../../hooks/useToast';
 import { Toaster } from 'react-hot-toast';
 
-const FinalCTA = () => {
+const FinalCTAGps = () => {
   const { showToast } = useToast();
 
   const scrollToHero = () => {
@@ -72,4 +72,4 @@ const FinalCTA = () => {
   );
 };
 
-export default FinalCTA;
+export default FinalCTAGps;

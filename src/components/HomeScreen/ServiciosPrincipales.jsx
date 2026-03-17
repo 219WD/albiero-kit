@@ -76,7 +76,7 @@ const servicios = [
       "Protección perimetral",
     ],
     cta: "Ver soluciones de seguridad integral",
-    href: "#seguridad-integral",
+    href: "seguridad-integral",
   },
   {
     id: 6,

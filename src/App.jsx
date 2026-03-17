@@ -8,6 +8,7 @@ import Alarmas from './pages/Alarmas.jsx';
 import Camaras from './pages/Camaras.jsx';
 import Analiticas from './pages/Analiticas/Analiticas';
 import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
+import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 
 function App() {
     useEffect(() => {
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/kit-alarma-camara" element={<KitAlarmaCamara />} />
                 <Route path="/seguimiento-vehicular" element={<SeguimientoVehicular />} />
                 <Route path="/deteccion-incendios" element={<DeteccionIncendios />} />
+                <Route path="/seguridad-integral" element={<SeguridadIntegral />} />
                 <Route path="/analiticas" element={<Analiticas />} />
             </Routes>
         </Router>

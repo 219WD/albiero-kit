@@ -23,6 +23,9 @@ const VIDEO_WEBM =
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
 
+const FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
+
 const HerosecurityCamaras = () => {
   useSecurityHeroGsap();
 
@@ -42,9 +45,9 @@ const HerosecurityCamaras = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    tipo: "",
+    tipo:      "",
     ubicacion: "",
-    sistema: "",
+    sistema:   "",
   });
 
   const handleOptionSelect = (field, value) => {
@@ -71,7 +74,32 @@ const HerosecurityCamaras = () => {
     trackFormComplete(formData);
     trackLeadGA4(formData);
 
-    const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
+    // ── Envío silencioso a Google Sheets ────────────────────────────────────
+    const email  = localStorage.getItem("albiero_email")  || "-";
+    const nombre = localStorage.getItem("albiero_nombre") || "-";
+    const codigo =
+      localStorage.getItem("albiero_codigo") ||
+      "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+
+    const params = new URLSearchParams({
+      "entry.150801547":  email,
+      "entry.586312181":  nombre,
+      "entry.1712587123": codigo,
+      "entry.918807836":  formData.tipo,
+      "entry.101350454":  formData.ubicacion,
+      "entry.865536607":  formData.sistema,
+      "entry.633861612":  "Camaras",
+      "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "",
+      submit: "Submit",
+    });
+
+    fetch(`${FORM_URL}?${params.toString()}`, {
+      method: "POST",
+      mode:   "no-cors",
+    });
+    // ── Fin envío Sheet ──────────────────────────────────────────────────────
+
+    const tipoTexto    = formData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
       {
         chico:         "Kit Chico (espacios reducidos)",
@@ -81,14 +109,11 @@ const HerosecurityCamaras = () => {
       }[formData.sistema] || formData.sistema;
 
     const mensaje = `Hola! Quiero asesoramiento por el sistema de cámaras de seguridad.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
-    const numero = "5493813522339";
-    window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
+    window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
   };
 
   return (
     <section className="hero-security">
-
-      {/* Video de fondo */}
       <div className="security-video-fondo">
         <img
           src={VIDEO_POSTER}
@@ -129,9 +154,9 @@ const HerosecurityCamaras = () => {
             con acceso desde tu celular.
           </p>
           <p className="security-descripcion">
-            <FontAwesomeIcon icon={faVideo}        className="icon-desc" aria-hidden="true" /> Cámaras HD +{" "}
-            <FontAwesomeIcon icon={faClock}         className="icon-desc" aria-hidden="true" /> monitoreo 24/7 +{" "}
-            <FontAwesomeIcon icon={faMobileScreen}  className="icon-desc" aria-hidden="true" /> acceso desde tu celular.
+            <FontAwesomeIcon icon={faVideo}       className="icon-desc" aria-hidden="true" /> Cámaras HD +{" "}
+            <FontAwesomeIcon icon={faClock}        className="icon-desc" aria-hidden="true" /> monitoreo 24/7 +{" "}
+            <FontAwesomeIcon icon={faMobileScreen} className="icon-desc" aria-hidden="true" /> acceso desde tu celular.
           </p>
           <div className="security-breadcrumb">
             <span>+40</span> Años de experiencia en seguridad en Tucumán
@@ -151,7 +176,6 @@ const HerosecurityCamaras = () => {
               ))}
             </div>
 
-            {/* Paso 1 */}
             {currentStep === 1 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 1: ¿Es para?</h4>
@@ -174,7 +198,6 @@ const HerosecurityCamaras = () => {
               </div>
             )}
 
-            {/* Paso 2 */}
             {currentStep === 2 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 2: ¿Dónde querés instalar?</h4>
@@ -207,12 +230,9 @@ const HerosecurityCamaras = () => {
               </div>
             )}
 
-            {/* Paso 3 */}
             {currentStep === 3 && (
               <div className="form-step">
-                <h4 className="step-titulo">
-                  Paso 3: ¿Qué tipo de sistema buscás?
-                </h4>
+                <h4 className="step-titulo">Paso 3: ¿Qué tipo de sistema buscás?</h4>
                 <div className="step-opciones vertical">
                   {[
                     { value: "chico",         label: "Kit Chico",    desc: "(espacios reducidos)"  },
@@ -227,9 +247,7 @@ const HerosecurityCamaras = () => {
                       aria-pressed={formData.sistema === opcion.value}
                     >
                       <span className="opcion-label">{opcion.label}</span>
-                      {opcion.desc && (
-                        <span className="opcion-desc">{opcion.desc}</span>
-                      )}
+                      {opcion.desc && <span className="opcion-desc">{opcion.desc}</span>}
                     </button>
                   ))}
                 </div>
@@ -263,9 +281,7 @@ const HerosecurityCamaras = () => {
             aria-label="Ver más información"
             onClick={() => {
               const element = document.getElementById("beneficios");
-              if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
+              if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
           >
             <span>Más Información</span>

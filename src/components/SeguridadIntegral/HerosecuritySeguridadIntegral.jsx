@@ -1,36 +1,34 @@
 import { useState } from "react";
-import useSecurityHeroGsap from "../../hooks/useSecurityHeroGsap";
-import "./HeroSecurity.css";
+import useSecurityHeroGsap from "../../hooks/useSecurityHeroGsap.js";
+import "./HerosecuritySeguridadIntegral.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faMotorcycle,
-  faCar,
-  faTruck,
+  faBuilding,
+  faStore,
   faLocationDot,
   faArrowLeft,
   faShield,
-  faRoute,
-  faGauge,
+  faLayerGroup,
   faChevronDown,
-  faClock,
+  faWarehouse,
+  faHouse,
+  faLandmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import useFacebookPixelGPS from "../../hooks/useFacebookPixelGPS";
-import useGoogleAnalyticsGPS from "../../hooks/useGoogleAnalyticsGPS";
+import useFacebookPixelSeguridadIntegral from "../../hooks/useFacebookPixelSeguridadIntegral.js";
+import useGoogleAnalyticsSeguridadIntegral from "../../hooks/useGoogleAnalyticsSeguridadIntegral.js";
 
-// ─────────────────────────────────────────────────────────────
-// URLs del video en Cloudinary
-// ─────────────────────────────────────────────────────────────
 const VIDEO_MP4 =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
-
 const VIDEO_WEBM =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,vc_vp9/v1772819547/video-bg-compr_a6c1oj.webm";
-
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
 
-const HeroSecurity = () => {
+const FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
+
+const HerosecuritySeguridadIntegral = () => {
   useSecurityHeroGsap();
 
   const {
@@ -38,20 +36,20 @@ const HeroSecurity = () => {
     trackUbicacionSelected,
     trackSistemaSelected,
     trackFormComplete,
-  } = useFacebookPixelGPS();
+  } = useFacebookPixelSeguridadIntegral();
 
   const {
     trackTipoSelectedGA4,
     trackUbicacionSelectedGA4,
     trackSistemaSelectedGA4,
     trackLeadGA4,
-  } = useGoogleAnalyticsGPS();
+  } = useGoogleAnalyticsSeguridadIntegral();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    tipo: "",
+    tipo:      "",
     ubicacion: "",
-    sistema: "",
+    sistema:   "",
   });
 
   const handleOptionSelect = (field, value) => {
@@ -78,30 +76,53 @@ const HeroSecurity = () => {
     trackFormComplete(formData);
     trackLeadGA4(formData);
 
-    const tipoTexto =
-      {
-        moto: "Moto",
-        auto: "Auto / Camioneta",
-        flota: "Flota de vehículos",
-      }[formData.tipo] || formData.tipo;
+    // ── Envío silencioso a Google Sheets ────────────────────────────────────
+    const email  = localStorage.getItem("albiero_email")  || "-";
+    const nombre = localStorage.getItem("albiero_nombre") || "-";
+    const codigo =
+      localStorage.getItem("albiero_codigo") ||
+      "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
 
-    const sistemaTexto =
-      {
-        ubicacion: "Ubicación y seguridad del vehículo",
-        control: "Control de uso y recorridos",
-        gestion: "Gestión de flota y eficiencia",
-        personalizado: "Asesoramiento personalizado",
-      }[formData.sistema] || formData.sistema;
+    const params = new URLSearchParams({
+      "entry.150801547":  email,
+      "entry.586312181":  nombre,
+      "entry.1712587123": codigo,
+      "entry.918807836":  formData.tipo,
+      "entry.101350454":  formData.ubicacion,
+      "entry.865536607":  formData.sistema,
+      "entry.633861612":  "SeguridadIntegral",
+      "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "",
+      submit: "Submit",
+    });
 
-    const mensaje = `Hola! Quiero información sobre el servicio de monitoreo GPS.%0A%0A📋 *Mi consulta:*%0A• Vehículo: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Necesidad: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
-    const numero = "5493813522339";
-    window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
+    fetch(`${FORM_URL}?${params.toString()}`, {
+      method: "POST",
+      mode:   "no-cors",
+    });
+    // ── Fin envío Sheet ──────────────────────────────────────────────────────
+
+    const tipoTexto = {
+      empresa:    "Empresa",
+      comercio:   "Comercio",
+      barrio:     "Barrio privado",
+      deposito:   "Depósito / predio",
+      particular: "Propiedad particular",
+    }[formData.tipo] || formData.tipo;
+
+    const sistemaTexto = {
+      guardias:     "Seguridad física con guardias",
+      perimetral:   "Protección perimetral electrónica",
+      accesos:      "Control de accesos",
+      integral:     "Sistema integral completo",
+      personalizado:"Asesoramiento personalizado",
+    }[formData.sistema] || formData.sistema;
+
+    const mensaje = `Hola! Quiero asesoramiento por el sistema de seguridad integral.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Solución: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
+    window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
   };
 
   return (
     <section className="hero-security">
-
-      {/* ── Video de fondo ──────────────────────────────────── */}
       <div className="security-video-fondo">
         <img
           src={VIDEO_POSTER}
@@ -130,19 +151,21 @@ const HeroSecurity = () => {
 
       <div className="security-contenedor">
         <div className="security-izquierda">
-          <h2 className="security-titulo">
-            Seguimiento Vehicular
+          <h2 className="security-titulo-alarmas">
+            Protegé tu empresa o
             <br />
-            Satelital.
+            propiedad con un sistema
+            <br />
+            de seguridad integral.
           </h2>
           <p className="security-subtitulo">
-            Controlá tu vehículo o flota con <br />
-            seguimiento en tiempo real 24/7.
+            Soluciones combinadas de seguridad física y electrónica<br />
+            diseñadas según el riesgo y las necesidades de cada espacio.
           </p>
           <p className="security-descripcion">
-            <FontAwesomeIcon icon={faShield} className="icon-desc" aria-hidden="true" /> Rastreo GPS +{" "}
-            <FontAwesomeIcon icon={faRoute} className="icon-desc" aria-hidden="true" /> historial de recorridos +{" "}
-            <FontAwesomeIcon icon={faGauge} className="icon-desc" aria-hidden="true" /> control de velocidad y conducción{" "}
+            <FontAwesomeIcon icon={faShield}     className="icon-desc" aria-hidden="true" /> Seguridad física +{" "}
+            <FontAwesomeIcon icon={faLayerGroup} className="icon-desc" aria-hidden="true" /> protección electrónica +{" "}
+            <FontAwesomeIcon icon={faBuilding}   className="icon-desc" aria-hidden="true" /> soluciones a medida.
           </p>
           <div className="security-breadcrumb">
             <span>+40</span> Años de experiencia en seguridad en Tucumán
@@ -151,7 +174,7 @@ const HeroSecurity = () => {
 
         <div className="security-derecha">
           <div className="security-form">
-            <h3 className="form-titulo">Configurá tu Servicio en 3 Pasos</h3>
+            <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
 
             <div className="form-steps-indicator">
               {[1, 2, 3].map((step) => (
@@ -164,43 +187,38 @@ const HeroSecurity = () => {
 
             {currentStep === 1 && (
               <div className="form-step">
-                <h4 className="step-titulo">Paso 1: ¿Qué vehículo querés monitorear?</h4>
-                <div className="step-opciones">
-                  <button
-                    onClick={() => handleOptionSelect("tipo", "moto")}
-                    className={`opcion-btn ${formData.tipo === "moto" ? "selected" : ""}`}
-                    aria-pressed={formData.tipo === "moto"}
-                  >
-                    <FontAwesomeIcon icon={faMotorcycle} className="btn-icon" aria-hidden="true" /> Moto
-                  </button>
-                  <button
-                    onClick={() => handleOptionSelect("tipo", "auto")}
-                    className={`opcion-btn ${formData.tipo === "auto" ? "selected" : ""}`}
-                    aria-pressed={formData.tipo === "auto"}
-                  >
-                    <FontAwesomeIcon icon={faCar} className="btn-icon" aria-hidden="true" />{" "}
-                    Auto / Camioneta
-                  </button>
-                  <button
-                    onClick={() => handleOptionSelect("tipo", "flota")}
-                    className={`opcion-btn ${formData.tipo === "flota" ? "selected" : ""}`}
-                    aria-pressed={formData.tipo === "flota"}
-                  >
-                    <FontAwesomeIcon icon={faTruck} className="btn-icon" aria-hidden="true" />{" "}
-                    Flota de vehículos
-                  </button>
+                <h4 className="step-titulo">Paso 1: ¿Qué tipo de propiedad querés proteger?</h4>
+                <div className="step-opciones vertical">
+                  {[
+                    { value: "empresa",    icon: faLandmark,  label: "Empresa"             },
+                    { value: "comercio",   icon: faStore,     label: "Comercio"             },
+                    { value: "barrio",     icon: faHouse,     label: "Barrio privado"       },
+                    { value: "deposito",   icon: faWarehouse, label: "Depósito / predio"    },
+                    { value: "particular", icon: faBuilding,  label: "Propiedad particular" },
+                  ].map((op) => (
+                    <button
+                      key={op.value}
+                      onClick={() => handleOptionSelect("tipo", op.value)}
+                      className={`opcion-btn ${formData.tipo === op.value ? "selected" : ""}`}
+                      aria-pressed={formData.tipo === op.value}
+                    >
+                      <FontAwesomeIcon icon={op.icon} className="btn-icon" aria-hidden="true" />{" "}
+                      {op.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
 
             {currentStep === 2 && (
               <div className="form-step">
-                <h4 className="step-titulo">Paso 2: ¿Dónde se utiliza principalmente?</h4>
+                <h4 className="step-titulo">Paso 2: ¿Dónde necesitás el servicio?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    "Yerba Buena",
                     "San Miguel de Tucumán",
-                    "Tafí / El Mollar",
+                    "Yerba Buena",
+                    "Tafí Viejo",
+                    "Tafí del Valle / El Mollar",
                     "Otra zona",
                   ].map((lugar) => (
                     <button
@@ -226,15 +244,14 @@ const HeroSecurity = () => {
 
             {currentStep === 3 && (
               <div className="form-step">
-                <h4 className="step-titulo">
-                  Paso 3: ¿Qué querés controlar principalmente?
-                </h4>
+                <h4 className="step-titulo">Paso 3: ¿Qué tipo de solución buscás?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    { value: "ubicacion",    label: "Ubicación y seguridad del vehículo", desc: "" },
-                    { value: "control",      label: "Control de uso y recorridos",        desc: "" },
-                    { value: "gestion",      label: "Gestión de flota y eficiencia",      desc: "" },
-                    { value: "personalizado", label: "Necesito asesoramiento personalizado", desc: "" },
+                    { value: "guardias",      label: "Seguridad física con guardias"      },
+                    { value: "perimetral",    label: "Protección perimetral electrónica"  },
+                    { value: "accesos",       label: "Control de accesos"                 },
+                    { value: "integral",      label: "Sistema integral completo"          },
+                    { value: "personalizado", label: "Necesito asesoramiento personalizado" },
                   ].map((opcion) => (
                     <button
                       key={opcion.value}
@@ -243,9 +260,6 @@ const HeroSecurity = () => {
                       aria-pressed={formData.sistema === opcion.value}
                     >
                       <span className="opcion-label">{opcion.label}</span>
-                      {opcion.desc && (
-                        <span className="opcion-desc">{opcion.desc}</span>
-                      )}
                     </button>
                   ))}
                 </div>
@@ -263,10 +277,10 @@ const HeroSecurity = () => {
               <div className="form-cta">
                 <button onClick={handleSubmit} className="cta-principal">
                   <FontAwesomeIcon icon={faWhatsapp} aria-hidden="true" style={{ marginRight: "10px" }} />
-                  Quiero información ahora
+                  Quiero asesoramiento ahora
                 </button>
                 <p className="cta-subtexto">
-                  Instalación sin cargo • Equipos en comodato • Más de 40 años de trayectoria
+                  Diagnóstico sin costo • Soluciones a medida • Más de 40 años en Tucumán
                 </p>
               </div>
             )}
@@ -279,9 +293,7 @@ const HeroSecurity = () => {
             aria-label="Ver más información"
             onClick={() => {
               const element = document.getElementById("beneficios");
-              if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
+              if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
           >
             <span>Más Información</span>
@@ -293,4 +305,4 @@ const HeroSecurity = () => {
   );
 };
 
-export default HeroSecurity;
+export default HerosecuritySeguridadIntegral;

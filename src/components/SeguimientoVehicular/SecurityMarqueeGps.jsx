@@ -1,6 +1,6 @@
-// SecurityMarquee.jsx
+// SecurityMarqueeGps.jsx
 import React from "react";
-import "./SecurityMarquee.css";
+import "./SecurityMarqueeGps.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLocationDot,
@@ -102,7 +102,7 @@ const services = [
 // Duplicar para efecto marquee infinito
 const duplicatedServices = [...services, ...services];
 
-const SecurityMarquee = () => {
+const SecurityMarqueeGps = () => {
   return (
     <section className="security-marquee-container">
       <div className="marquee-header" id="beneficios">
@@ -153,4 +153,4 @@ const SecurityMarquee = () => {
   );
 };
 
-export default SecurityMarquee;
+export default SecurityMarqueeGps;

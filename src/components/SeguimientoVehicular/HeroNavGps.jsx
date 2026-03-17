@@ -19,7 +19,11 @@ import {
   faMapMarkerAlt,
   faLocationDot,
   faRoute,
-  faGauge
+  faGauge,
+  faFireFlameCurved,
+  faLayerGroup,
+  faUser,
+  faFileInvoiceDollar,
 } from '@fortawesome/free-solid-svg-icons';
 import LogoGrande from '../../assets/logo-grande.png';
 
@@ -29,9 +33,7 @@ const HeroNavGps = () => {
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setMobileMenuOpen(false);
     setMobileServicesOpen(false);
   };
@@ -42,24 +44,35 @@ const HeroNavGps = () => {
     setMobileServicesOpen(false);
   };
 
-  // Servicios CON ICONOS
+  const openClientAccess = () => {
+    window.open('https://clientes.albieroseguridad.com.ar:14443/welcome.php', '_blank');
+    setMobileMenuOpen(false);
+    setMobileServicesOpen(false);
+  };
+
+  const openPayBill = () => {
+    window.open('https://albiero.com.ar/paga-tu-factura/', '_blank');
+    setMobileMenuOpen(false);
+    setMobileServicesOpen(false);
+  };
+
   const serviceLinks = [
-    { name: 'Alarmas', path: '/alarmas', icon: faShieldAlt },
-    { name: 'Cámaras', path: '/camaras', icon: faVideo },
-    { name: 'Kit Alarma + Cámara', path: '/kit-alarma-camara', icon: faHome },
-    { name: 'Seguimiento Vehicular', path: '/seguimiento-vehicular', icon: faCar },
+    { name: 'Alarmas',                path: '/alarmas',               icon: faShieldAlt       },
+    { name: 'Cámaras',                path: '/camaras',               icon: faVideo           },
+    { name: 'Kit Alarma + Cámara',    path: '/kit-alarma-camara',     icon: faHome            },
+    { name: 'Seguimiento Vehicular',  path: '/seguimiento-vehicular', icon: faCar             },
+    { name: 'Detección de Incendios', path: '/deteccion-incendios',   icon: faFireFlameCurved },
+    { name: 'Seguridad Integral',     path: '/seguridad-integral',    icon: faLayerGroup      },
   ];
 
-  // Links de navegación específicos de GPS CON ICONOS
   const navLinks = [
-    { name: 'Configurar Sistema', section: 'hero-security', icon: faCog },
-    { name: 'Beneficios', section: 'beneficios', icon: faChartLine },
-    { name: 'Soluciones', section: 'soluciones', icon: faBuilding },
-    { name: 'Acerca de', section: 'acerca-de', icon: faInfoCircle },
-    { name: 'Cómo Funciona', section: 'como-funciona', icon: faPlayCircle },
-    { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
-    { name: 'Protege tu Hogar', section: 'protege-tu-hogar', icon: faShieldHeart, highlight: true },
-    { name: 'Contacto', section: 'contacto', icon: faPhone, highlight: true },
+    { name: 'Configurar Sistema',   section: 'hero-security',        icon: faCog,            type: 'scroll'   },
+    { name: 'Soluciones',           section: 'soluciones',           icon: faBuilding,       type: 'scroll'   },
+    { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle,     type: 'scroll'   },
+    { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle, type: 'scroll'   },
+    { name: 'Acceso a Clientes',    icon: faUser,                    type: 'external',       highlight: true, action: openClientAccess },
+    { name: 'Paga tu factura',      icon: faFileInvoiceDollar,       type: 'external',       highlight: true, action: openPayBill      },
+    { name: 'Contacto',             section: 'contacto',             icon: faPhone,          type: 'scroll',  highlight: true },
   ];
 
   return (
@@ -69,19 +82,17 @@ const HeroNavGps = () => {
         {/* Logo */}
         <div
           className="hn__logo"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onClick={() => window.location.href = '/'}
           role="button"
           tabIndex={0}
           aria-label="Ir al inicio"
-          onKeyDown={(e) => e.key === 'Enter' && window.scrollTo({ top: 0, behavior: 'smooth' })}
+          onKeyDown={(e) => e.key === 'Enter' && (window.location.href = '/')}
         >
           <img src={LogoGrande} alt="Albiero Seguridad" className="hn__logo-img" width="120" height="45" />
         </div>
 
         {/* Desktop Navigation */}
         <div className="hn__links">
-
-          {/* Dropdown Servicios con iconos */}
           <div className="hn__dropdown">
             <button className="hn__link hn__link--dropdown">
               <span>Servicios</span>
@@ -102,12 +113,11 @@ const HeroNavGps = () => {
             </div>
           </div>
 
-          {/* Links específicos de GPS con iconos */}
           {navLinks.map((link, index) => (
             <button
               key={index}
               className={`hn__link${link.highlight ? ' hn__link--highlight' : ''}`}
-              onClick={() => scrollToSection(link.section)}
+              onClick={() => link.type === 'external' ? link.action() : scrollToSection(link.section)}
             >
               {link.icon && <FontAwesomeIcon icon={link.icon} className="hn__link-icon" aria-hidden="true" />}
               <span>{link.name}</span>
@@ -140,8 +150,6 @@ const HeroNavGps = () => {
         </button>
 
         <div className="hn__mobile-links">
-
-          {/* Acordeón Servicios con iconos */}
           <div className="hn__accordion">
             <button
               className={`hn__mobile-link hn__accordion-trigger${mobileServicesOpen ? ' open' : ''}`}
@@ -149,23 +157,23 @@ const HeroNavGps = () => {
               aria-expanded={mobileServicesOpen}
             >
               <span>Servicios</span>
-              <FontAwesomeIcon 
-                icon={faChevronDown} 
-                className={`hn__chevron hn__chevron--mobile ${mobileServicesOpen ? 'open' : ''}`} 
-                aria-hidden="true" 
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className={`hn__chevron hn__chevron--mobile ${mobileServicesOpen ? 'open' : ''}`}
+                aria-hidden="true"
               />
             </button>
-            <div 
+            <div
               className={`hn__accordion-panel${mobileServicesOpen ? ' open' : ''}`}
               style={{
                 maxHeight: mobileServicesOpen ? `${serviceLinks.length * 48}px` : '0',
-                opacity: mobileServicesOpen ? 1 : 0
+                opacity:   mobileServicesOpen ? 1 : 0,
               }}
             >
               {serviceLinks.map((service, i) => (
-                <button 
-                  key={i} 
-                  className="hn__sub-link" 
+                <button
+                  key={i}
+                  className="hn__sub-link"
                   onClick={() => navigateTo(service.path)}
                 >
                   <FontAwesomeIcon icon={service.icon} className="hn__sub-link-icon" />
@@ -175,12 +183,11 @@ const HeroNavGps = () => {
             </div>
           </div>
 
-          {/* Links específicos de GPS en móvil */}
           {navLinks.map((link, index) => (
             <button
               key={index}
               className={`hn__mobile-link${link.highlight ? ' hn__mobile-link--highlight' : ''}`}
-              onClick={() => scrollToSection(link.section)}
+              onClick={() => link.type === 'external' ? link.action() : scrollToSection(link.section)}
             >
               {link.icon && <FontAwesomeIcon icon={link.icon} className="hn__mobile-link-icon" aria-hidden="true" />}
               <span>{link.name}</span>

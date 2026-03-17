@@ -1,6 +1,6 @@
-// RespaldoAlbiero.jsx
+// RespaldoAlbieroGps.jsx
 import React, { useState } from "react";
-import "./RespaldoAlbiero.css";
+import "./RespaldoAlbieroGps.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
@@ -11,7 +11,7 @@ import {
 import useToast from "../../hooks/useToast";
 import { Toaster } from "react-hot-toast";
 
-const RespaldoAlbiero = () => {
+const RespaldoAlbieroGps = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const { showToast } = useToast();
   const central =
@@ -159,4 +159,4 @@ const RespaldoAlbiero = () => {
   );
 };
 
-export default RespaldoAlbiero;
+export default RespaldoAlbieroGps;
