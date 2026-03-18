@@ -71,7 +71,7 @@ const HeroBranding = () => {
   }, []);
 
   const handleVerSoluciones = () => {
-    const el = document.getElementById("soluciones");
+    const el = document.getElementById("servicios");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 

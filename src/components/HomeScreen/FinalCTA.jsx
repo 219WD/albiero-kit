@@ -8,11 +8,12 @@ import {
   faArrowRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import useToast from '../../hooks/useToast';
-import { Toaster } from 'react-hot-toast';
+// Eliminamos la importación de useToast
+// import useToast from '../../hooks/useToast';
+// import { Toaster } from 'react-hot-toast';
 
 const FinalCTA = () => {
-  const { showToast } = useToast();
+  // Eliminamos: const { showToast } = useToast();
 
   const scrollToHero = () => {
     const heroSection = document.querySelector('.hero-security');
@@ -22,13 +23,27 @@ const FinalCTA = () => {
   };
 
   const handleButtonClick = () => {
-    showToast();
+    // Eliminamos showToast()
+    
+    // Número de WhatsApp (formateado para URL)
+    const phoneNumber = '5493813522339'; // +54 9 3813 52-2339 sin espacios ni guiones
+    
+    // Mensaje predefinido (codificado para URL)
+    const message = encodeURIComponent('Hola, quisiera solicitar asesoramiento sobre sistemas de seguridad.');
+    
+    // Crear URL de WhatsApp
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    
+    // Abrir WhatsApp en una nueva pestaña
+    window.open(whatsappUrl, '_blank');
+    
+    // Mantenemos el scroll si es necesario
     scrollToHero();
   };
 
   return (
     <section className="final-cta-section">
-      <Toaster />
+      {/* Eliminamos <Toaster /> */}
 
       <div className="final-cta-container" id="protege-tu-hogar">
 

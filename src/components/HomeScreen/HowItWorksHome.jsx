@@ -9,12 +9,13 @@ import {
   faCar,
   faMobileScreen,
 } from '@fortawesome/free-solid-svg-icons';
-import useToast from '../../hooks/useToast';
-import { Toaster } from 'react-hot-toast';
+// Eliminamos la importación de useToast ya que no la necesitamos
+// import useToast from '../../hooks/useToast';
+// import { Toaster } from 'react-hot-toast';
 
 const HowItWorksHome = () => {
   const [activeStep, setActiveStep] = useState(null);
-  const { showToast } = useToast();
+  // Eliminamos la línea: const { showToast } = useToast();
 
   const steps = [
     {
@@ -81,14 +82,28 @@ const HowItWorksHome = () => {
   };
 
   const handleButtonClick = () => {
-    showToast();
+    // Eliminamos showToast() para que no aparezca el mensaje
+    
+    // Número de WhatsApp (formateado para URL)
+    const phoneNumber = '5493813522339'; // Sin espacios ni guiones, con código de país
+    
+    // Mensaje predefinido (codificado para URL)
+    const message = encodeURIComponent('Hola, quisiera solicitar asesoramiento sobre sistemas de seguridad.');
+    
+    // Crear URL de WhatsApp
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    
+    // Abrir WhatsApp en una nueva pestaña
+    window.open(whatsappUrl, '_blank');
+    
+    // Mantenemos el scroll si es necesario
     scrollToHero();
   };
 
   return (
     <section className="how-it-works">
-      <Toaster />
-
+      {/* Eliminamos <Toaster /> ya no es necesario */}
+      
       <div className="how-it-works-wrapper" id="como-funciona">
         {/* Header */}
         <div className="how-it-works-header">
