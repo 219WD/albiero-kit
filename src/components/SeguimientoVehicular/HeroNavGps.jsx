@@ -51,7 +51,7 @@ const HeroNavGps = () => {
   };
 
   const openPayBill = () => {
-    window.open('https://albiero.com.ar/paga-tu-factura/', '_blank');
+    window.open('https://ws.albiero.com.ar/paga-tu-factura/', '_blank');
     setMobileMenuOpen(false);
     setMobileServicesOpen(false);
   };
