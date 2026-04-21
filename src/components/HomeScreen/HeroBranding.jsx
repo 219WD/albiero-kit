@@ -19,52 +19,61 @@ const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
 
 const HeroBranding = () => {
-  const tituloRef   = useRef(null);
-  const subRef      = useRef(null);
-  const descRef     = useRef(null);
-  const pillsRef    = useRef(null);
-  const ctasRef     = useRef(null);
-  const breadRef    = useRef(null);
-  const scrollRef   = useRef(null);
+  const tituloRef = useRef(null);
+  const subRef = useRef(null);
+  const descRef = useRef(null);
+  const pillsRef = useRef(null);
+  const ctasRef = useRef(null);
+  const breadRef = useRef(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.fromTo(tituloRef.current,
+      tl.fromTo(
+        tituloRef.current,
         { opacity: 0, y: 40 },
-        { opacity: 1, y: 0, duration: 0.9 }
+        { opacity: 1, y: 0, duration: 0.9 },
       )
-      .fromTo(subRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.7 },
-        "-=0.5"
-      )
-      .fromTo(descRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6 },
-        "-=0.4"
-      )
-      .fromTo(pillsRef.current?.children ? Array.from(pillsRef.current.children) : [],
-        { opacity: 0, y: 16, scale: 0.95 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.12 },
-        "-=0.3"
-      )
-      .fromTo(ctasRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6 },
-        "-=0.2"
-      )
-      .fromTo(breadRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.5 },
-        "-=0.2"
-      )
-      .fromTo(scrollRef.current,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.5 },
-        "-=0.1"
-      );
+        .fromTo(
+          subRef.current,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.7 },
+          "-=0.5",
+        )
+        .fromTo(
+          descRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.6 },
+          "-=0.4",
+        )
+        .fromTo(
+          pillsRef.current?.children
+            ? Array.from(pillsRef.current.children)
+            : [],
+          { opacity: 0, y: 16, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.12 },
+          "-=0.3",
+        )
+        .fromTo(
+          ctasRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.6 },
+          "-=0.2",
+        )
+        .fromTo(
+          breadRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.5 },
+          "-=0.2",
+        )
+        .fromTo(
+          scrollRef.current,
+          { opacity: 0, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5 },
+          "-=0.1",
+        );
     });
 
     return () => ctx.revert();
@@ -76,13 +85,16 @@ const HeroBranding = () => {
   };
 
   const handleWhatsApp = () => {
-    const msg = "Hola! Quiero solicitar asesoramiento sobre las soluciones de seguridad de Albiero.";
-    window.open(`https://wa.me/5493813522339?text=${encodeURIComponent(msg)}`, "_blank");
+    const msg =
+      "Hola! Quiero solicitar asesoramiento sobre las soluciones de seguridad de Albiero.";
+    window.open(
+      `https://wa.me/5493813522339?text=${encodeURIComponent(msg)}`,
+      "_blank",
+    );
   };
 
   return (
     <section className="hb-section">
-
       {/* ── Fondo de video ── */}
       <div className="hb-video-wrap">
         <img
@@ -104,7 +116,7 @@ const HeroBranding = () => {
           aria-hidden="true"
         >
           <source src={VIDEO_WEBM} type="video/webm" />
-          <source src={VIDEO_MP4}  type="video/mp4"  />
+          <source src={VIDEO_MP4} type="video/mp4" />
         </video>
       </div>
 
@@ -112,9 +124,7 @@ const HeroBranding = () => {
 
       {/* ── Contenido ── */}
       <div className="hb-contenedor">
-
         <div className="hb-inner">
-
           {/* Pills de servicios */}
           <div className="hb-pills" ref={pillsRef}>
             <span className="hb-pill">
@@ -130,20 +140,22 @@ const HeroBranding = () => {
 
           {/* Titular */}
           <h1 className="hb-titulo" ref={tituloRef}>
-            Más de 40 años protegiendo<br />
-            hogares, empresas<br />
+            Más de 40 años ofreciendo
+            <br />
+            soluciones de seguridad
+            <br />
             <span className="hb-titulo-accent">y vehículos en Tucumán.</span>
           </h1>
 
           {/* Subtítulo */}
           <p className="hb-subtitulo" ref={subRef}>
-            Soluciones profesionales en seguridad electrónica, monitoreo y
-            protección integral para casas, comercios y flotas.
+            Soluciones integrales en seguridad electrónica y física, con
+            monitoreo y protección 24/7.
           </p>
 
           {/* Descripción */}
           <p className="hb-desc" ref={descRef}>
-            Tecnología, experiencia y respuesta real cuando más se necesita.
+            Tecnología, experiencia y guardias de asistencia propios cuando más se necesita.
           </p>
 
           {/* CTAs */}
@@ -161,13 +173,16 @@ const HeroBranding = () => {
           {/* Subtexto confianza */}
           <p className="hb-trust" ref={breadRef}>
             <span>40 años de trayectoria</span>
-            <span className="hb-trust-sep" aria-hidden="true">•</span>
+            <span className="hb-trust-sep" aria-hidden="true">
+              •
+            </span>
             <span>Tecnología profesional</span>
-            <span className="hb-trust-sep" aria-hidden="true">•</span>
+            <span className="hb-trust-sep" aria-hidden="true">
+              •
+            </span>
             <span>Cobertura en Tucumán</span>
           </p>
         </div>
-
       </div>
 
       {/* ── Scroll indicator ── */}
@@ -181,7 +196,6 @@ const HeroBranding = () => {
           <FontAwesomeIcon icon={faChevronDown} aria-hidden="true" />
         </button>
       </div>
-
     </section>
   );
 };

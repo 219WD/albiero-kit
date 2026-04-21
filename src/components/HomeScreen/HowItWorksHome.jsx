@@ -22,27 +22,27 @@ const HowItWorksHome = () => {
       id: 1,
       number: '01',
       icon: faComments,
-      title: 'Asesoramiento inicial',
+      title: 'Asesoramiento integral',
       description:
-        'Analizamos qué necesitás proteger: tu casa, comercio, vehículos o empresa. Te ayudamos a elegir el sistema adecuado según el tipo de propiedad y el nivel de protección que buscás.',
+        'Nos contactás por una necesidad y analizamos el conjunto. Te guiamos para definir la solución más adecuada según tu realidad, combinando tecnología y servicios de seguridad.',
       highlight: 'Sin costo',
     },
     {
       id: 2,
       number: '02',
       icon: faDraftingCompass,
-      title: 'Diseño de la solución',
+      title: 'Proyecto a medida',
       description:
-        'Evaluamos el espacio y definimos la combinación ideal: alarmas, cámaras, seguimiento vehicular, protección perimetral y control de accesos. Cada proyecto se adapta al cliente.',
+        'Relevamos el lugar y diseñamos la solución integral: sistemas, cobertura y nivel de protección, todo adaptado a cada cliente.',
       highlight: 'A medida',
     },
     {
       id: 3,
       number: '03',
       icon: faScrewdriverWrench,
-      title: 'Instalación profesional',
+      title: 'Implementación y seguimiento',
       description:
-        'Nuestros técnicos instalan los equipos y dejan todo funcionando. Configuramos cada sistema para que puedas usarlo de forma simple desde el primer día.',
+        'Instalamos, configuramos y dejamos todo operativo. Luego hacemos seguimiento para asegurar que el sistema funcione como esperás.',
       highlight: 'Operativo desde el día 1',
     },
     {

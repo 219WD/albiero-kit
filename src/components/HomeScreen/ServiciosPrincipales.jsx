@@ -54,7 +54,7 @@ const servicios = [
     tag: "GPS Vehicular",
     title: "Seguimiento Vehicular",
     description:
-      "Seguimiento GPS en tiempo real para autos, motos y flotas de vehículos.",
+      "Seguimiento y Logística Vehicular para autos, camiones, motos y flotas vehiculares.",
     detail:
       "Ubicación en vivo, historial de recorridos, alertas inteligentes y control total desde el celular.",
     cta: "Ver seguimiento vehicular",

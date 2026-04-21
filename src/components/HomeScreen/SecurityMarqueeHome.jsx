@@ -61,7 +61,7 @@ const services = [
     icon: faTruck,
     title: "Móviles propios en tu zona",
     description:
-      "No tercerizamos la reacción. Tenemos móviles recorriendo distintos puntos estratégicos de Tucumán.",
+      "No tercerizamos la respuesta. Contamos con móviles propios en puntos estratégicos.",
     image: clUrl(IMAGES.movil, CARD_DIMS),
     dims: CARD_DIMS,
   },
@@ -70,7 +70,7 @@ const services = [
     icon: faHandshake,
     title: "Sin comprar equipos",
     description:
-      "Instalamos todo en comodato. Pagás únicamente el servicio mensual de monitoreo.",
+      "Planes de comodato disponibles para alarmas, cámaras y seguimiento vehicular, con abono mensual de servicio.",
     image: clUrl(IMAGES.equipo, EQUIPO_DIMS),
     dims: EQUIPO_DIMS,
   },
@@ -86,25 +86,25 @@ const services = [
   {
     id: 6,
     icon: faBolt,
-    title: "Respuesta en menos de 5 minutos",
+    title: "Intervención inmediata",
     description:
-      "Desde que se activa la alarma hasta que llega el móvil a tu domicilio.",
+      "Desde la señal de alarma hasta la asistencia en el lugar.",
     image: clUrl(IMAGES.atencionDos, CARD_DIMS),
     dims: CARD_DIMS,
   },
   {
     id: 7,
     icon: faLock,
-    title: "Tecnología con respaldo humano",
+    title: "Tecnología inteligente con respaldo humano",
     description:
-      "Sensores de última generación combinados con análisis humano para evitar falsas alarmas.",
+      "Sensores de última generación combinados con análisis automatizado y supervisión profesional.",
     image: clUrl(IMAGES.guardia, CARD_DIMS),
     dims: CARD_DIMS,
   },
   {
     id: 8,
     icon: faClock,
-    title: "Instalación en 24 horas",
+    title: "Instalación en el Día",
     description:
       "Desde que contratás el servicio hasta que tu hogar está protegido. Sin demoras ni complicaciones.",
     image: clUrl(IMAGES.instalacion, CARD_DIMS),
