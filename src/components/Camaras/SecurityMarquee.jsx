@@ -77,7 +77,7 @@ const services = [
   {
     id: 5,
     icon: faHeadset,
-    title: "Atención 24/7 en español",
+    title: "Atención 24/7",
     description:
       "Central de monitoreo operando las 24 horas con personal capacitado y protocolos actualizados constantemente.",
     image: clUrl(IMAGES.atencion, CARD_DIMS),
@@ -104,7 +104,7 @@ const services = [
   {
     id: 8,
     icon: faClock,
-    title: "Instalación en 48 horas",
+    title: "Instalación en 24 horas",
     description:
       "Desde que contratás el servicio hasta que tu hogar está protegido. Sin demoras ni complicaciones.",
     image: clUrl(IMAGES.instalacion, CARD_DIMS),
