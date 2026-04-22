@@ -142,9 +142,7 @@ const HeroBranding = () => {
           <h1 className="hb-titulo" ref={tituloRef}>
             Más de 40 años ofreciendo
             <br />
-            soluciones de seguridad
-            <br />
-            <span className="hb-titulo-accent">y vehículos en Tucumán.</span>
+            <span className="hb-titulo-accent">soluciones de seguridad</span>
           </h1>
 
           {/* Subtítulo */}
