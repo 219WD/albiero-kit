@@ -203,6 +203,12 @@
   margin: 0 auto;
 }
 
+.footer-credits-text a {
+  color: var(--footer-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .footer-container {

@@ -164,7 +164,7 @@ const Footer = () => {
         {/* Barra de créditos */}
         <div className="footer-credits">
           <p className="footer-credits-text">
-            Página web hecha con ♥ por 219Labs
+            Página web hecha con ♥ por <a href="https://219labs.com.ar" target="_blank" rel="noopener noreferrer">219Labs</a>
           </p>
         </div>
       </footer>
