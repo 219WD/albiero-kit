@@ -1,0 +1,214 @@
+/* ═══════════════════════════════════════════
+   TerminosYCondiciones.css
+═══════════════════════════════════════════ */
+
+/* ─── Root ─────────────────────────────── */
+
+.tyc-root {
+  flex: 1;
+  background-color: #FAFFFF;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ─── Header ───────────────────────────── */
+
+.tyc-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 15px;
+  border-bottom: 1px solid #E8E8E8;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tyc-header-logo {
+  height: 32px;
+  object-fit: contain;
+}
+
+/* ─── Hero ─────────────────────────────── */
+
+.tyc-hero {
+  background-color: #7D1522;
+  border-radius: 12px;
+  padding: 24px 20px;
+  margin: 16px 16px 0 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.tyc-hero-logo {
+  height: 56px;
+  object-fit: contain;
+  tint-color: white;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.tyc-hero-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  font-family: 'BaiJamjuree', sans-serif;
+  margin-bottom: 4px;
+}
+
+.tyc-hero-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: 'BaiJamjuree', sans-serif;
+  line-height: 18px;
+}
+
+/* ─── Date badge ───────────────────────── */
+
+.tyc-date-badge {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 12px 16px 0 16px;
+}
+
+.tyc-date-badge span {
+  background-color: #FFF5F5;
+  border: 1px solid #f5c4c4;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #7D1522;
+  font-weight: bold;
+  font-family: 'BaiJamjuree', sans-serif;
+}
+
+/* ─── Sections ─────────────────────────── */
+
+.tyc-section {
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #E8E8E8;
+  margin: 12px 16px 0 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.tyc-section-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.tyc-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #7D1522;
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: 'BaiJamjuree', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tyc-section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #3D3D3D;
+  font-family: 'BaiJamjuree', sans-serif;
+  margin: 0;
+}
+
+.tyc-section-body {
+  padding: 14px 16px;
+}
+
+/* ─── Bullets ──────────────────────────── */
+
+.tyc-bullet-primary {
+  color: #7D1522;
+  margin-right: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.tyc-bullet-danger {
+  color: #dc3545;
+  margin-right: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* ─── Note ─────────────────────────────── */
+
+.tyc-note {
+  background-color: #FFF9E6;
+  border: 1px solid #FFEBB2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #7D5A00;
+  font-family: 'BaiJamjuree', sans-serif;
+  line-height: 18px;
+}
+
+/* ─── Avatar ───────────────────────────── */
+
+.tyc-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #7D1522;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  font-family: 'BaiJamjuree', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ─── Contact row ──────────────────────── */
+
+.tyc-contact-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ─── Contact row ──────────────────────── */
+
+.tyc-contact-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ─── Bottom spacing ───────────────────── */
+
+.messages-container {
+  flex: 1;
+}
+
+.messages-list {
+  padding-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+}

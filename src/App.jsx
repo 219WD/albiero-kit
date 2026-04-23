@@ -9,6 +9,7 @@ import Camaras from './pages/Camaras.jsx';
 import Analiticas from './pages/Analiticas/Analiticas';
 import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
 import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
+import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
 
 function App() {
     useEffect(() => {
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/deteccion-incendios" element={<DeteccionIncendios />} />
                 <Route path="/seguridad-integral" element={<SeguridadIntegral />} />
                 <Route path="/analiticas" element={<Analiticas />} />
+                <Route path="/terminos-y-condiciones" element={<TerminosYCondiciones />} />
             </Routes>
         </Router>
     );
