@@ -10,6 +10,7 @@ import Analiticas from './pages/Analiticas/Analiticas';
 import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
 import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
+import PoliticaPrivacidad from './pages/PoliticaPrivacidad.jsx';
 
 function App() {
     useEffect(() => {
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/seguridad-integral" element={<SeguridadIntegral />} />
                 <Route path="/analiticas" element={<Analiticas />} />
                 <Route path="/terminos-y-condiciones" element={<TerminosYCondiciones />} />
+                <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
             </Routes>
         </Router>
     );
