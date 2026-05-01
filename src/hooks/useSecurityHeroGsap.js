@@ -8,7 +8,7 @@ const useSecurityHeroGsap = () => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
       // Título principal
-      tl.fromTo(".security-titulo", {
+      tl.fromTo(".security-titulo, .security-titulo-alarmas, .security-titulo-camaras", {
         y: 60, opacity: 0
       }, {
         y: 0, opacity: 1, duration: 1.2
