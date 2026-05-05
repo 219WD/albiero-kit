@@ -16,14 +16,11 @@
 //   - Leads completos por combinación: Auto_SanMiguel_Control
 // ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useRef } from 'react';
+import { sendMetaEvent } from '../utils/metaEvents';
 
 // ─── Helper: dispara fbq solo si está disponible en window ───────────────────
 const firePixel = (eventType, eventName, params = {}) => {
-  if (typeof window === 'undefined' || typeof window.fbq !== 'function') {
-    console.warn('[Pixel GPS] fbq no está disponible todavía');
-    return;
-  }
-  window.fbq(eventType, eventName, params);
+  sendMetaEvent(eventType, eventName, params, { warnPrefix: 'Pixel GPS' });
 };
 
 // ─── Helper: construye el content_name combinado para segmentación ────────────

@@ -1,12 +1,9 @@
 // hooks/useFacebookPixelCamaras.js
 import { useEffect, useRef } from 'react';
+import { sendMetaEvent } from '../utils/metaEvents';
 
 const firePixel = (eventType, eventName, params = {}) => {
-    if (typeof window === 'undefined' || typeof window.fbq !== 'function') {
-        console.warn('[Pixel Camaras] fbq no está disponible');
-        return;
-    }
-    window.fbq(eventType, eventName, params);
+  sendMetaEvent(eventType, eventName, params, { warnPrefix: 'Pixel Camaras' });
 };
 
 const buildContentName = (tipo, ubicacion, sistema) => {

@@ -1,14 +1,11 @@
 // hooks/useFacebookPixelSeguridadIntegral.js
 import { useEffect, useRef } from 'react';
+import { sendMetaEvent } from '../utils/metaEvents';
 
 const PRODUCTO = 'SeguridadIntegral';
 
 const firePixel = (eventType, eventName, params = {}) => {
-  if (typeof window === 'undefined' || typeof window.fbq !== 'function') {
-    console.warn('[Pixel SeguridadIntegral] fbq no está disponible');
-    return;
-  }
-  window.fbq(eventType, eventName, params);
+  sendMetaEvent(eventType, eventName, params, { warnPrefix: 'Pixel SeguridadIntegral' });
 };
 
 const buildContentName = (tipo, ubicacion, sistema) => {

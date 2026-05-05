@@ -1,14 +1,11 @@
 // hooks/useFacebookPixelIncendio.js
 import { useEffect, useRef } from 'react';
+import { sendMetaEvent } from '../utils/metaEvents';
 
 const PRODUCTO = 'Incendio';
 
 const firePixel = (eventType, eventName, params = {}) => {
-  if (typeof window === 'undefined' || typeof window.fbq !== 'function') {
-    console.warn('[Pixel Incendio] fbq no está disponible');
-    return;
-  }
-  window.fbq(eventType, eventName, params);
+  sendMetaEvent(eventType, eventName, params, { warnPrefix: 'Pixel Incendio' });
 };
 
 const buildContentName = (tipo, ubicacion, sistema) => {

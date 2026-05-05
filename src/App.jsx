@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Clarity from '@microsoft/clarity';
+import { sendMetaEvent } from './utils/metaEvents';
 import HomeScreen from './pages/HomeScreen.jsx';
 import KitAlarmaCamara from './pages/KitAlarmaCamara.jsx';
 import SeguimientoVehicular from './pages/SeguimientoVehicular.jsx';
@@ -12,6 +13,19 @@ import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
 import PoliticaPrivacidad from './pages/PoliticaPrivacidad.jsx';
 
+function MetaPageViewTracker() {
+    const location = useLocation();
+
+    useEffect(() => {
+        sendMetaEvent('track', 'PageView', {
+            content_name: document.title,
+            page_path: `${location.pathname}${location.search}`,
+        }, { warnPrefix: 'Pixel PageView' });
+    }, [location.pathname, location.search]);
+
+    return null;
+}
+
 function App() {
     useEffect(() => {
         Clarity.init('vt5t07r3a8');
@@ -19,6 +33,7 @@ function App() {
 
     return (
         <Router>
+            <MetaPageViewTracker />
             <Routes>
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/alarmas" element={<Alarmas />} />
