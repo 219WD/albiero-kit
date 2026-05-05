@@ -8,3 +8,75 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px; /* Para que no quede pegado al borde superior */
 }
+
+@media (max-width: 768px) {
+  .hero-security .security-form {
+    position: relative;
+  }
+
+  .hero-security .security-form::before {
+    content: "Completa el formulario y te asesoramos";
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(201, 21, 44, 0.22);
+    background: rgba(201, 21, 44, 0.06);
+    color: #961C2C;
+    font-family: var(--fuente);
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.25;
+    text-align: center;
+    box-shadow: 0 8px 18px rgba(150, 28, 44, 0.08);
+  }
+
+  .hero-security .opcion-btn {
+    position: relative;
+    z-index: 0;
+    isolation: isolate;
+    overflow: hidden;
+    border-color: transparent !important;
+    background: var(--gris-claro) !important;
+    box-shadow: 0 5px 14px rgba(150, 28, 44, 0.08);
+  }
+
+  .hero-security .opcion-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--opcion-border-angle),
+      rgba(150, 28, 44, 0.08),
+      rgba(226, 41, 63, 0.9),
+      rgba(255, 180, 180, 0.55),
+      rgba(150, 28, 44, 0.08),
+      rgba(150, 28, 44, 0.08)
+    );
+    pointer-events: none;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: opcionBorderSpin 3.8s linear infinite;
+  }
+
+  .hero-security .opcion-btn.selected {
+    background: var(--rojo-principal) !important;
+    box-shadow: 0 8px 18px rgba(150, 28, 44, 0.22);
+  }
+}
+
+@property --opcion-border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes opcionBorderSpin {
+  to {
+    --opcion-border-angle: 360deg;
+  }
+}
