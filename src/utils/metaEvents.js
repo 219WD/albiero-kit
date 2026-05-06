@@ -55,7 +55,8 @@ export const sendMetaEvent = (eventType, eventName, params = {}, options = {}) =
   if (CAPI_ENDPOINT) {
     fetch(CAPI_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
       keepalive: true,
       body: JSON.stringify(payload),
     }).catch((error) => {
