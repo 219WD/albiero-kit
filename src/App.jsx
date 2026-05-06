@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Clarity from '@microsoft/clarity';
 import { sendMetaEvent } from './utils/metaEvents';
+import GoogleTagManager from './components/GoogleTagManager.jsx';
 import HomeScreen from './pages/HomeScreen.jsx';
 import KitAlarmaCamara from './pages/KitAlarmaCamara.jsx';
 import SeguimientoVehicular from './pages/SeguimientoVehicular.jsx';
@@ -33,6 +34,7 @@ function App() {
 
     return (
         <Router>
+            <GoogleTagManager id="GTM-M4JF5GV3" />
             <MetaPageViewTracker />
             <Routes>
                 <Route path="/" element={<HomeScreen />} />
