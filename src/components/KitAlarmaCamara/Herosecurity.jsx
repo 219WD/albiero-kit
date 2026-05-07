@@ -25,6 +25,7 @@ const VIDEO_POSTER =
 
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
+const FORM_EVENT_NAME = "FormularioEnviado_WhatsApp";
 
 const HeroSecurity = () => {
   useSecurityHeroGsap();
@@ -94,7 +95,7 @@ const HeroSecurity = () => {
       "entry.101350454":  selectedData.ubicacion,
       "entry.865536607":  selectedData.sistema,
       "entry.633861612":  "KitAlarmaCamara",
-      "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "",
+      "entry.1390851687": FORM_EVENT_NAME,
       submit: "Submit",
     });
 
