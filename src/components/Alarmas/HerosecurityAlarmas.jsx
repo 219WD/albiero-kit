@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useSecurityHeroGsap from "../../hooks/useSecurityHeroGsap";
 import "./HerosecurityAlarmas.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,7 +12,6 @@ import {
   faClock,
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
-import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import useFacebookPixel from "../../hooks/useFacebookPixelAlarmas.js";
 import useGoogleAnalytics from "../../hooks/useGoogleAnalyticsAlarmas.js";
 
@@ -49,6 +48,7 @@ const HerosecurityAlarmas = () => {
     ubicacion: "",
     sistema:   "",
   });
+  const submittedLeadKey = useRef("");
 
   const handleOptionSelect = (field, value) => {
     const newData = { ...formData, [field]: value };
@@ -63,6 +63,7 @@ const HerosecurityAlarmas = () => {
     } else if (field === "sistema") {
       trackSistemaSelected(newData.tipo, newData.ubicacion, value);
       trackSistemaSelectedGA4(newData.tipo, newData.ubicacion, value);
+      handleSubmit(newData);
     }
 
     if (currentStep < 3) {
@@ -70,9 +71,13 @@ const HerosecurityAlarmas = () => {
     }
   };
 
-  const handleSubmit = () => {
-    trackFormComplete(formData);
-    trackLeadGA4(formData);
+  const handleSubmit = (selectedData = formData) => {
+    const submissionKey = `${selectedData.tipo}|${selectedData.ubicacion}|${selectedData.sistema}`;
+    if (submittedLeadKey.current === submissionKey) return;
+    submittedLeadKey.current = submissionKey;
+
+    trackFormComplete(selectedData);
+    trackLeadGA4(selectedData);
 
     // ── Envío silencioso a Google Sheets ────────────────────────────────────
     const email  = localStorage.getItem("albiero_email")  || "-";
@@ -85,9 +90,9 @@ const HerosecurityAlarmas = () => {
       "entry.150801547":  email,
       "entry.586312181":  nombre,
       "entry.1712587123": codigo,
-      "entry.918807836":  formData.tipo,
-      "entry.101350454":  formData.ubicacion,
-      "entry.865536607":  formData.sistema,
+      "entry.918807836":  selectedData.tipo,
+      "entry.101350454":  selectedData.ubicacion,
+      "entry.865536607":  selectedData.sistema,
       "entry.633861612":  "Alarmas",
       "entry.1390851687": localStorage.getItem("albiero_subscribed") ? "Si" : "",
       submit: "Submit",
@@ -99,16 +104,16 @@ const HerosecurityAlarmas = () => {
     });
     // ── Fin envío Sheet ──────────────────────────────────────────────────────
 
-    const tipoTexto = formData.tipo === "casa" ? "Casa" : "Comercio";
+    const tipoTexto = selectedData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
       {
         chico:         "Kit Chico (ambientes reducidos)",
         mediano:       "Kit Mediano (propiedad estándar)",
         grande:        "Kit Grande (propiedad amplia)",
         personalizado: "Asesoramiento personalizado",
-      }[formData.sistema] || formData.sistema;
+      }[selectedData.sistema] || selectedData.sistema;
 
-    const mensaje = `Hola! Quiero asesoramiento por el sistema de alarmas monitoreadas.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${formData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
+    const mensaje = `Hola! Quiero asesoramiento por el sistema de alarmas monitoreadas.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${selectedData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
     window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
   };
 
@@ -260,18 +265,6 @@ const HerosecurityAlarmas = () => {
                 </button>
               </div>
             )}
-
-            {currentStep === 3 && formData.sistema && (
-              <div className="form-cta">
-                <button onClick={handleSubmit} className="cta-principal">
-                  <FontAwesomeIcon icon={faWhatsapp} aria-hidden="true" style={{ marginRight: "10px" }} />
-                  Quiero asesoramiento ahora
-                </button>
-                <p className="cta-subtexto">
-                  Instalación sin costo • Sistema en comodato • Más de 40 años en Tucumán
-                </p>
-              </div>
-            )}
           </div>
         </div>
 
@@ -294,3 +287,4 @@ const HerosecurityAlarmas = () => {
 };
 
 export default HerosecurityAlarmas;
+
