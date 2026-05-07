@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import "./Footer.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -19,12 +20,14 @@ import EmailCapture from "./EmailCapture/EmailCapture.jsx";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { pathname } = useLocation();
+  const showEmailCapture = pathname === "/";
 
   return (
     // ── NUEVA LÍNEA 2: wrapper Fragment ──
     <>
       {/* ── NUEVA LÍNEA 3: newsletter bar + modal automático ── */}
-      <EmailCapture />
+      {showEmailCapture && <EmailCapture />}
 
       {/* Todo lo que sigue es idéntico a tu Footer.jsx original */}
       <footer className="footer">
