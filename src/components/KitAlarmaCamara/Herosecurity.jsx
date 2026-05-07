@@ -23,10 +23,6 @@ const VIDEO_WEBM =
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
 
-const FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
-const FORM_EVENT_NAME = "FormularioEnviado_WhatsApp";
-
 const HeroSecurity = () => {
   useSecurityHeroGsap();
 
@@ -80,29 +76,6 @@ const HeroSecurity = () => {
 
     trackFormComplete(selectedData);
     trackLeadGA4(selectedData);
-
-    const email  = localStorage.getItem("albiero_email")  || "-";
-    const nombre = localStorage.getItem("albiero_nombre") || "-";
-    const codigo =
-      localStorage.getItem("albiero_codigo") ||
-      "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
-
-    const params = new URLSearchParams({
-      "entry.150801547":  email,
-      "entry.586312181":  nombre,
-      "entry.1712587123": codigo,
-      "entry.918807836":  selectedData.tipo,
-      "entry.101350454":  selectedData.ubicacion,
-      "entry.865536607":  selectedData.sistema,
-      "entry.633861612":  "KitAlarmaCamara",
-      "entry.1390851687": FORM_EVENT_NAME,
-      submit: "Submit",
-    });
-
-    fetch(`${FORM_URL}?${params.toString()}`, {
-      method: "POST",
-      mode:   "no-cors",
-    });
 
     const tipoTexto = selectedData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
