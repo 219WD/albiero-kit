@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import './EmailMkt.css';
 
-const API_BASE = import.meta.env.VITE_ANALYTICS_API_URL || 'http://localhost:4000';
+const PROD_API_BASE = 'https://albi-backend-nine.vercel.app';
+const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const configuredApiBase = import.meta.env.VITE_ANALYTICS_API_URL || '';
+const API_BASE =
+  !isLocalHost && configuredApiBase.includes('localhost')
+    ? PROD_API_BASE
+    : configuredApiBase || (isLocalHost ? 'http://localhost:4000' : PROD_API_BASE);
 const ADMIN_TOKEN_KEY = 'albiero_emailmkt_admin_token';
 
 const initialButtons = [
