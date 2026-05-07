@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import './EmailMkt.css';
 
 const API_BASE = import.meta.env.VITE_ANALYTICS_API_URL || 'http://localhost:4000';
-const API_SECRET = import.meta.env.VITE_ANALYTICS_SECRET || '';
+const ADMIN_TOKEN_KEY = 'albiero_emailmkt_admin_token';
 
 const initialButtons = [
   {
@@ -13,12 +13,12 @@ const initialButtons = [
   { label: '', url: '' },
 ];
 
-async function apiRequest(endpoint, options = {}) {
+async function apiRequest(endpoint, options = {}, token = '') {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${API_SECRET}`,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
   });
@@ -33,6 +33,13 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 export default function EmailMkt() {
+  const [token, setToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_KEY) || '');
+  const [authMode, setAuthMode] = useState('login');
+  const [adminUser, setAdminUser] = useState('');
+  const [adminEmail, setAdminEmail] = useState('');
+  const [adminPass, setAdminPass] = useState('');
+  const [adminPassConfirm, setAdminPassConfirm] = useState('');
+  const [campaignId, setCampaignId] = useState('');
   const [subject, setSubject] = useState('');
   const [title, setTitle] = useState('');
   const [preheader, setPreheader] = useState('');
@@ -45,14 +52,29 @@ export default function EmailMkt() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (!token) {
+      setLoadingRecipients(false);
+      return undefined;
+    }
+
     let active = true;
 
-    apiRequest('/api/emailmkt/recipients')
+    setLoadingRecipients(true);
+
+    const query = campaignId.trim() ? `?campaignId=${encodeURIComponent(campaignId.trim())}` : '';
+
+    apiRequest(`/api/emailmkt/recipients${query}`, {}, token)
       .then((data) => {
         if (active) setRecipients(data);
       })
       .catch((err) => {
-        if (active) setError(err.message);
+        if (active) {
+          setError(err.message);
+          if (err.message === 'No autorizado') {
+            localStorage.removeItem(ADMIN_TOKEN_KEY);
+            setToken('');
+          }
+        }
       })
       .finally(() => {
         if (active) setLoadingRecipients(false);
@@ -61,14 +83,14 @@ export default function EmailMkt() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [token, campaignId]);
 
   const validButtons = useMemo(
     () => buttons.filter((button) => button.label.trim() && button.url.trim()),
     [buttons]
   );
 
-  const canSend = subject.trim() && title.trim() && content.trim() && !sending;
+  const canSend = campaignId.trim() && subject.trim() && title.trim() && content.trim() && !sending;
 
   const updateButton = (index, field, value) => {
     setButtons((current) =>
@@ -78,11 +100,70 @@ export default function EmailMkt() {
     );
   };
 
+  const login = async (event) => {
+    event.preventDefault();
+    setError('');
+    setMessage('');
+
+    try {
+      const data = await apiRequest('/api/emailmkt/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: adminUser,
+          password: adminPass,
+        }),
+      });
+
+      localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+      setToken(data.token);
+      setAdminPass('');
+      setLoadingRecipients(true);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const register = async (event) => {
+    event.preventDefault();
+    setError('');
+    setMessage('');
+
+    if (adminPass !== adminPassConfirm) {
+      setError('Las contrasenas no coinciden.');
+      return;
+    }
+
+    try {
+      const data = await apiRequest('/api/emailmkt/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: adminUser,
+          email: adminEmail,
+          password: adminPass,
+        }),
+      });
+
+      setMessage(data.message || 'Usuario creado. Pedile a un admin que habilite el rango en Mongo.');
+      setAuthMode('login');
+      setAdminPass('');
+      setAdminPassConfirm('');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    setToken('');
+    setRecipients(null);
+    setMessage('');
+  };
+
   const sendCampaign = async () => {
     if (!canSend) return;
 
     const confirmed = window.confirm(
-      `Vas a enviar esta campaña a ${recipients?.recipients || 0} emails. ¿Confirmás el envío?`
+      `Vas a enviar la campana "${campaignId}" a ${recipients?.eligible ?? recipients?.recipients ?? 0} emails nuevos. Confirmas el envio?`
     );
 
     if (!confirmed) return;
@@ -95,21 +176,101 @@ export default function EmailMkt() {
       const result = await apiRequest('/api/emailmkt/send', {
         method: 'POST',
         body: JSON.stringify({
+          campaignId,
           subject,
           title,
           preheader,
           content,
           buttons: validButtons,
         }),
-      });
+      }, token);
 
-      setMessage(`Enviados: ${result.sent}/${result.recipients}. Fallidos: ${result.failed?.length || 0}.`);
+      setMessage(`Enviados: ${result.sent}/${result.eligible}. Ya enviados antes: ${result.alreadySent}. Fallidos: ${result.failed?.length || 0}.`);
     } catch (err) {
       setError(err.message);
     } finally {
       setSending(false);
     }
   };
+
+  if (!token) {
+    return (
+      <main className="em-page em-page--login">
+        <form className="em-login" onSubmit={authMode === 'login' ? login : register}>
+          <p className="em-kicker">Email marketing</p>
+          <h1>{authMode === 'login' ? 'Acceso admin' : 'Crear usuario'}</h1>
+          <div className="em-auth-tabs">
+            <button
+              type="button"
+              className={authMode === 'login' ? 'is-active' : ''}
+              onClick={() => setAuthMode('login')}
+            >
+              Entrar
+            </button>
+            <button
+              type="button"
+              className={authMode === 'register' ? 'is-active' : ''}
+              onClick={() => setAuthMode('register')}
+            >
+              Registro
+            </button>
+          </div>
+          {error && <div className="em-alert em-alert--error">{error}</div>}
+          {message && <div className="em-alert">{message}</div>}
+          <label>
+            Usuario
+            <input value={adminUser} onChange={(event) => setAdminUser(event.target.value)} autoComplete="username" />
+          </label>
+          {authMode === 'register' && (
+            <label>
+              Email
+              <input
+                type="email"
+                value={adminEmail}
+                onChange={(event) => setAdminEmail(event.target.value)}
+                autoComplete="email"
+              />
+            </label>
+          )}
+          <label>
+            Contraseña
+            <input
+              type="password"
+              value={adminPass}
+              onChange={(event) => setAdminPass(event.target.value)}
+              autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
+            />
+          </label>
+          {authMode === 'register' && (
+            <label>
+              Repetir contrasena
+              <input
+                type="password"
+                value={adminPassConfirm}
+                onChange={(event) => setAdminPassConfirm(event.target.value)}
+                autoComplete="new-password"
+              />
+            </label>
+          )}
+          {authMode === 'register' && (
+            <p className="em-auth-note">
+              El usuario queda pendiente. Habilitalo en Mongo cambiando el campo rango a emailmkt, admin o superadmin.
+            </p>
+          )}
+          <button
+            className="em-send"
+            disabled={
+              !adminUser.trim()
+              || !adminPass
+              || (authMode === 'register' && (!adminEmail.trim() || !adminPassConfirm))
+            }
+          >
+            {authMode === 'login' ? 'Entrar' : 'Crear usuario'}
+          </button>
+        </form>
+      </main>
+    );
+  }
 
   return (
     <main className="em-page">
@@ -119,7 +280,10 @@ export default function EmailMkt() {
           <h1>Campañas Albiero</h1>
         </div>
         <div className="em-count">
-          {loadingRecipients ? 'Cargando...' : `${recipients?.recipients || 0} destinatarios`}
+          {loadingRecipients
+            ? 'Cargando...'
+            : `${recipients?.eligible ?? recipients?.recipients ?? 0} nuevos / ${recipients?.recipients || 0} total`}
+          <button className="em-logout" onClick={logout}>Salir</button>
         </div>
       </section>
 
@@ -128,6 +292,15 @@ export default function EmailMkt() {
 
       <section className="em-grid">
         <div className="em-panel">
+          <label>
+            ID de campana
+            <input
+              value={campaignId}
+              onChange={(event) => setCampaignId(event.target.value)}
+              placeholder="mail_1_descuento_newsletter"
+            />
+          </label>
+
           <label>
             Asunto
             <input value={subject} onChange={(event) => setSubject(event.target.value)} />
