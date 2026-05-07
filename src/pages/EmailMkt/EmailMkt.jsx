@@ -38,6 +38,15 @@ async function apiRequest(endpoint, options = {}, token = '') {
   return data;
 }
 
+function formatDate(value) {
+  if (!value) return '-';
+
+  return new Intl.DateTimeFormat('es-AR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date(value));
+}
+
 export default function EmailMkt() {
   const [token, setToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_KEY) || '');
   const [authMode, setAuthMode] = useState('login');
@@ -51,7 +60,11 @@ export default function EmailMkt() {
   const [preheader, setPreheader] = useState('');
   const [content, setContent] = useState('');
   const [buttons, setButtons] = useState(initialButtons);
+  const [view, setView] = useState('send');
   const [recipients, setRecipients] = useState(null);
+  const [campaigns, setCampaigns] = useState([]);
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(false);
   const [loadingRecipients, setLoadingRecipients] = useState(true);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState('');
@@ -90,6 +103,42 @@ export default function EmailMkt() {
       active = false;
     };
   }, [token, campaignId]);
+
+  const loadCampaigns = async () => {
+    if (!token) return;
+
+    setLoadingCampaigns(true);
+    setError('');
+
+    try {
+      const data = await apiRequest('/api/emailmkt/campaigns', {}, token);
+      setCampaigns(data.campaigns || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoadingCampaigns(false);
+    }
+  };
+
+  const loadCampaignDetail = async (nextCampaignId) => {
+    setLoadingCampaigns(true);
+    setError('');
+
+    try {
+      const data = await apiRequest(`/api/emailmkt/campaigns/${encodeURIComponent(nextCampaignId)}`, {}, token);
+      setSelectedCampaign(data.campaign);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoadingCampaigns(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token && view === 'history') {
+      loadCampaigns();
+    }
+  }, [token, view]);
 
   const validButtons = useMemo(
     () => buttons.filter((button) => button.label.trim() && button.url.trim()),
@@ -192,6 +241,7 @@ export default function EmailMkt() {
       }, token);
 
       setMessage(`Enviados: ${result.sent}/${result.eligible}. Ya enviados antes: ${result.alreadySent}. Fallidos: ${result.failed?.length || 0}.`);
+      loadCampaigns();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -296,6 +346,80 @@ export default function EmailMkt() {
       {error && <div className="em-alert em-alert--error">{error}</div>}
       {message && <div className="em-alert">{message}</div>}
 
+      <div className="em-view-tabs">
+        <button className={view === 'send' ? 'is-active' : ''} onClick={() => setView('send')}>
+          Enviar campana
+        </button>
+        <button className={view === 'history' ? 'is-active' : ''} onClick={() => setView('history')}>
+          Historial
+        </button>
+      </div>
+
+      {view === 'history' ? (
+        <section className="em-history">
+          <div className="em-panel">
+            <div className="em-panel-head">
+              <div>
+                <p className="em-kicker">Historial</p>
+                <h2>Campanas enviadas</h2>
+              </div>
+              <button className="em-logout" onClick={loadCampaigns} disabled={loadingCampaigns}>
+                Actualizar
+              </button>
+            </div>
+            {campaigns.length === 0 && (
+              <p className="em-empty">{loadingCampaigns ? 'Cargando campanas...' : 'Todavia no hay campanas enviadas.'}</p>
+            )}
+            {campaigns.map((campaign) => (
+              <button
+                className="em-campaign-row"
+                key={campaign.campaignId}
+                onClick={() => loadCampaignDetail(campaign.campaignId)}
+              >
+                <span>
+                  <strong>{campaign.campaignId}</strong>
+                  <small>{campaign.subject || 'Sin asunto'} - ultimo envio {formatDate(campaign.lastSentAt)}</small>
+                </span>
+                <span className="em-campaign-stats">
+                  {campaign.sent} enviados
+                  {campaign.failed > 0 ? ` - ${campaign.failed} fallidos` : ''}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <aside className="em-panel">
+            <div className="em-panel-head">
+              <div>
+                <p className="em-kicker">Detalle</p>
+                <h2>{selectedCampaign?.campaignId || 'Selecciona una campana'}</h2>
+              </div>
+            </div>
+            {!selectedCampaign && <p className="em-empty">Elegí una campaña para ver destinatarios y estado.</p>}
+            {selectedCampaign && (
+              <>
+                <div className="em-detail-stats">
+                  <span>{selectedCampaign.sent} enviados</span>
+                  <span>{selectedCampaign.failed} fallidos</span>
+                  <span>{selectedCampaign.total} total</span>
+                </div>
+                <div className="em-recipient-list">
+                  {selectedCampaign.recipients.map((recipient) => (
+                    <div className="em-recipient-row" key={`${recipient.email}-${recipient.updatedAt}`}>
+                      <span>
+                        <strong>{recipient.email}</strong>
+                        <small>{formatDate(recipient.sentAt || recipient.updatedAt)}</small>
+                        {recipient.error && <small className="em-error-text">{recipient.error}</small>}
+                      </span>
+                      <em className={recipient.status === 'sent' ? 'is-sent' : 'is-failed'}>{recipient.status}</em>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </aside>
+        </section>
+      ) : (
       <section className="em-grid">
         <div className="em-panel">
           <label>
@@ -374,6 +498,7 @@ export default function EmailMkt() {
           </div>
         </aside>
       </section>
+      )}
     </main>
   );
 }
