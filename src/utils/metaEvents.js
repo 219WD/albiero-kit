@@ -32,6 +32,19 @@ const createEventId = (eventName) => {
   return `${eventName}.${randomPart}`;
 };
 
+const getStoredLeadData = (eventName) => {
+  if (!String(eventName || "").endsWith("FormularioEnviado_WhatsApp")) {
+    return {};
+  }
+
+  return {
+    email: localStorage.getItem("albiero_email") || "-",
+    nombre: localStorage.getItem("albiero_nombre") || "-",
+    codigo: localStorage.getItem("albiero_codigo") || "-",
+    bienvenida_enviada: localStorage.getItem("albiero_subscribed") ? "Si" : "",
+  };
+};
+
 export const sendMetaEvent = (eventType, eventName, params = {}, options = {}) => {
   if (typeof window === "undefined") return undefined;
 
@@ -47,7 +60,10 @@ export const sendMetaEvent = (eventType, eventName, params = {}, options = {}) =
     event_name: eventName,
     event_id: eventId,
     event_source_url: window.location.href,
-    custom_data: params,
+    custom_data: {
+      ...params,
+      ...getStoredLeadData(eventName),
+    },
     fbp: readCookie("_fbp"),
     fbc: getFbc(),
   };
@@ -55,8 +71,8 @@ export const sendMetaEvent = (eventType, eventName, params = {}, options = {}) =
   if (CAPI_ENDPOINT) {
     fetch(CAPI_ENDPOINT, {
       method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain" },
+      mode: "cors",
+      headers: { "Content-Type": "application/json" },
       keepalive: true,
       body: JSON.stringify(payload),
     }).catch((error) => {
