@@ -32,7 +32,9 @@ async function apiRequest(endpoint, options = {}, token = '') {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.error || `Error ${response.status}`);
+    const error = new Error(data.error || `Error ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
 
   return data;
@@ -70,6 +72,24 @@ export default function EmailMkt() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  const clearAdminSession = () => {
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    setToken('');
+    setRecipients(null);
+    setCampaigns([]);
+    setSelectedCampaign(null);
+  };
+
+  const handleRequestError = (err) => {
+    if (err.status === 401 || err.message === 'No autorizado') {
+      clearAdminSession();
+      setError('Sesion vencida o usuario sin permisos. Inicia sesion de nuevo.');
+      return;
+    }
+
+    setError(err.message);
+  };
+
   useEffect(() => {
     if (!token) {
       setLoadingRecipients(false);
@@ -88,11 +108,7 @@ export default function EmailMkt() {
       })
       .catch((err) => {
         if (active) {
-          setError(err.message);
-          if (err.message === 'No autorizado') {
-            localStorage.removeItem(ADMIN_TOKEN_KEY);
-            setToken('');
-          }
+          handleRequestError(err);
         }
       })
       .finally(() => {
@@ -114,7 +130,7 @@ export default function EmailMkt() {
       const data = await apiRequest('/api/emailmkt/campaigns', {}, token);
       setCampaigns(data.campaigns || []);
     } catch (err) {
-      setError(err.message);
+      handleRequestError(err);
     } finally {
       setLoadingCampaigns(false);
     }
@@ -128,7 +144,7 @@ export default function EmailMkt() {
       const data = await apiRequest(`/api/emailmkt/campaigns/${encodeURIComponent(nextCampaignId)}`, {}, token);
       setSelectedCampaign(data.campaign);
     } catch (err) {
-      setError(err.message);
+      handleRequestError(err);
     } finally {
       setLoadingCampaigns(false);
     }
@@ -208,9 +224,7 @@ export default function EmailMkt() {
   };
 
   const logout = () => {
-    localStorage.removeItem(ADMIN_TOKEN_KEY);
-    setToken('');
-    setRecipients(null);
+    clearAdminSession();
     setMessage('');
   };
 
