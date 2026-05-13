@@ -44,7 +44,7 @@ const useFacebookPixelCamaras = () => {
         const sistemaLabel = SISTEMA_LABELS[sistema] || sistema;
         const contentName = buildContentName(tipo, ubicacion, sistema);
         firePixel('track', 'InitiateCheckout', { content_name: contentName, content_category: 'Camaras_Paso3', content_type: 'service', value: 1.0, currency: 'ARS', tipo: tipoLabel, ubicacion, sistema: sistemaLabel });
-        firePixel('trackCustom', 'Paso3_Camaras_SistemaSeleccionado', { tipo: tipoLabel, ubicacion, sistema: sistemaLabel, content_name: contentName, producto: 'Camaras', valor_lead: 1.0, currency: 'ARS' });
+        firePixel('trackCustom', 'Paso3_Camaras_SistemaSeleccionado', { tipo: tipoLabel, ubicacion, sistema: sistemaLabel, content_name: contentName, producto: 'Camaras', value: 1.0, valor_lead: 1.0, currency: 'ARS' });
     };
 
     const trackFormComplete = (formData) => {
@@ -52,7 +52,7 @@ const useFacebookPixelCamaras = () => {
         const sistemaLabel = SISTEMA_LABELS[formData.sistema] || formData.sistema;
         const contentName = buildContentName(formData.tipo, formData.ubicacion, formData.sistema);
         firePixel('track', 'Lead', { content_name: contentName, content_category: 'Camaras_Lead_Completado', value: 1.0, currency: 'ARS', tipo: tipoLabel, ubicacion: formData.ubicacion, sistema: sistemaLabel });
-        firePixel('trackCustom', 'Camaras_FormularioEnviado_WhatsApp', { content_name: contentName, tipo: tipoLabel, ubicacion: formData.ubicacion, sistema: sistemaLabel, producto: 'Camaras', timestamp: new Date().toISOString() });
+        firePixel('trackCustom', 'Camaras_FormularioEnviado_WhatsApp', { content_name: contentName, tipo: tipoLabel, ubicacion: formData.ubicacion, sistema: sistemaLabel, producto: 'Camaras', value: 1.0, valor_lead: 1.0, currency: 'ARS', timestamp: new Date().toISOString() });
     };
 
     return { trackTipoSelected, trackUbicacionSelected, trackSistemaSelected, trackFormComplete };

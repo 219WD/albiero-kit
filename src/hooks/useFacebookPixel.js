@@ -98,6 +98,7 @@ const useFacebookPixel = () => {
       sistema:      sistemaLabel,
       content_name: contentName,
       producto:     PRODUCTO,
+      value:        1.0,
       valor_lead:   1.0,
       currency:     'ARS',
     });
@@ -128,6 +129,9 @@ const useFacebookPixel = () => {
       ubicacion:    formData.ubicacion,
       sistema:      sistemaLabel,
       producto:     PRODUCTO,
+      value:        1.0,
+      valor_lead:   1.0,
+      currency:     'ARS',
       timestamp:    new Date().toISOString(),
     });
 

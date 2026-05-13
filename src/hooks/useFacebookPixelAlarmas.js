@@ -105,6 +105,7 @@ const useFacebookPixelAlarmas = () => {
       sistema:      sistemaLabel,
       content_name: contentName,
       producto:     'Alarmas',
+      value:        1.0,
       valor_lead:   1.0,
       currency:     'ARS',
     });
@@ -134,6 +135,9 @@ const useFacebookPixelAlarmas = () => {
       ubicacion:    formData.ubicacion,
       sistema:      sistemaLabel,
       producto:     'Alarmas',
+      value:        1.0,
+      valor_lead:   1.0,
+      currency:     'ARS',
       timestamp:    new Date().toISOString(),
     });
 
