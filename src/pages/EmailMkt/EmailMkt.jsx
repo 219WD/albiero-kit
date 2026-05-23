@@ -19,6 +19,22 @@ const initialButtons = [
   { label: '', url: '' },
 ];
 
+const padButtons = (buttons = []) => {
+  const normalized = buttons
+    .filter((button) => button && (button.label || button.url))
+    .slice(0, 3)
+    .map((button) => ({
+      label: button.label || '',
+      url: button.url || '',
+    }));
+
+  while (normalized.length < 3) {
+    normalized.push({ label: '', url: '' });
+  }
+
+  return normalized;
+};
+
 async function apiRequest(endpoint, options = {}, token = '') {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
@@ -62,12 +78,17 @@ export default function EmailMkt() {
   const [preheader, setPreheader] = useState('');
   const [content, setContent] = useState('');
   const [buttons, setButtons] = useState(initialButtons);
+  const [templateId, setTemplateId] = useState('');
+  const [templateName, setTemplateName] = useState('');
+  const [templates, setTemplates] = useState([]);
   const [view, setView] = useState('send');
   const [recipients, setRecipients] = useState(null);
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
   const [loadingRecipients, setLoadingRecipients] = useState(true);
+  const [savingTemplate, setSavingTemplate] = useState(false);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -78,12 +99,13 @@ export default function EmailMkt() {
     setRecipients(null);
     setCampaigns([]);
     setSelectedCampaign(null);
+    setTemplates([]);
+    setTemplateId('');
   };
 
   const handleRequestError = (err) => {
     if (err.status === 401 || err.message === 'No autorizado') {
-      clearAdminSession();
-      setError('Sesion vencida o usuario sin permisos. Inicia sesion de nuevo.');
+      setError('Sesion vencida o usuario sin permisos. Toca Salir e inicia sesion de nuevo.');
       return;
     }
 
@@ -150,9 +172,58 @@ export default function EmailMkt() {
     }
   };
 
+  const loadTemplates = async () => {
+    if (!token) return;
+
+    setLoadingTemplates(true);
+    setError('');
+
+    try {
+      const data = await apiRequest('/api/emailmkt/templates', {}, token);
+      setTemplates(data.templates || []);
+    } catch (err) {
+      handleRequestError(err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
+  const applyTemplate = (template) => {
+    setTemplateId(template.id || '');
+    setTemplateName(template.name || '');
+    setSubject(template.subject || '');
+    setTitle(template.title || '');
+    setPreheader(template.preheader || '');
+    setContent(template.content || '');
+    setButtons(padButtons(template.buttons || []));
+  };
+
+  const loadTemplateDetail = async (nextTemplateId) => {
+    if (!nextTemplateId) return;
+
+    setLoadingTemplates(true);
+    setError('');
+
+    try {
+      const data = await apiRequest(`/api/emailmkt/templates/${encodeURIComponent(nextTemplateId)}`, {}, token);
+      applyTemplate(data.template);
+      setMessage('Plantilla cargada.');
+    } catch (err) {
+      handleRequestError(err);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
   useEffect(() => {
     if (token && view === 'history') {
       loadCampaigns();
+    }
+  }, [token, view]);
+
+  useEffect(() => {
+    if (token && view === 'send') {
+      loadTemplates();
     }
   }, [token, view]);
 
@@ -162,6 +233,7 @@ export default function EmailMkt() {
   );
 
   const canSend = campaignId.trim() && subject.trim() && title.trim() && content.trim() && !sending;
+  const canSaveTemplate = templateName.trim() && subject.trim() && title.trim() && content.trim() && !savingTemplate;
 
   const updateButton = (index, field, value) => {
     setButtons((current) =>
@@ -260,6 +332,67 @@ export default function EmailMkt() {
       setError(err.message);
     } finally {
       setSending(false);
+    }
+  };
+
+  const saveTemplate = async () => {
+    if (!canSaveTemplate) return;
+
+    setSavingTemplate(true);
+    setError('');
+    setMessage('');
+
+    const endpoint = templateId
+      ? `/api/emailmkt/templates/${encodeURIComponent(templateId)}`
+      : '/api/emailmkt/templates';
+    const method = templateId ? 'PUT' : 'POST';
+
+    try {
+      const data = await apiRequest(endpoint, {
+        method,
+        body: JSON.stringify({
+          name: templateName,
+          subject,
+          title,
+          preheader,
+          content,
+          buttons: validButtons,
+        }),
+      }, token);
+
+      applyTemplate(data.template);
+      await loadTemplates();
+      setMessage(templateId ? 'Plantilla actualizada.' : 'Plantilla guardada.');
+    } catch (err) {
+      handleRequestError(err);
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  const deleteTemplate = async () => {
+    if (!templateId) return;
+
+    const confirmed = window.confirm(`Vas a eliminar la plantilla "${templateName}". Confirmas?`);
+    if (!confirmed) return;
+
+    setSavingTemplate(true);
+    setError('');
+    setMessage('');
+
+    try {
+      await apiRequest(`/api/emailmkt/templates/${encodeURIComponent(templateId)}`, {
+        method: 'DELETE',
+      }, token);
+
+      setTemplateId('');
+      setTemplateName('');
+      await loadTemplates();
+      setMessage('Plantilla eliminada.');
+    } catch (err) {
+      handleRequestError(err);
+    } finally {
+      setSavingTemplate(false);
     }
   };
 
@@ -436,6 +569,62 @@ export default function EmailMkt() {
       ) : (
       <section className="em-grid">
         <div className="em-panel">
+          <div className="em-template-box">
+            <div className="em-template-head">
+              <span>Plantillas</span>
+              <button type="button" onClick={loadTemplates} disabled={loadingTemplates}>
+                {loadingTemplates ? 'Cargando...' : 'Actualizar'}
+              </button>
+            </div>
+
+            <label>
+              Nombre de plantilla
+              <input
+                value={templateName}
+                onChange={(event) => setTemplateName(event.target.value)}
+                placeholder="Promo newsletter junio"
+              />
+            </label>
+
+            <div className="em-template-row">
+              <select
+                value={templateId}
+                onChange={(event) => {
+                  const nextId = event.target.value;
+                  setTemplateId(nextId);
+                  if (!nextId) {
+                    setTemplateName('');
+                    return;
+                  }
+                  loadTemplateDetail(nextId);
+                }}
+              >
+                <option value="">Nueva plantilla</option>
+                {templates.map((template) => (
+                  <option value={template.id} key={template.id}>
+                    {template.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => loadTemplateDetail(templateId)}
+                disabled={!templateId || loadingTemplates}
+              >
+                Usar
+              </button>
+            </div>
+
+            <div className="em-template-actions">
+              <button type="button" onClick={saveTemplate} disabled={!canSaveTemplate}>
+                {savingTemplate ? 'Guardando...' : templateId ? 'Actualizar plantilla' : 'Guardar plantilla'}
+              </button>
+              <button type="button" onClick={deleteTemplate} disabled={!templateId || savingTemplate}>
+                Eliminar
+              </button>
+            </div>
+          </div>
+
           <label>
             ID de campana
             <input
