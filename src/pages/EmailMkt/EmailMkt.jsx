@@ -233,7 +233,8 @@ export default function EmailMkt() {
   );
 
   const canSend = campaignId.trim() && subject.trim() && title.trim() && content.trim() && !sending;
-  const canSaveTemplate = templateName.trim() && subject.trim() && title.trim() && content.trim() && !savingTemplate;
+  const effectiveTemplateName = templateName.trim() || campaignId.trim();
+  const canSaveTemplate = effectiveTemplateName && subject.trim() && title.trim() && content.trim() && !savingTemplate;
 
   const updateButton = (index, field, value) => {
     setButtons((current) =>
@@ -351,7 +352,7 @@ export default function EmailMkt() {
       const data = await apiRequest(endpoint, {
         method,
         body: JSON.stringify({
-          name: templateName,
+          name: effectiveTemplateName,
           subject,
           title,
           preheader,
@@ -582,7 +583,7 @@ export default function EmailMkt() {
               <input
                 value={templateName}
                 onChange={(event) => setTemplateName(event.target.value)}
-                placeholder="Promo newsletter junio"
+                placeholder={campaignId || 'Promo newsletter junio'}
               />
             </label>
 
