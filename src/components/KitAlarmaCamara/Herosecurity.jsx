@@ -87,7 +87,9 @@ const HeroSecurity = () => {
       }[selectedData.sistema] || selectedData.sistema;
 
     const mensaje = `Hola! Quiero asesoramiento por el Kit de Alarma y Cámara.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${selectedData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
-    window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
+    setTimeout(() => {
+      window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
+    }, 900);
   };
 
   return (
