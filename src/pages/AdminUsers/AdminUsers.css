@@ -1,0 +1,166 @@
+.admin-users-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  background: #0d0d0d;
+  color: #fff;
+  font-family: 'Bai Jamjuree', sans-serif;
+  padding: 2.5rem 2rem;
+}
+
+.admin-users-page--center {
+  display: grid;
+  place-items: center;
+}
+
+.admin-users-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-users-header h1,
+.admin-users-empty h1 {
+  margin: 0 0 0.35rem;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.admin-users-header p,
+.admin-users-empty p,
+.admin-users-muted {
+  margin: 0;
+  color: rgba(255,255,255,0.45);
+}
+
+.admin-users-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.admin-users-actions button,
+.admin-users-empty button,
+.admin-users-empty a {
+  border: 0;
+  border-radius: 9px;
+  background: #961C2C;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.72rem 1rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-users-actions .is-secondary {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.admin-users-empty {
+  width: min(460px, 100%);
+  display: grid;
+  gap: 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.admin-users-alert {
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.admin-users-alert--ok {
+  background: rgba(33,150,83,0.12);
+  border: 1px solid rgba(33,150,83,0.35);
+  color: #8fe0b5;
+}
+
+.admin-users-alert--error {
+  background: rgba(150,28,44,0.12);
+  border: 1px solid rgba(150,28,44,0.35);
+  color: #f0a0aa;
+}
+
+.admin-users-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.admin-users-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-users-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 0.85rem 0.75rem;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.admin-users-table th {
+  color: rgba(255,255,255,0.38);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.admin-users-table td {
+  color: rgba(255,255,255,0.78);
+}
+
+.admin-users-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-users-table select {
+  width: 150px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: #121212;
+  color: #fff;
+  font-family: inherit;
+  padding: 0.5rem 0.6rem;
+}
+
+.admin-users-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(255,255,255,0.7);
+}
+
+.admin-users-switch input {
+  accent-color: #961C2C;
+}
+
+@media (max-width: 640px) {
+  .admin-users-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .admin-users-header h1,
+  .admin-users-empty h1 {
+    font-size: 1.5rem;
+  }
+}

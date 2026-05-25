@@ -9,6 +9,7 @@ import Alarmas from './pages/Alarmas.jsx';
 import Camaras from './pages/Camaras.jsx';
 import Analiticas from './pages/Analiticas/Analiticas';
 import EmailMkt from './pages/EmailMkt/EmailMkt.jsx';
+import AdminUsers from './pages/AdminUsers/AdminUsers.jsx';
 import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
 import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
@@ -45,6 +46,7 @@ function App() {
                 <Route path="/seguridad-integral" element={<SeguridadIntegral />} />
                 <Route path="/analiticas" element={<Analiticas />} />
                 <Route path="/emailmkt" element={<EmailMkt />} />
+                <Route path="/usuarios" element={<AdminUsers />} />
                 <Route path="/terminos-y-condiciones" element={<TerminosYCondiciones />} />
                 <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
             </Routes>
