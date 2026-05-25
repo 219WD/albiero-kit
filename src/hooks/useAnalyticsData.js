@@ -35,17 +35,20 @@ const useAnalyticsData = (range = '30d', from = '', to = '', token = '') => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [errorStatus, setErrorStatus] = useState(null);
 
   const fetchAll = useCallback(async () => {
     if (!token) {
       setSummary(null);
       setLoading(false);
       setError(null);
+      setErrorStatus(null);
       return;
     }
 
     setLoading(true);
     setError(null);
+    setErrorStatus(null);
 
     try {
       const q = buildQuery(range, from, to);
@@ -53,6 +56,7 @@ const useAnalyticsData = (range = '30d', from = '', to = '', token = '') => {
       setSummary(data);
     } catch (err) {
       setError(err.message);
+      setErrorStatus(err.status || null);
     } finally {
       setLoading(false);
     }
@@ -62,7 +66,7 @@ const useAnalyticsData = (range = '30d', from = '', to = '', token = '') => {
     fetchAll();
   }, [fetchAll]);
 
-  return { summary, loading, error, refetch: fetchAll };
+  return { summary, loading, error, errorStatus, refetch: fetchAll };
 };
 
 export default useAnalyticsData;

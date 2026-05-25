@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -135,7 +135,7 @@ const Analiticas = () => {
   const [to, setTo] = useState('');
   const [activeRange, setActiveRange] = useState('30d');
 
-  const { summary, loading, error, refetch } = useAnalyticsData(activeRange, from, to, token);
+  const { summary, loading, error, errorStatus, refetch } = useAnalyticsData(activeRange, from, to, token);
   const breakdowns = summary?.breakdowns || {};
   const totals = summary?.totals || {};
   const topLocation = breakdowns.ubicacion?.[0];
@@ -146,6 +146,14 @@ const Analiticas = () => {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
     setToken('');
   };
+
+  useEffect(() => {
+    if (errorStatus !== 401) return;
+
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    setToken('');
+    setAuthError('Sesion vencida o backend sin permisos para este usuario. Inicia sesion de nuevo.');
+  }, [errorStatus]);
 
   const handleAuth = async (event) => {
     event.preventDefault();
