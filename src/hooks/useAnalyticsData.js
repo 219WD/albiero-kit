@@ -22,16 +22,19 @@ const fetcher = async (endpoint, token) => {
   return res.json();
 };
 
-const buildQuery = (range, from, to) => {
+const buildQuery = (range, from, to, filters = {}) => {
   const params = new URLSearchParams({ range });
   if (range === 'custom') {
     params.set('from', from);
     params.set('to', to);
   }
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
   return params.toString();
 };
 
-const useAnalyticsData = (range = '30d', from = '', to = '', token = '') => {
+const useAnalyticsData = (range = '30d', from = '', to = '', token = '', filters = {}) => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,7 +54,7 @@ const useAnalyticsData = (range = '30d', from = '', to = '', token = '') => {
     setErrorStatus(null);
 
     try {
-      const q = buildQuery(range, from, to);
+      const q = buildQuery(range, from, to, filters);
       const data = await fetcher(`/api/analytics/sheet-summary?${q}`, token);
       setSummary(data);
     } catch (err) {
@@ -60,7 +63,7 @@ const useAnalyticsData = (range = '30d', from = '', to = '', token = '') => {
     } finally {
       setLoading(false);
     }
-  }, [range, from, to, token]);
+  }, [range, from, to, token, filters.producto, filters.tipo, filters.ubicacion, filters.sistema]);
 
   useEffect(() => {
     fetchAll();

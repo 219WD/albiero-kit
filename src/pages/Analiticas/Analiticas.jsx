@@ -28,6 +28,7 @@ const API_BASE =
     ? PROD_API_BASE
     : configuredApiBase || (isLocalHost ? 'http://localhost:4000' : PROD_API_BASE);
 const ADMIN_TOKEN_KEY = 'albiero_emailmkt_admin_token';
+const LEAD_STATUSES = ['Nuevo', 'Contactado', 'Cotizado', 'Vendido', 'Perdido'];
 
 const RANGOS = [
   { value: '7d', label: '7 dias' },
@@ -71,6 +72,18 @@ const StatCard = ({ title, value, sub }) => (
     <p className="an-stat-value">{value}</p>
     {sub && <p className="an-stat-sub">{sub}</p>}
   </div>
+);
+
+const FilterSelect = ({ label, value, options = [], onChange }) => (
+  <label className="an-filter">
+    {label}
+    <select value={value} onChange={(event) => onChange(event.target.value)}>
+      <option value="">Todos</option>
+      {options.map((option) => (
+        <option value={option} key={option}>{option}</option>
+      ))}
+    </select>
+  </label>
 );
 
 const BreakdownTable = ({ rows = [] }) => (
@@ -120,6 +133,15 @@ const apiRequest = async (endpoint, options = {}, token = '') => {
   return data;
 };
 
+const buildWhatsAppUrl = (lead) => {
+  const phone = String(lead.telefono || '').replace(/\D/g, '');
+  if (!phone) return '';
+
+  const normalizedPhone = phone.startsWith('54') ? phone : `549${phone}`;
+  const text = `Hola ${lead.nombre !== 'Sin dato' ? lead.nombre : ''}, te contacto de Albiero Seguridad por tu consulta sobre ${lead.producto || 'seguridad'} en ${lead.ubicacion || 'Tucuman'}.`;
+  return `https://wa.me/${normalizedPhone}?text=${encodeURIComponent(text)}`;
+};
+
 const Analiticas = () => {
   const [token, setToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_KEY) || '');
   const [authMode, setAuthMode] = useState('login');
@@ -134,17 +156,53 @@ const Analiticas = () => {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [activeRange, setActiveRange] = useState('30d');
+  const [filters, setFilters] = useState({
+    producto: '',
+    tipo: '',
+    ubicacion: '',
+    sistema: '',
+  });
+  const [statusSaving, setStatusSaving] = useState('');
 
-  const { summary, loading, error, errorStatus, refetch } = useAnalyticsData(activeRange, from, to, token);
+  const { summary, loading, error, errorStatus, refetch } = useAnalyticsData(activeRange, from, to, token, filters);
   const breakdowns = summary?.breakdowns || {};
   const totals = summary?.totals || {};
   const topLocation = breakdowns.ubicacion?.[0];
   const topType = breakdowns.tipo?.[0];
+  const filterOptions = summary?.filterOptions || {};
 
   const applyRange = () => setActiveRange(range);
   const logout = () => {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
     setToken('');
+  };
+
+  const updateFilter = (field, value) => {
+    setFilters((current) => ({ ...current, [field]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({ producto: '', tipo: '', ubicacion: '', sistema: '' });
+  };
+
+  const updateLeadStatus = async (lead, status) => {
+    if (!lead.rowNumber) return;
+
+    const saveKey = `${lead.rowNumber}-${status}`;
+    setStatusSaving(saveKey);
+    setAuthError('');
+
+    try {
+      await apiRequest(`/api/analytics/sheet-leads/${lead.rowNumber}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      }, token);
+      await refetch();
+    } catch (err) {
+      setAuthError(err.message || 'No se pudo guardar el estado.');
+    } finally {
+      setStatusSaving('');
+    }
   };
 
   useEffect(() => {
@@ -336,9 +394,20 @@ const Analiticas = () => {
 
       {loading && <div className="an-loading"><span className="an-spinner" />Cargando datos...</div>}
       {error && <div className="an-error">Error: {error}</div>}
+      {authError && token && <div className="an-error">{authError}</div>}
 
       {!loading && !error && (
         <>
+          <div className="an-card an-filters-card">
+            <div className="an-filters">
+              <FilterSelect label="Producto" value={filters.producto} options={filterOptions.producto} onChange={(value) => updateFilter('producto', value)} />
+              <FilterSelect label="Tipo" value={filters.tipo} options={filterOptions.tipo} onChange={(value) => updateFilter('tipo', value)} />
+              <FilterSelect label="Zona" value={filters.ubicacion} options={filterOptions.ubicacion} onChange={(value) => updateFilter('ubicacion', value)} />
+              <FilterSelect label="Sistema" value={filters.sistema} options={filterOptions.sistema} onChange={(value) => updateFilter('sistema', value)} />
+              <button className="an-apply-btn an-secondary-btn" onClick={clearFilters}>Limpiar</button>
+            </div>
+          </div>
+
           <div className="an-stats-grid">
             <StatCard title="Leads totales" value={formatNumber(totals.leads)} sub="FormularioEnviado_WhatsApp" />
             <StatCard title="Tipos" value={formatNumber(totals.tipos)} sub={topType ? `${topType.label}: ${topType.percent}%` : 'Casa / Comercio'} />
@@ -348,6 +417,30 @@ const Analiticas = () => {
             <StatCard title="Con nombre" value={formatNumber(totals.withName)} sub={`${totals.withNamePercent || 0}% de leads`} />
             <StatCard title="Con email" value={formatNumber(totals.withEmail)} sub={`${totals.withEmailPercent || 0}% de leads`} />
             <StatCard title="Lead completo" value={formatNumber(totals.completeContactLeads)} sub="Nombre + email + datos del kit" />
+          </div>
+
+          <div className="an-card">
+            <h2 className="an-card-title">Embudo del formulario</h2>
+            {!summary?.funnel?.length ? (
+              <EmptyState />
+            ) : (
+              <div className="an-funnel">
+                {summary.funnel.map((step, index) => (
+                  <div className="an-funnel-step" key={step.key}>
+                    <div className="an-funnel-head">
+                      <span>{step.label}</span>
+                      <strong>{formatNumber(step.count)}</strong>
+                    </div>
+                    <div className="an-funnel-bar-wrap">
+                      <div className="an-funnel-bar" style={{ width: `${Math.max(step.retention, 4)}%` }} />
+                    </div>
+                    <small>
+                      {index === 0 ? 'Inicio' : `${step.retention}% retencion / ${step.dropoff}% abandono`}
+                    </small>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="an-card">
@@ -422,6 +515,38 @@ const Analiticas = () => {
           </div>
 
           <div className="an-card">
+            <h2 className="an-card-title">Ranking de zonas con conversion</h2>
+            {!summary?.locationConversion?.length ? (
+              <EmptyState />
+            ) : (
+              <div className="an-table-wrap">
+                <table className="an-table">
+                  <thead>
+                    <tr>
+                      <th>Zona</th>
+                      <th>Visitas paso 2</th>
+                      <th>Leads</th>
+                      <th>Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {summary.locationConversion.map((row) => (
+                      <tr key={row.label}>
+                        <td>{row.label}</td>
+                        <td>{formatNumber(row.visits)}</td>
+                        <td>{formatNumber(row.leads)}</td>
+                        <td>
+                          <span className="an-status-pill">{row.conversion}%</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          <div className="an-card">
             <h2 className="an-card-title">Ultimos leads</h2>
             {!summary?.recentLeads?.length ? (
               <EmptyState />
@@ -431,20 +556,47 @@ const Analiticas = () => {
                   <thead>
                     <tr>
                       <th>Fecha</th>
+                      <th>Nombre</th>
+                      <th>Email</th>
+                      <th>Telefono</th>
                       <th>Tipo</th>
                       <th>Ubicacion</th>
                       <th>Sistema</th>
                       <th>Producto</th>
+                      <th>Estado</th>
+                      <th>WhatsApp</th>
                     </tr>
                   </thead>
                   <tbody>
                     {summary.recentLeads.map((lead, index) => (
                       <tr key={`${lead.fecha}-${index}`}>
                         <td>{formatDateTime(lead.fecha)}</td>
+                        <td>{lead.nombre}</td>
+                        <td>{lead.email}</td>
+                        <td>{lead.telefono || <span className="an-muted">Sin telefono</span>}</td>
                         <td>{lead.tipo}</td>
                         <td>{lead.ubicacion}</td>
                         <td>{lead.sistema}</td>
                         <td>{lead.producto}</td>
+                        <td>
+                          <select
+                            className="an-status-select"
+                            value={lead.estado || 'Nuevo'}
+                            disabled={statusSaving.startsWith(`${lead.rowNumber}-`)}
+                            onChange={(event) => updateLeadStatus(lead, event.target.value)}
+                          >
+                            {LEAD_STATUSES.map((status) => (
+                              <option value={status} key={status}>{status}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          {buildWhatsAppUrl(lead) ? (
+                            <a className="an-mini-link" href={buildWhatsAppUrl(lead)} target="_blank" rel="noreferrer">Abrir</a>
+                          ) : (
+                            <span className="an-muted">Sin telefono</span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

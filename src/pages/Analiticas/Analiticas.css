@@ -287,6 +287,114 @@
   margin: 0 0 1.5rem 0;
 }
 
+.an-filters-card {
+  padding: 1rem;
+}
+
+.an-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr)) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.an-filter {
+  display: grid;
+  gap: 0.35rem;
+  color: rgba(255,255,255,0.42);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.an-filter select,
+.an-status-select {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: #121212;
+  color: #fff;
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.an-funnel {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.an-funnel-step {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+  padding: 1rem;
+}
+
+.an-funnel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.an-funnel-head span {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.an-funnel-head strong {
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.an-funnel-bar-wrap {
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.an-funnel-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #961C2C, #e8687a);
+}
+
+.an-funnel-step small,
+.an-muted {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.75rem;
+}
+
+.an-status-pill {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 54px;
+  border-radius: 999px;
+  background: rgba(150,28,44,0.18);
+  color: #f0a0aa;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.28rem 0.55rem;
+}
+
+.an-mini-link {
+  display: inline-flex;
+  border-radius: 7px;
+  background: rgba(33,150,83,0.16);
+  border: 1px solid rgba(33,150,83,0.28);
+  color: #8fe0b5;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.38rem 0.55rem;
+  text-decoration: none;
+}
+
 .an-two-col {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
@@ -383,6 +491,8 @@
 @media (max-width: 1024px) {
   .an-stats-grid  { grid-template-columns: repeat(2, 1fr); }
   .an-two-col     { grid-template-columns: 1fr; }
+  .an-filters     { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .an-funnel      { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 600px) {
@@ -391,6 +501,8 @@
   .an-stats-grid  { grid-template-columns: 1fr 1fr; }
   .an-stat-value  { font-size: 1.5rem; }
   .an-title       { font-size: 1.5rem; }
+  .an-filters     { grid-template-columns: 1fr; }
+  .an-funnel      { grid-template-columns: 1fr; }
 }
 
 /* ── Desglose table ──────────────────────────────────────────────────────────── */
