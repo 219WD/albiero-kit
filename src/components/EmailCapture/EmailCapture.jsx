@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./EmailCapture.css";
+import { setMetaAdvancedMatching } from "../../utils/metaEvents";
 
 // ─── Google Forms ─────────────────────────────────────────────
 const FORM_URL =
@@ -71,6 +72,7 @@ function DiscountModal({ onClose }) {
       localStorage.setItem("albiero_email", email);
       localStorage.setItem("albiero_nombre", nombre);
       localStorage.setItem("albiero_codigo", res.codigo); // ← AGREGAR
+      setMetaAdvancedMatching({ email, nombre });
       setStep("success");
     } catch {
       setError("Error al conectar. Intentá de nuevo.");
