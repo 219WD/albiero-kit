@@ -32,6 +32,18 @@ const createEventId = (eventName) => {
   return `${eventName}.${randomPart}`;
 };
 
+const getMetaTestEventCode = () => {
+  if (typeof window === "undefined") return undefined;
+
+  const urlCode = new URLSearchParams(window.location.search).get("test_event_code");
+  if (urlCode) {
+    sessionStorage.setItem("albiero_meta_test_event_code", urlCode);
+    return urlCode;
+  }
+
+  return sessionStorage.getItem("albiero_meta_test_event_code") || undefined;
+};
+
 const normalizeEmail = (value = "") => {
   const email = String(value || "").trim().toLowerCase();
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
@@ -126,6 +138,7 @@ export const sendMetaEvent = (eventType, eventName, params = {}, options = {}) =
       ...getStoredLeadData(eventName),
     },
     user_data: advancedMatching,
+    test_event_code: getMetaTestEventCode(),
     fbp: readCookie("_fbp"),
     fbc: getFbc(),
   };
