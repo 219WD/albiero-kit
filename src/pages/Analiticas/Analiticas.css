@@ -95,6 +95,15 @@
 
 .an-apply-btn:hover { background: #b52236; }
 
+.an-secondary-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.an-secondary-btn:hover {
+  background: rgba(255,255,255,0.14);
+}
+
 /* ── Stats grid ─────────────────────────────────────────────────────────────── */
 .an-stats-grid {
   display: grid;
@@ -314,4 +323,39 @@
   font-size: 0.75rem;
   color: rgba(255,255,255,0.3);
   margin: -1rem 0 1rem 0;
+}
+
+.an-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.an-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.an-table th,
+.an-table td {
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 0.85rem 0.75rem;
+  text-align: left;
+  font-size: 0.82rem;
+}
+
+.an-table th {
+  color: rgba(255,255,255,0.38);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.an-table td {
+  color: rgba(255,255,255,0.75);
+}
+
+.an-table tr:last-child td {
+  border-bottom: 0;
 }
