@@ -3,12 +3,111 @@
 
 .an-page {
   min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
   background: #0d0d0d;
   padding: 2.5rem 2rem;
   font-family: 'Bai Jamjuree', sans-serif;
   color: #fff;
-  max-width: 1300px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
+}
+
+.an-page--login {
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.an-login-card {
+  width: min(420px, 100%);
+  display: grid;
+  gap: 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 22px 70px rgba(0,0,0,0.35);
+}
+
+.an-auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  padding: 0.3rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+}
+
+.an-auth-tab {
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(255,255,255,0.45);
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.65rem;
+  cursor: pointer;
+}
+
+.an-auth-tab.active {
+  background: #961C2C;
+  color: #fff;
+}
+
+.an-login-label {
+  display: grid;
+  gap: 0.45rem;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.an-login-label input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-size: 0.95rem;
+  padding: 0.75rem 0.85rem;
+  outline: none;
+}
+
+.an-login-label input:focus {
+  border-color: rgba(150,28,44,0.85);
+  box-shadow: 0 0 0 3px rgba(150,28,44,0.18);
+}
+
+.an-auth-alert {
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.an-auth-alert--error {
+  background: rgba(150,28,44,0.12);
+  border: 1px solid rgba(150,28,44,0.35);
+  color: #f0a0aa;
+}
+
+.an-auth-alert--ok {
+  background: rgba(33,150,83,0.12);
+  border: 1px solid rgba(33,150,83,0.35);
+  color: #8fe0b5;
+}
+
+.an-login-submit {
+  width: 100%;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
 }
 
 /* ── Header ─────────────────────────────────────────────────────────────────── */
@@ -104,10 +203,35 @@
   background: rgba(255,255,255,0.14);
 }
 
+.an-excel-btn {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  background: rgba(33,150,83,0.18);
+  border: 1px solid rgba(33,150,83,0.32);
+  color: #8fe0b5;
+}
+
+.an-excel-btn:hover {
+  background: rgba(33,150,83,0.28);
+  color: #baf0d1;
+}
+
+.an-logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.65);
+}
+
+.an-logout-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
 /* ── Stats grid ─────────────────────────────────────────────────────────────── */
 .an-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
 }

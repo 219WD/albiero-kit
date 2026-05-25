@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import AdminNav from '../../components/AdminNav';
 import './EmailMkt.css';
 
 const PROD_API_BASE = 'https://albi-backend-nine.vercel.app';
@@ -478,6 +479,8 @@ export default function EmailMkt() {
 
   return (
     <main className="em-page">
+      <AdminNav />
+
       <section className="em-header">
         <div>
           <p className="em-kicker">Email marketing</p>
