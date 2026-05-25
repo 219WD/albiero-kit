@@ -186,7 +186,10 @@ const Analiticas = () => {
   };
 
   const updateLeadStatus = async (lead, status) => {
-    if (!lead.rowNumber) return;
+    if (!lead.rowNumber) {
+      setAuthError('Este lead todavia no trae numero de fila desde el backend. Hay que desplegar el backend actualizado.');
+      return;
+    }
 
     const saveKey = `${lead.rowNumber}-${status}`;
     setStatusSaving(saveKey);
