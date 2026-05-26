@@ -3,6 +3,7 @@ import { getStoredAdmin } from '../utils/adminSession';
 
 const links = [
   { href: '/analiticas', label: 'Analiticas' },
+  { href: '/leads', label: 'Leads' },
   { href: '/emailmkt', label: 'Email MKT' },
   { href: '/promos', label: 'Promos' },
   { href: '/usuarios', label: 'Usuarios', superOnly: true },
