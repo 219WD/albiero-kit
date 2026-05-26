@@ -86,6 +86,16 @@ function toPayload(form) {
   };
 }
 
+function getMetrics(promo) {
+  return {
+    views: Number(promo.metrics?.views || 0),
+    clicks: Number(promo.metrics?.clicks || 0),
+    subscribes: Number(promo.metrics?.subscribes || 0),
+    clickRate: Number(promo.metrics?.clickRate || 0),
+    subscribeRate: Number(promo.metrics?.subscribeRate || 0),
+  };
+}
+
 export default function Promos() {
   const [token, setToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_KEY) || '');
   const admin = useMemo(() => getAdminFromToken(token), [token]);
@@ -95,6 +105,15 @@ export default function Promos() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  const totals = useMemo(() => promos.reduce((acc, promo) => {
+    const metrics = getMetrics(promo);
+    return {
+      views: acc.views + metrics.views,
+      clicks: acc.clicks + metrics.clicks,
+      subscribes: acc.subscribes + metrics.subscribes,
+    };
+  }, { views: 0, clicks: 0, subscribes: 0 }), [promos]);
 
   const logout = () => {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
@@ -183,6 +202,25 @@ export default function Promos() {
 
       {message && <div className="promos-alert promos-alert--ok">{message}</div>}
       {error && <div className="promos-alert promos-alert--error">{error}</div>}
+
+      <section className="promos-stats" aria-label="Performance de promos">
+        <article>
+          <span>Vistas</span>
+          <strong>{totals.views}</strong>
+        </article>
+        <article>
+          <span>Clics</span>
+          <strong>{totals.clicks}</strong>
+        </article>
+        <article>
+          <span>Emails capturados</span>
+          <strong>{totals.subscribes}</strong>
+        </article>
+        <article>
+          <span>Conversion a email</span>
+          <strong>{totals.views > 0 ? `${Math.round((totals.subscribes / totals.views) * 1000) / 10}%` : '0%'}</strong>
+        </article>
+      </section>
 
       <section className="promos-layout">
         <form className="promos-card promos-form" onSubmit={savePromo}>
@@ -273,6 +311,12 @@ export default function Promos() {
                   onClick={() => setForm(toForm(promo))}
                 >
                   <span>{promo.title}</span>
+                  <div className="promos-item-metrics">
+                    <b>{getMetrics(promo).views}<em>vistas</em></b>
+                    <b>{getMetrics(promo).clicks}<em>clics</em></b>
+                    <b>{getMetrics(promo).subscribes}<em>emails</em></b>
+                    <b>{getMetrics(promo).subscribeRate}%<em>conv.</em></b>
+                  </div>
                   <small>{promo.active ? 'Activa' : 'Inactiva'} · {promo.discountValue} {promo.discountLabel}</small>
                 </button>
               ))}

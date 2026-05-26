@@ -50,6 +50,17 @@ async function getActivePromo() {
   return data.promo || DEFAULT_PROMO;
 }
 
+function recordPromoEvent(promoId, type) {
+  if (!promoId || promoId === "default") return;
+
+  fetch(`${API_BASE}/api/promos/${encodeURIComponent(promoId)}/events`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    keepalive: true,
+    body: JSON.stringify({ type }),
+  }).catch(() => {});
+}
+
 async function enviarEmail({ email, nombre = "", tipo }) {
   const codigo = tipo === "descuento" ? generarCodigo() : null;
   const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&${ENTRY_CODIGO}=${encodeURIComponent(codigo || "-")}&entry.1390851687=&submit=Submit`;
@@ -110,6 +121,7 @@ function DiscountModal({ onClose, promo }) {
         content_name: promo.title,
         promo_id: promo.id,
       }, { warnPrefix: "Pixel Promo" });
+      recordPromoEvent(promo.id, "subscribe");
       setStep("success");
     } catch {
       setError("Error al conectar. Intenta de nuevo.");
@@ -255,7 +267,16 @@ export default function EmailCapture() {
 
     getActivePromo()
       .then((activePromo) => {
-        if (alive) setPromo({ ...DEFAULT_PROMO, ...activePromo });
+        if (!alive) return;
+
+        const nextPromo = { ...DEFAULT_PROMO, ...activePromo };
+        setPromo(nextPromo);
+
+        const viewKey = `albiero_promo_view_${nextPromo.id}`;
+        if (nextPromo.id && nextPromo.id !== "default" && !sessionStorage.getItem(viewKey)) {
+          sessionStorage.setItem(viewKey, "1");
+          recordPromoEvent(nextPromo.id, "view");
+        }
       })
       .catch(() => {
         if (alive) setPromo(DEFAULT_PROMO);
@@ -284,6 +305,7 @@ export default function EmailCapture() {
       content_name: promo.title,
       promo_id: promo.id,
     }, { warnPrefix: "Pixel Promo" });
+    recordPromoEvent(promo.id, "click");
     setModalOpen(true);
   }, [promo.id, promo.title]);
   const cerrarModal = useCallback(() => setModalOpen(false), []);

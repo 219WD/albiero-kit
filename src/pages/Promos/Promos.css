@@ -98,6 +98,34 @@
   align-items: start;
 }
 
+.promos-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.promos-stats article {
+  display: grid;
+  gap: 0.35rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.promos-stats span {
+  color: rgba(255,255,255,0.48);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.promos-stats strong {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
 .promos-card {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.07);
@@ -198,9 +226,34 @@
   color: rgba(255,255,255,0.48);
 }
 
+.promos-item-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.promos-item-metrics b {
+  display: grid;
+  gap: 0.15rem;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-size: 0.92rem;
+  padding: 0.5rem;
+}
+
+.promos-item-metrics em {
+  color: rgba(255,255,255,0.44);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 @media (max-width: 920px) {
   .promos-layout,
-  .promos-grid {
+  .promos-grid,
+  .promos-stats {
     grid-template-columns: 1fr;
   }
 }
