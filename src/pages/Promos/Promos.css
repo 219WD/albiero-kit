@@ -1,0 +1,217 @@
+.promos-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  background: #0d0d0d;
+  color: #fff;
+  font-family: 'Bai Jamjuree', sans-serif;
+  padding: 2.5rem 2rem;
+}
+
+.promos-page--center {
+  display: grid;
+  place-items: center;
+}
+
+.promos-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.promos-header h1,
+.promos-empty h1 {
+  margin: 0 0 0.35rem;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.promos-header p,
+.promos-empty p,
+.promos-muted {
+  margin: 0;
+  color: rgba(255,255,255,0.48);
+}
+
+.promos-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.promos-actions button,
+.promos-empty a,
+.promos-save {
+  border: 0;
+  border-radius: 9px;
+  background: #961C2C;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.72rem 1rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.promos-actions .is-secondary {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.promos-empty {
+  width: min(460px, 100%);
+  display: grid;
+  gap: 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.promos-alert {
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.promos-alert--ok {
+  background: rgba(33,150,83,0.12);
+  border: 1px solid rgba(33,150,83,0.35);
+  color: #8fe0b5;
+}
+
+.promos-alert--error {
+  background: rgba(150,28,44,0.12);
+  border: 1px solid rgba(150,28,44,0.35);
+  color: #f0a0aa;
+}
+
+.promos-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.6fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.promos-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.promos-card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.promos-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.promos-form-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.promos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.promos-form label {
+  display: grid;
+  gap: 0.4rem;
+  color: rgba(255,255,255,0.58);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.promos-form input,
+.promos-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  background: #121212;
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.72rem 0.75rem;
+  text-transform: none;
+}
+
+.promos-form textarea {
+  resize: vertical;
+}
+
+.promos-switch {
+  display: inline-flex !important;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 0.45rem;
+  text-transform: none !important;
+}
+
+.promos-switch input {
+  width: auto;
+  accent-color: #961C2C;
+}
+
+.promos-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.promos-item {
+  display: grid;
+  gap: 0.25rem;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  font: inherit;
+  padding: 0.85rem;
+  cursor: pointer;
+}
+
+.promos-item.is-active {
+  border-color: rgba(33,150,83,0.45);
+}
+
+.promos-item span {
+  font-weight: 700;
+}
+
+.promos-item small {
+  color: rgba(255,255,255,0.48);
+}
+
+@media (max-width: 920px) {
+  .promos-layout,
+  .promos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .promos-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .promos-header h1,
+  .promos-empty h1 {
+    font-size: 1.5rem;
+  }
+}
