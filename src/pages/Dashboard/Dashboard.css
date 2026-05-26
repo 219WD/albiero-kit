@@ -1,0 +1,254 @@
+.dash-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  background: #0d0d0d;
+  color: #fff;
+  font-family: 'Bai Jamjuree', sans-serif;
+  padding: 2.5rem 2rem;
+}
+
+.dash-page--center {
+  display: grid;
+  place-items: center;
+}
+
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+}
+
+.dash-header h1,
+.dash-empty h1 {
+  margin: 0 0 0.35rem;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.dash-header p,
+.dash-empty p,
+.dash-muted {
+  margin: 0;
+  color: rgba(255,255,255,0.48);
+}
+
+.dash-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.dash-actions button,
+.dash-empty a,
+.dash-card-link {
+  border: 0;
+  border-radius: 9px;
+  background: #961C2C;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.72rem 1rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dash-actions .is-secondary {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.dash-empty {
+  width: min(460px, 100%);
+  display: grid;
+  gap: 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.dash-alert {
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.72);
+}
+
+.dash-alert--error {
+  background: rgba(150,28,44,0.12);
+  border-color: rgba(150,28,44,0.35);
+  color: #f0a0aa;
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.dash-stat,
+.dash-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+}
+
+.dash-stat {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.dash-stat.is-primary {
+  border-color: rgba(150,28,44,0.42);
+  background: rgba(150,28,44,0.13);
+}
+
+.dash-stat span,
+.dash-card h2 {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.dash-stat strong {
+  font-size: 1.85rem;
+  line-height: 1;
+}
+
+.dash-stat small {
+  color: rgba(255,255,255,0.45);
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dash-card {
+  padding: 1.2rem;
+}
+
+.dash-card h2 {
+  margin: 0 0 1rem;
+}
+
+.dash-focus-list,
+.dash-leads,
+.dash-tools {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.dash-focus-list a,
+.dash-lead-row,
+.dash-tools a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+  color: #fff;
+  padding: 0.85rem;
+  text-decoration: none;
+}
+
+.dash-focus-list strong {
+  font-size: 1.2rem;
+}
+
+.dash-focus-list span,
+.dash-lead-row small,
+.dash-lead-row em {
+  color: rgba(255,255,255,0.48);
+  font-size: 0.82rem;
+  font-style: normal;
+}
+
+.dash-lead-row span {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.dash-promo-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.dash-promo-head strong {
+  font-size: 1.05rem;
+}
+
+.dash-promo-head span {
+  border-radius: 999px;
+  background: rgba(150,28,44,0.18);
+  color: #f0a0aa;
+  font-weight: 800;
+  padding: 0.35rem 0.65rem;
+}
+
+.dash-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dash-mini-stats span {
+  display: grid;
+  gap: 0.2rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.52);
+  font-size: 0.72rem;
+  padding: 0.7rem;
+}
+
+.dash-mini-stats b {
+  color: #fff;
+  font-size: 1.05rem;
+}
+
+.dash-card-link {
+  display: inline-flex;
+}
+
+@media (max-width: 1100px) {
+  .dash-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .dash-grid,
+  .dash-stats,
+  .dash-mini-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dash-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .dash-header h1,
+  .dash-empty h1 {
+    font-size: 1.5rem;
+  }
+}

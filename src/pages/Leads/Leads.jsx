@@ -96,7 +96,7 @@ export default function Leads() {
     tipo: '',
     ubicacion: '',
     sistema: '',
-    status: '',
+    status: new URLSearchParams(window.location.search).get('status') || '',
     search: '',
   });
   const [data, setData] = useState(null);

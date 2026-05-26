@@ -2,6 +2,7 @@ import './AdminNav.css';
 import { getStoredAdmin } from '../utils/adminSession';
 
 const links = [
+  { href: '/dashboard', label: 'Dashboard' },
   { href: '/analiticas', label: 'Analiticas' },
   { href: '/leads', label: 'Leads' },
   { href: '/emailmkt', label: 'Email MKT' },

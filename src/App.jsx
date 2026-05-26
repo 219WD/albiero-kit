@@ -12,6 +12,7 @@ import EmailMkt from './pages/EmailMkt/EmailMkt.jsx';
 import AdminUsers from './pages/AdminUsers/AdminUsers.jsx';
 import Promos from './pages/Promos/Promos.jsx';
 import Leads from './pages/Leads/Leads.jsx';
+import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
 import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
@@ -46,6 +47,7 @@ function App() {
                 <Route path="/seguimiento-vehicular" element={<SeguimientoVehicular />} />
                 <Route path="/deteccion-incendios" element={<DeteccionIncendios />} />
                 <Route path="/seguridad-integral" element={<SeguridadIntegral />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/analiticas" element={<Analiticas />} />
                 <Route path="/emailmkt" element={<EmailMkt />} />
                 <Route path="/usuarios" element={<AdminUsers />} />
