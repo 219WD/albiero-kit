@@ -13,6 +13,8 @@ import AdminUsers from './pages/AdminUsers/AdminUsers.jsx';
 import Promos from './pages/Promos/Promos.jsx';
 import Leads from './pages/Leads/Leads.jsx';
 import Dashboard from './pages/Dashboard/Dashboard.jsx';
+import Reportes from './pages/Reportes/Reportes.jsx';
+import Informe from './pages/Informe/Informe.jsx';
 import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
 import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
@@ -53,6 +55,8 @@ function App() {
                 <Route path="/usuarios" element={<AdminUsers />} />
                 <Route path="/promos" element={<Promos />} />
                 <Route path="/leads" element={<Leads />} />
+                <Route path="/reportes" element={<Reportes />} />
+                <Route path="/informe/:token" element={<Informe />} />
                 <Route path="/terminos-y-condiciones" element={<TerminosYCondiciones />} />
                 <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
             </Routes>

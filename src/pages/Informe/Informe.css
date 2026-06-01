@@ -1,0 +1,297 @@
+.informe-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  background: #202124;
+  color: #151515;
+  font-family: 'Bai Jamjuree', sans-serif;
+  padding: 2rem;
+}
+
+.informe-page--center {
+  display: grid;
+  place-items: center;
+}
+
+.informe-empty,
+.informe-sheet {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  background: #f8f7f3;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+}
+
+.informe-empty {
+  padding: 2rem;
+}
+
+.informe-empty h1,
+.informe-empty p {
+  margin: 0;
+}
+
+.informe-empty p {
+  margin-top: 0.5rem;
+  color: rgba(0,0,0,0.55);
+}
+
+.informe-sheet {
+  padding: 2rem;
+}
+
+.informe-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 1.4rem;
+}
+
+.informe-hero span {
+  color: #961C2C;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.informe-hero h1 {
+  margin: 0.25rem 0;
+  font-size: 2.7rem;
+  line-height: 1;
+}
+
+.informe-hero p {
+  margin: 0;
+  color: rgba(0,0,0,0.56);
+  font-size: 1.05rem;
+}
+
+.informe-actions button {
+  border: 0;
+  border-radius: 9px;
+  background: #961C2C;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 800;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+}
+
+.informe-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 1rem 0;
+}
+
+.informe-meta span {
+  border-radius: 999px;
+  background: #ece9df;
+  color: rgba(0,0,0,0.62);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.45rem 0.7rem;
+}
+
+.informe-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.informe-kpis article,
+.informe-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 14px;
+}
+
+.informe-kpis article {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem;
+}
+
+.informe-kpis article.is-primary {
+  background: #961C2C;
+  color: #fff;
+}
+
+.informe-kpis span,
+.informe-card h2 {
+  color: rgba(0,0,0,0.5);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.informe-kpis article.is-primary span,
+.informe-kpis article.is-primary small {
+  color: rgba(255,255,255,0.72);
+}
+
+.informe-kpis strong {
+  font-size: 1.45rem;
+  line-height: 1.05;
+}
+
+.informe-kpis small {
+  color: rgba(0,0,0,0.48);
+}
+
+.informe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.informe-card {
+  padding: 1rem;
+}
+
+.informe-card--wide {
+  grid-column: 1 / -1;
+}
+
+.informe-card h2 {
+  margin: 0 0 1rem;
+}
+
+.informe-chart {
+  height: 260px;
+}
+
+.informe-legend {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.informe-legend span {
+  color: rgba(0,0,0,0.58);
+  font-size: 0.8rem;
+}
+
+.informe-legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  margin-right: 0.35rem;
+}
+
+.informe-funnel,
+.informe-table,
+.informe-leads {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.informe-funnel div,
+.informe-table div,
+.informe-leads div {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.25rem 1rem;
+  border-radius: 10px;
+  background: #f4f2ea;
+  padding: 0.8rem;
+  overflow: hidden;
+}
+
+.informe-funnel div b {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  background: #961C2C;
+}
+
+.informe-funnel strong,
+.informe-table strong {
+  text-align: right;
+}
+
+.informe-funnel small,
+.informe-table small,
+.informe-leads small,
+.informe-leads em {
+  color: rgba(0,0,0,0.52);
+  font-size: 0.82rem;
+  font-style: normal;
+}
+
+.informe-leads span {
+  display: grid;
+  gap: 0.2rem;
+}
+
+@media (max-width: 1040px) {
+  .informe-kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .informe-page {
+    padding: 1rem;
+  }
+
+  .informe-sheet {
+    padding: 1.2rem;
+  }
+
+  .informe-hero,
+  .informe-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .informe-hero {
+    display: grid;
+  }
+
+  .informe-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .informe-hero h1 {
+    font-size: 2rem;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body,
+  .informe-page {
+    background: #fff;
+    padding: 0;
+  }
+
+  .informe-sheet {
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .informe-actions {
+    display: none;
+  }
+
+  .informe-chart {
+    height: 220px;
+  }
+
+  .informe-card,
+  .informe-kpis article {
+    break-inside: avoid;
+  }
+}

@@ -1,0 +1,208 @@
+.reportes-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  background: #0d0d0d;
+  color: #fff;
+  font-family: 'Bai Jamjuree', sans-serif;
+  padding: 2.5rem 2rem;
+}
+
+.reportes-page--center {
+  display: grid;
+  place-items: center;
+}
+
+.reportes-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+}
+
+.reportes-header h1,
+.reportes-empty h1 {
+  margin: 0 0 0.35rem;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.reportes-header p,
+.reportes-empty p,
+.reportes-muted {
+  margin: 0;
+  color: rgba(255,255,255,0.48);
+}
+
+.reportes-actions,
+.reportes-item-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.reportes-actions button,
+.reportes-empty a,
+.reportes-form button,
+.reportes-item-actions a,
+.reportes-item-actions button {
+  border: 0;
+  border-radius: 9px;
+  background: #961C2C;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.72rem 1rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.reportes-actions .is-secondary,
+.reportes-item-actions .is-secondary {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.reportes-empty,
+.reportes-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+}
+
+.reportes-empty {
+  width: min(460px, 100%);
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.reportes-alert {
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.reportes-alert--ok {
+  color: #b4efc2;
+  border-color: rgba(84,190,111,0.35);
+  background: rgba(84,190,111,0.12);
+}
+
+.reportes-alert--error {
+  color: #f0a0aa;
+  border-color: rgba(150,28,44,0.35);
+  background: rgba(150,28,44,0.12);
+}
+
+.reportes-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.reportes-card {
+  padding: 1.2rem;
+}
+
+.reportes-card h2 {
+  margin: 0 0 1rem;
+  color: rgba(255,255,255,0.56);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.reportes-form,
+.reportes-form label {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.reportes-form {
+  gap: 1rem;
+}
+
+.reportes-form label {
+  color: rgba(255,255,255,0.58);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.reportes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.reportes-form input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  background: rgba(0,0,0,0.28);
+  color: #fff;
+  font-family: inherit;
+  padding: 0.8rem 0.85rem;
+  outline: none;
+}
+
+.reportes-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.reportes-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.035);
+  padding: 1rem;
+}
+
+.reportes-item.is-active {
+  border-color: rgba(84,190,111,0.3);
+}
+
+.reportes-item strong,
+.reportes-item span,
+.reportes-item small {
+  display: block;
+}
+
+.reportes-item span {
+  margin-top: 0.25rem;
+  color: rgba(255,255,255,0.52);
+}
+
+.reportes-item small {
+  margin-top: 0.45rem;
+  color: rgba(255,255,255,0.34);
+  word-break: break-all;
+}
+
+@media (max-width: 980px) {
+  .reportes-layout,
+  .reportes-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .reportes-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .reportes-grid {
+    grid-template-columns: 1fr;
+  }
+}

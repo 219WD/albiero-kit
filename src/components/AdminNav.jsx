@@ -5,6 +5,7 @@ const links = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/analiticas', label: 'Analiticas' },
   { href: '/leads', label: 'Leads' },
+  { href: '/reportes', label: 'Reportes' },
   { href: '/emailmkt', label: 'Email MKT' },
   { href: '/promos', label: 'Promos' },
   { href: '/usuarios', label: 'Usuarios', superOnly: true },
