@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./EmailCapture.css";
 import { sendMetaEvent, setMetaAdvancedMatching } from "../../utils/metaEvents";
+import sygnusA1Image from "../../assets/CygnusA1.png";
 
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
@@ -18,21 +19,24 @@ const API_BASE =
 
 const MODAL_DELAY = 500;
 const DEFAULT_PROMO = {
-  id: "default",
-  title: "Accede a tu beneficio ahora",
-  subtitle: "Completa tus datos y recibi tu codigo exclusivo para la instalacion.",
-  badge: "BENEFICIO EXCLUSIVO",
-  discountValue: "10%",
-  discountLabel: "OFF",
-  offerText: "Aprovecha este beneficio en la instalacion de tu sistema de seguridad.",
+  id: "worldcup-2026",
+  title: "Participa del torneo Mundial Albiero 2026",
+  subtitle: "Hace tus predicciones, suma puntos en el ranking y competi por premios reales durante el Mundial.",
+  badge: "MUNDIAL ALBIERO",
+  discountValue: "2",
+  discountLabel: "CAMARAS",
+  offerText: "Primer premio: 2 Camaras Sygnus A1 para el campeon del ranking.",
   features: [
-    "Instalacion profesional sin costo",
-    "Equipos confiables y garantia oficial",
-    "Mas de 40 anos protegiendo Tucuman",
+    "Fixture completo del Mundial",
+    "Ranking de participantes",
+    "Premios para 1er, 2do y 3er puesto",
   ],
-  ctaText: "QUIERO MI BENEFICIO AHORA",
-  successTitle: "Listo. Tu beneficio ya esta activo",
-  successText: "Guarda este codigo y usalo al momento de coordinar la instalacion.",
+  ctaText: "PARTICIPAR AHORA",
+  successTitle: "Listo. Ya estas participando",
+  successText: "Entra al fixture y guarda tus predicciones antes de cada partido.",
+  isWorldCup: true,
+  imageUrl: sygnusA1Image,
+  linkUrl: "/mundial",
 };
 
 function generarCodigo() {
@@ -61,11 +65,29 @@ function recordPromoEvent(promoId, type) {
   }).catch(() => {});
 }
 
-async function enviarEmail({ email, nombre = "", tipo }) {
+async function enviarEmail({ email, nombre = "", tipo, promoId = "" }) {
   const codigo = tipo === "descuento" ? generarCodigo() : null;
+  const subscribeResponse = await fetch(`${API_BASE}/api/emailmkt/subscribe`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      nombre,
+      codigo,
+      promoId,
+      source: "email_capture",
+      bienvenidaEnviada: true,
+    }),
+  });
+
+  if (!subscribeResponse.ok) {
+    const data = await subscribeResponse.json().catch(() => ({}));
+    throw new Error(data.error || `Error ${subscribeResponse.status}`);
+  }
+
   const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&${ENTRY_CODIGO}=${encodeURIComponent(codigo || "-")}&entry.1390851687=&submit=Submit`;
 
-  await fetch(url, { method: "POST", mode: "no-cors" });
+  fetch(url, { method: "POST", mode: "no-cors" }).catch(() => {});
 
   return { ok: true, codigo };
 }
@@ -109,7 +131,7 @@ function DiscountModal({ onClose, promo }) {
     setLoading(true);
 
     try {
-      const res = await enviarEmail({ email, nombre, tipo: "descuento" });
+      const res = await enviarEmail({ email, nombre, tipo: "descuento", promoId: promo.id });
       setCodigo(res.codigo);
       localStorage.setItem("albiero_subscribed", "1");
       localStorage.setItem("albiero_email", email);
@@ -137,6 +159,15 @@ function DiscountModal({ onClose, promo }) {
     });
   };
 
+  const goToPromo = () => {
+    sendMetaEvent("trackCustom", "Promo_Mundial_Click", {
+      content_name: promo.title,
+      promo_id: promo.id,
+    }, { warnPrefix: "Pixel Promo Mundial" });
+    recordPromoEvent(promo.id, "click");
+    window.location.href = promo.linkUrl || "/mundial";
+  };
+
   return (
     <div className={`ec-overlay ${visible ? "ec-overlay--in" : ""}`} onClick={cerrar}>
       <div
@@ -157,6 +188,18 @@ function DiscountModal({ onClose, promo }) {
             <span className="ec-modal__off">{promo.discountLabel}</span>
           </div>
           <p className="ec-modal__offer-text">{promo.offerText}</p>
+          {promo.imageUrl && (
+            <div className="ec-modal__prize" aria-label="Premio: 2 Camaras Sygnus A1">
+              {[1, 2].map((item) => (
+                <img
+                  className={`ec-modal__product ec-modal__product--${item}`}
+                  src={promo.imageUrl}
+                  alt="Camara Sygnus A1"
+                  key={item}
+                />
+              ))}
+            </div>
+          )}
           <ul className="ec-modal__features">
             {(promo.features || []).map((feature) => (
               <li key={feature}>- {feature}</li>
@@ -165,7 +208,23 @@ function DiscountModal({ onClose, promo }) {
         </div>
 
         <div className="ec-modal__right">
-          {step === "form" ? (
+          {promo.isWorldCup ? (
+            <div className="ec-worldcup">
+              <span className="ec-worldcup__eyebrow">Camino a la cuarta estrella</span>
+              <h2 className="ec-modal__title">{promo.title}</h2>
+              <p className="ec-modal__subtitle">{promo.subtitle}</p>
+              <div className="ec-worldcup__reward">
+                <span>Primer puesto</span>
+                <strong>2 Camaras Sygnus A1</strong>
+              </div>
+              <button type="button" className="ec-btn ec-btn--primary" onClick={goToPromo}>
+                {`${promo.ctaText} ->`}
+              </button>
+              <p className="ec-disclaimer">
+                Tambien hay premios para el segundo y tercer puesto.
+              </p>
+            </div>
+          ) : step === "form" ? (
             <>
               <h2 className="ec-modal__title">{promo.title}</h2>
               <p className="ec-modal__subtitle">{promo.subtitle}</p>
@@ -263,28 +322,14 @@ export default function EmailCapture() {
   const [promo, setPromo] = useState(DEFAULT_PROMO);
 
   useEffect(() => {
-    let alive = true;
-
-    getActivePromo()
-      .then((activePromo) => {
-        if (!alive) return;
-
-        const nextPromo = { ...DEFAULT_PROMO, ...activePromo };
-        setPromo(nextPromo);
-
-        const viewKey = `albiero_promo_view_${nextPromo.id}`;
-        if (nextPromo.id && nextPromo.id !== "default" && !sessionStorage.getItem(viewKey)) {
-          sessionStorage.setItem(viewKey, "1");
-          recordPromoEvent(nextPromo.id, "view");
-        }
-      })
-      .catch(() => {
-        if (alive) setPromo(DEFAULT_PROMO);
-      });
-
-    return () => {
-      alive = false;
-    };
+    const viewKey = `albiero_promo_view_${DEFAULT_PROMO.id}`;
+    if (!sessionStorage.getItem(viewKey)) {
+      sessionStorage.setItem(viewKey, "1");
+      sendMetaEvent("trackCustom", "Promo_Mundial_View", {
+        content_name: DEFAULT_PROMO.title,
+        promo_id: DEFAULT_PROMO.id,
+      }, { warnPrefix: "Pixel Promo Mundial" });
+    }
   }, []);
 
   useEffect(() => {

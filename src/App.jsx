@@ -15,6 +15,7 @@ import Leads from './pages/Leads/Leads.jsx';
 import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import Reportes from './pages/Reportes/Reportes.jsx';
 import Informe from './pages/Informe/Informe.jsx';
+import WorldCup from './pages/WorldCup/WorldCup.jsx';
 import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
 import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
@@ -57,6 +58,7 @@ function App() {
                 <Route path="/leads" element={<Leads />} />
                 <Route path="/reportes" element={<Reportes />} />
                 <Route path="/informe/:token" element={<Informe />} />
+                <Route path="/mundial" element={<WorldCup />} />
                 <Route path="/terminos-y-condiciones" element={<TerminosYCondiciones />} />
                 <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
             </Routes>
