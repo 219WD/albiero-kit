@@ -545,6 +545,16 @@ export default function WorldCup() {
     setError('');
     setMessage('');
 
+    const tryAdminLogin = async () => {
+      const adminData = await apiRequest('/api/emailmkt/login', {
+        method: 'POST',
+        body: JSON.stringify({ username: form.email, password: form.password }),
+      });
+      localStorage.setItem(ADMIN_TOKEN_KEY, adminData.token);
+      setAdminToken(adminData.token);
+      return adminData;
+    };
+
     try {
       const endpoint = mode === 'register' ? '/api/worldcup/register' : '/api/worldcup/login';
       const data = await apiRequest(endpoint, {
@@ -554,16 +564,21 @@ export default function WorldCup() {
       localStorage.setItem(WORLDCUP_TOKEN_KEY, data.token);
       setToken(data.token);
       setMessage(mode === 'register' ? 'Usuario creado. Bienvenido al prode.' : 'Sesion iniciada.');
+
+      if (mode === 'login') {
+        try {
+          await tryAdminLogin();
+        } catch {
+          localStorage.removeItem(ADMIN_TOKEN_KEY);
+          setAdminToken('');
+        }
+      }
+
       setTab('fixture');
     } catch (err) {
       if (mode === 'login') {
         try {
-          const adminData = await apiRequest('/api/emailmkt/login', {
-            method: 'POST',
-            body: JSON.stringify({ username: form.email, password: form.password }),
-          });
-          localStorage.setItem(ADMIN_TOKEN_KEY, adminData.token);
-          setAdminToken(adminData.token);
+          await tryAdminLogin();
           setMessage('Sesion iniciada.');
           setTab('admin');
           return;
