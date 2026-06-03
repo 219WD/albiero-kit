@@ -266,8 +266,25 @@ function getFlagUrl(team) {
   return flagCode ? `https://flagcdn.com/${flagCode}.svg` : '';
 }
 
+function getFlagFallback(team) {
+  const flagCode = FLAG_CODES[team?.code] || team?.code?.toLowerCase();
+  if (/^[a-z]{2}$/.test(flagCode || '')) {
+    return flagCode
+      .toUpperCase()
+      .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+  }
+
+  const specialFlags = {
+    ENG: '🏴',
+    SCO: '🏴',
+  };
+
+  return specialFlags[team?.code] || team?.flag || team?.code || '';
+}
+
 function Team({ team, align = 'left' }) {
   const flagUrl = getFlagUrl(team);
+  const flagFallback = getFlagFallback(team);
 
   return (
     <span className={`wc-team wc-team--${align}`}>
@@ -282,7 +299,7 @@ function Team({ team, align = 'left' }) {
             }}
           />
         ) : null}
-        <span>{team.code}</span>
+        <span>{flagFallback}</span>
       </b>
       <em>{team.name}</em>
     </span>
@@ -291,6 +308,7 @@ function Team({ team, align = 'left' }) {
 
 function TeamInline({ team }) {
   const flagUrl = getFlagUrl(team);
+  const flagFallback = getFlagFallback(team);
 
   return (
     <span className="wc-team-inline">
@@ -304,6 +322,7 @@ function TeamInline({ team }) {
           }}
         />
       ) : null}
+      <span className="wc-team-inline__flag">{flagFallback}</span>
       <b>{team.name}</b>
     </span>
   );

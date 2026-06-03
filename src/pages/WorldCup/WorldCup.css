@@ -405,6 +405,20 @@
   flex: 0 0 auto;
 }
 
+.wc-team-inline__flag {
+  display: inline-grid;
+  width: 30px;
+  height: 22px;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.wc-team-inline img + .wc-team-inline__flag {
+  display: none;
+}
+
 .wc-team-inline b {
   overflow: hidden;
   color: #fff;
@@ -550,7 +564,7 @@
   display: grid;
   place-items: center;
   color: rgba(255,255,255,0.72);
-  font-size: 0.74rem;
+  font-size: 1.25rem;
   font-weight: 900;
   letter-spacing: 0;
   z-index: 0;
