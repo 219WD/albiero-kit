@@ -170,6 +170,11 @@ function DiscountModal({ onClose, promo }) {
 
   return (
     <div className={`ec-overlay ${visible ? "ec-overlay--in" : ""}`} onClick={cerrar}>
+      <div className="ec-confetti" aria-hidden="true">
+        {Array.from({ length: 28 }, (_, index) => (
+          <span key={index} />
+        ))}
+      </div>
       <div
         className={`ec-modal ${visible ? "ec-modal--in" : ""}`}
         onClick={(e) => e.stopPropagation()}

@@ -247,9 +247,103 @@
   opacity: 1;
 }
 
+.ec-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ec-confetti span {
+  --x: 0px;
+  --y: 0px;
+  --r: 0deg;
+  --delay: 0s;
+  --duration: 3.4s;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9px;
+  height: 18px;
+  border-radius: 2px;
+  background: #74acdf;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(0deg);
+  animation: ec-confetti-burst var(--duration) ease-out infinite;
+  animation-delay: var(--delay);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+}
+
+.ec-confetti span:nth-child(3n) {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.ec-confetti span:nth-child(4n) {
+  width: 14px;
+  height: 8px;
+  background: #f6c85f;
+}
+
+.ec-confetti span:nth-child(1) { --x: -455px; --y: -185px; --r: -58deg; --delay: 0.02s; }
+.ec-confetti span:nth-child(2) { --x: 430px; --y: -170px; --r: 48deg; --delay: 0.06s; }
+.ec-confetti span:nth-child(3) { --x: -390px; --y: 150px; --r: 128deg; --delay: 0.1s; }
+.ec-confetti span:nth-child(4) { --x: 370px; --y: 170px; --r: -120deg; --delay: 0.14s; }
+.ec-confetti span:nth-child(5) { --x: -510px; --y: 20px; --r: 88deg; --delay: 0.18s; }
+.ec-confetti span:nth-child(6) { --x: 505px; --y: 10px; --r: -82deg; --delay: 0.22s; }
+.ec-confetti span:nth-child(7) { --x: -300px; --y: -255px; --r: 168deg; --delay: 0.26s; }
+.ec-confetti span:nth-child(8) { --x: 285px; --y: -245px; --r: -148deg; --delay: 0.3s; }
+.ec-confetti span:nth-child(9) { --x: -235px; --y: 240px; --r: -205deg; --delay: 0.34s; }
+.ec-confetti span:nth-child(10) { --x: 245px; --y: 238px; --r: 205deg; --delay: 0.38s; }
+.ec-confetti span:nth-child(11) { --x: -560px; --y: -115px; --r: 240deg; --delay: 0.42s; }
+.ec-confetti span:nth-child(12) { --x: 555px; --y: -100px; --r: -235deg; --delay: 0.46s; }
+.ec-confetti span:nth-child(13) { --x: -455px; --y: 260px; --r: -310deg; --delay: 0.5s; }
+.ec-confetti span:nth-child(14) { --x: 440px; --y: 250px; --r: 310deg; --delay: 0.54s; }
+.ec-confetti span:nth-child(15) { --x: -115px; --y: -310px; --r: -80deg; --delay: 0.58s; }
+.ec-confetti span:nth-child(16) { --x: 125px; --y: -315px; --r: 86deg; --delay: 0.62s; }
+.ec-confetti span:nth-child(17) { --x: -610px; --y: 100px; --r: 28deg; --delay: 0.66s; }
+.ec-confetti span:nth-child(18) { --x: 610px; --y: 110px; --r: -28deg; --delay: 0.7s; }
+.ec-confetti span:nth-child(19) { --x: -160px; --y: 330px; --r: 150deg; --delay: 0.74s; }
+.ec-confetti span:nth-child(20) { --x: 165px; --y: 326px; --r: -150deg; --delay: 0.78s; }
+.ec-confetti span:nth-child(21) { --x: -25px; --y: -350px; --r: 230deg; --delay: 0.82s; }
+.ec-confetti span:nth-child(22) { --x: 32px; --y: 350px; --r: -230deg; --delay: 0.86s; }
+.ec-confetti span:nth-child(23) { --x: -520px; --y: -250px; --r: 112deg; --delay: 0.12s; }
+.ec-confetti span:nth-child(24) { --x: 520px; --y: -250px; --r: -112deg; --delay: 0.16s; }
+.ec-confetti span:nth-child(25) { --x: -345px; --y: 325px; --r: 260deg; --delay: 0.28s; }
+.ec-confetti span:nth-child(26) { --x: 345px; --y: 325px; --r: -260deg; --delay: 0.32s; }
+.ec-confetti span:nth-child(27) { --x: -665px; --y: -5px; --r: -172deg; --delay: 0.48s; }
+.ec-confetti span:nth-child(28) { --x: 665px; --y: -5px; --r: 172deg; --delay: 0.52s; }
+
+@keyframes ec-confetti-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+  }
+  12% {
+    opacity: 0.95;
+  }
+  68% {
+    opacity: 0.78;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1) rotate(var(--r));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-confetti {
+    display: none;
+  }
+}
+
 /* ── Modal container ──────────────────────────────────────────── */
 .ec-modal {
   position: relative;
+  z-index: 2;
   display: flex;
   width: 100%;
   max-width: 860px;
@@ -261,6 +355,20 @@
   opacity: 0;
   transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
               opacity 0.28s ease;
+}
+
+.ec-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
+  z-index: 9;
+  background: linear-gradient(
+    90deg,
+    #74acdf 0 33.33%,
+    #ffffff 33.33% 66.66%,
+    #74acdf 66.66% 100%
+  );
 }
 
 .ec-modal--in {
