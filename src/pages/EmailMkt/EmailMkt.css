@@ -69,7 +69,7 @@
 
 .em-view-tabs {
   display: inline-grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-bottom: 18px;
   padding: 5px;
@@ -98,6 +98,116 @@
   grid-template-columns: minmax(360px, 0.8fr) minmax(420px, 1.2fr);
   gap: 24px;
   align-items: start;
+}
+
+.em-contacts {
+  display: block;
+}
+
+.em-contact-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.em-contact-stats span {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: #101010;
+  padding: 12px;
+  color: #bdbdbd;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.em-contact-stats strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #fff;
+  font-size: 24px;
+}
+
+.em-contact-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.em-contact-tools input {
+  flex: 1;
+}
+
+.em-contact-tools small {
+  color: #bdbdbd;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.em-contact-table {
+  display: grid;
+  gap: 8px;
+}
+
+.em-contact-table__head,
+.em-contact-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(150px, 0.7fr) minmax(220px, 1fr) 110px;
+  gap: 14px;
+  align-items: center;
+}
+
+.em-contact-table__head {
+  color: #aaa;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 12px;
+}
+
+.em-contact-row {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: #101010;
+  padding: 12px;
+  color: #ddd;
+}
+
+.em-contact-row strong,
+.em-contact-row small {
+  display: block;
+}
+
+.em-contact-row strong {
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.em-contact-row small {
+  color: #aaa;
+}
+
+.em-contact-row em {
+  justify-self: end;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.em-contact-row em.is-sent {
+  background: rgba(50, 160, 100, 0.18);
+  color: #8be0ac;
+}
+
+.em-contact-row em.is-failed {
+  background: rgba(150, 28, 44, 0.18);
+  color: #ff9cac;
 }
 
 .em-panel-head {
@@ -465,6 +575,28 @@
 
   .em-history {
     grid-template-columns: 1fr;
+  }
+
+  .em-contact-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .em-contact-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .em-contact-table__head {
+    display: none;
+  }
+
+  .em-contact-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .em-contact-row em {
+    justify-self: start;
   }
 
   .em-header {

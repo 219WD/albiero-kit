@@ -66,6 +66,17 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
+const SOURCE_LABELS = {
+  google_sheets: 'Excel',
+  mongodb: 'Base Albiero',
+  worldcup: 'Mundial',
+  sin_fuente: 'Sin fuente',
+};
+
+function formatSources(sources = []) {
+  return sources.map((source) => SOURCE_LABELS[source] || source).join(', ');
+}
+
 export default function EmailMkt() {
   const [token, setToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_KEY) || '');
   const [authMode, setAuthMode] = useState('login');
@@ -84,11 +95,14 @@ export default function EmailMkt() {
   const [templates, setTemplates] = useState([]);
   const [view, setView] = useState('send');
   const [recipients, setRecipients] = useState(null);
+  const [contacts, setContacts] = useState(null);
+  const [contactSearch, setContactSearch] = useState('');
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
   const [loadingRecipients, setLoadingRecipients] = useState(true);
+  const [loadingContacts, setLoadingContacts] = useState(false);
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState('');
@@ -98,6 +112,7 @@ export default function EmailMkt() {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
     setToken('');
     setRecipients(null);
+    setContacts(null);
     setCampaigns([]);
     setSelectedCampaign(null);
     setTemplates([]);
@@ -156,6 +171,23 @@ export default function EmailMkt() {
       handleRequestError(err);
     } finally {
       setLoadingCampaigns(false);
+    }
+  };
+
+  const loadContacts = async () => {
+    if (!token) return;
+
+    setLoadingContacts(true);
+    setError('');
+
+    try {
+      const query = campaignId.trim() ? `?campaignId=${encodeURIComponent(campaignId.trim())}` : '';
+      const data = await apiRequest(`/api/emailmkt/contacts${query}`, {}, token);
+      setContacts(data);
+    } catch (err) {
+      handleRequestError(err);
+    } finally {
+      setLoadingContacts(false);
     }
   };
 
@@ -228,6 +260,12 @@ export default function EmailMkt() {
     }
   }, [token, view]);
 
+  useEffect(() => {
+    if (token && view === 'contacts') {
+      loadContacts();
+    }
+  }, [token, view, campaignId]);
+
   const validButtons = useMemo(
     () => buttons.filter((button) => button.label.trim() && button.url.trim()),
     [buttons]
@@ -236,6 +274,21 @@ export default function EmailMkt() {
   const canSend = campaignId.trim() && subject.trim() && title.trim() && content.trim() && !sending;
   const effectiveTemplateName = templateName.trim() || campaignId.trim();
   const canSaveTemplate = effectiveTemplateName && subject.trim() && title.trim() && content.trim() && !savingTemplate;
+  const filteredContacts = useMemo(() => {
+    const term = contactSearch.trim().toLowerCase();
+    const rows = contacts?.contacts || [];
+    if (!term) return rows;
+
+    return rows.filter((contact) => [
+      contact.email,
+      contact.nombre,
+      formatSources(contact.sources || []),
+      contact.tipo,
+      contact.ubicacion,
+      contact.sistema,
+      contact.producto,
+    ].some((value) => String(value || '').toLowerCase().includes(term)));
+  }, [contacts, contactSearch]);
 
   const updateButton = (index, field, value) => {
     setButtons((current) =>
@@ -438,7 +491,7 @@ export default function EmailMkt() {
             </label>
           )}
           <label>
-            Contraseña
+            Contrasena
             <input
               type="password"
               value={adminPass}
@@ -484,7 +537,7 @@ export default function EmailMkt() {
       <section className="em-header">
         <div>
           <p className="em-kicker">Email marketing</p>
-          <h1>Campañas Albiero</h1>
+          <h1>Campanas Albiero</h1>
         </div>
         <div className="em-count">
           {loadingRecipients
@@ -501,12 +554,78 @@ export default function EmailMkt() {
         <button className={view === 'send' ? 'is-active' : ''} onClick={() => setView('send')}>
           Enviar campana
         </button>
+        <button className={view === 'contacts' ? 'is-active' : ''} onClick={() => setView('contacts')}>
+          Contactos
+        </button>
         <button className={view === 'history' ? 'is-active' : ''} onClick={() => setView('history')}>
           Historial
         </button>
       </div>
 
-      {view === 'history' ? (
+      {view === 'contacts' ? (
+        <section className="em-contacts">
+          <div className="em-panel">
+            <div className="em-panel-head">
+              <div>
+                <p className="em-kicker">Base unificada</p>
+                <h2>Contactos para email marketing</h2>
+              </div>
+              <button className="em-logout" onClick={loadContacts} disabled={loadingContacts}>
+                {loadingContacts ? 'Actualizando...' : 'Actualizar'}
+              </button>
+            </div>
+
+            <div className="em-contact-stats">
+              <span><strong>{contacts?.total ?? 0}</strong>Total</span>
+              <span><strong>{contacts?.eligible ?? 0}</strong>Nuevos</span>
+              <span><strong>{contacts?.alreadySent ?? 0}</strong>Ya enviados</span>
+              <span><strong>{contacts?.bySource?.google_sheets ?? 0}</strong>Excel</span>
+              <span><strong>{contacts?.bySource?.worldcup ?? 0}</strong>Mundial</span>
+            </div>
+
+            <div className="em-contact-tools">
+              <input
+                value={contactSearch}
+                onChange={(event) => setContactSearch(event.target.value)}
+                placeholder="Buscar por nombre, email, fuente, zona..."
+              />
+              <small>{filteredContacts.length} visibles</small>
+            </div>
+
+            {loadingContacts && <p className="em-empty">Cargando contactos...</p>}
+            {!loadingContacts && filteredContacts.length === 0 && (
+              <p className="em-empty">No hay contactos para mostrar.</p>
+            )}
+            {!loadingContacts && filteredContacts.length > 0 && (
+              <div className="em-contact-table">
+                <div className="em-contact-table__head">
+                  <span>Contacto</span>
+                  <span>Fuente</span>
+                  <span>Datos</span>
+                  <span>Estado</span>
+                </div>
+                {filteredContacts.map((contact) => (
+                  <div className="em-contact-row" key={contact.email}>
+                    <span>
+                      <strong>{contact.nombre || 'Sin nombre'}</strong>
+                      <small>{contact.email}</small>
+                    </span>
+                    <span>{formatSources(contact.sources || [])}</span>
+                    <span>
+                      {[contact.tipo, contact.ubicacion, contact.sistema, contact.producto]
+                        .filter(Boolean)
+                        .join(' - ') || 'Sin datos extra'}
+                    </span>
+                    <em className={contact.eligible ? 'is-sent' : 'is-failed'}>
+                      {contact.eligible ? 'Nuevo' : 'Ya enviado'}
+                    </em>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      ) : view === 'history' ? (
         <section className="em-history">
           <div className="em-panel">
             <div className="em-panel-head">
@@ -546,7 +665,7 @@ export default function EmailMkt() {
                 <h2>{selectedCampaign?.campaignId || 'Selecciona una campana'}</h2>
               </div>
             </div>
-            {!selectedCampaign && <p className="em-empty">Elegí una campaña para ver destinatarios y estado.</p>}
+            {!selectedCampaign && <p className="em-empty">Elegi una campana para ver destinatarios y estado.</p>}
             {selectedCampaign && (
               <>
                 <div className="em-detail-stats">
@@ -644,7 +763,7 @@ export default function EmailMkt() {
           </label>
 
           <label>
-            Título principal
+            Titulo principal
             <input value={title} onChange={(event) => setTitle(event.target.value)} />
           </label>
 
@@ -677,7 +796,7 @@ export default function EmailMkt() {
           </div>
 
           <button className="em-send" disabled={!canSend} onClick={sendCampaign}>
-            {sending ? 'Enviando...' : 'Enviar campaña'}
+            {sending ? 'Enviando...' : 'Enviar campana'}
           </button>
         </div>
 
@@ -685,11 +804,11 @@ export default function EmailMkt() {
           <div className="em-mail">
             <div className="em-mail-head">
               <img src="https://res.cloudinary.com/dtxdv136u/image/upload/v1763499836/logo_alb_ged07k.png" alt="" />
-              <h2>{title || 'Título de la campaña'}</h2>
-              <p>Albiero Seguridad · +40 años protegiendo Tucumán</p>
+              <h2>{title || 'Titulo de la campana'}</h2>
+              <p>Albiero Seguridad - +40 anos protegiendo Tucuman</p>
             </div>
             <div className="em-mail-body">
-              {(content || 'Escribí el contenido de la campaña. Separá párrafos con una línea en blanco.')
+              {(content || 'Escribi el contenido de la campana. Separa parrafos con una linea en blanco.')
                 .split(/\n{2,}/)
                 .map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
