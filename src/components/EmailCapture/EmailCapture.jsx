@@ -25,11 +25,12 @@ const DEFAULT_PROMO = {
   badge: "MUNDIAL ALBIERO",
   discountValue: "2",
   discountLabel: "CAMARAS",
-  offerText: "Primer premio: 2 Camaras Sygnus A1 para el campeon del ranking.",
+  offerText: "Primer premio: 2 camaras Cygnus A1 con vision nocturna HD, audio bidireccional y seguimiento automatico.",
   features: [
     "Fixture completo del Mundial",
     "Ranking de participantes",
     "Premios para 1er, 2do y 3er puesto",
+    "Camara 2 MP con giro 360 y deteccion inteligente",
   ],
   ctaText: "PARTICIPAR AHORA",
   successTitle: "Listo. Ya estas participando",
@@ -194,12 +195,12 @@ function DiscountModal({ onClose, promo }) {
           </div>
           <p className="ec-modal__offer-text">{promo.offerText}</p>
           {promo.imageUrl && (
-            <div className="ec-modal__prize" aria-label="Premio: 2 Camaras Sygnus A1">
+            <div className="ec-modal__prize" aria-label="Premio: 2 camaras Cygnus A1">
               {[1, 2].map((item) => (
                 <img
                   className={`ec-modal__product ec-modal__product--${item}`}
                   src={promo.imageUrl}
-                  alt="Camara Sygnus A1"
+                  alt="Camara Cygnus A1"
                   key={item}
                 />
               ))}
@@ -220,7 +221,8 @@ function DiscountModal({ onClose, promo }) {
               <p className="ec-modal__subtitle">{promo.subtitle}</p>
               <div className="ec-worldcup__reward">
                 <span>Primer puesto</span>
-                <strong>2 Camaras Sygnus A1</strong>
+                <strong>2 camaras con vision nocturna HD</strong>
+                <small>Audio bidireccional, giro 360 y deteccion inteligente. Cygnus A1.</small>
               </div>
               <button type="button" className="ec-btn ec-btn--primary" onClick={goToPromo}>
                 {`${promo.ctaText} ->`}

@@ -6,6 +6,12 @@ import { ADMIN_TOKEN_KEY, getAdminFromToken } from '../../utils/adminSession';
 import { WORLDCUP_TOKEN_KEY, getWorldCupUserFromToken } from '../../utils/worldCupSession';
 import albieroLogo from '../../assets/logo.png';
 import sygnusA1Image from '../../assets/CygnusA1.png';
+import {
+  WORLD_CUP_FIXTURE as FALLBACK_WORLD_CUP_FIXTURE,
+  WORLD_CUP_GROUPS as FALLBACK_WORLD_CUP_GROUPS,
+  WORLD_CUP_PRIZES as FALLBACK_WORLD_CUP_PRIZES,
+  WORLD_CUP_TEAMS as FALLBACK_WORLD_CUP_TEAMS,
+} from './worldCupFixtureFallback';
 import './WorldCup.css';
 
 const PROD_API_BASE = 'https://albi-backend-nine.vercel.app';
@@ -75,87 +81,18 @@ const FLAG_CODES = {
   UZB: 'uz',
 };
 
+const teamPayload = (code) => FALLBACK_WORLD_CUP_TEAMS[code] || { code, name: code, flag: '' };
+
 const LOCAL_FIXTURE_FALLBACK = {
-  groups: ['Grupo A', 'Grupo B', 'Grupo C'],
-  prizes: [
-    {
-      place: 1,
-      title: 'Primer Puesto',
-      description: 'El premio que todos quieren. Gana 2 Camaras Cygnus A1 y convertite en el gran campeon del ranking Albiero 2026.',
-    },
-    {
-      place: 2,
-      title: 'Segundo Puesto',
-      description: 'Seguridad + beneficio exclusivo. Llevate 1 Camara Cygnus A1 y 20% de descuento en la instalacion de tu sistema Albiero.',
-    },
-    {
-      place: 3,
-      title: 'Tercer Puesto',
-      description: 'Tu lugar en el podio tambien tiene premio. Gana 1 Camara Cygnus A1 y empeza a proteger lo que construiste con tanto esfuerzo.',
-    },
-  ],
-  matches: [
-    {
-      id: 'arg-01',
-      stage: 'Fase de grupos',
-      group: 'Grupo C',
-      kickoff: '2026-06-13T21:00:00.000Z',
-      venue: 'Estadio a confirmar',
-      home: 'ARG',
-      away: 'SAU',
-      locked: false,
-      homeTeam: { code: 'ARG', name: 'Argentina', flag: '🇦🇷' },
-      awayTeam: { code: 'SAU', name: 'Arabia Saudita', flag: '🇸🇦' },
-    },
-    {
-      id: 'mex-pol-01',
-      stage: 'Fase de grupos',
-      group: 'Grupo C',
-      kickoff: '2026-06-14T18:00:00.000Z',
-      venue: 'Estadio a confirmar',
-      home: 'MEX',
-      away: 'POL',
-      locked: false,
-      homeTeam: { code: 'MEX', name: 'Mexico', flag: '🇲🇽' },
-      awayTeam: { code: 'POL', name: 'Polonia', flag: '🇵🇱' },
-    },
-    {
-      id: 'arg-02',
-      stage: 'Fase de grupos',
-      group: 'Grupo C',
-      kickoff: '2026-06-18T21:00:00.000Z',
-      venue: 'Estadio a confirmar',
-      home: 'ARG',
-      away: 'MEX',
-      locked: false,
-      homeTeam: { code: 'ARG', name: 'Argentina', flag: '🇦🇷' },
-      awayTeam: { code: 'MEX', name: 'Mexico', flag: '🇲🇽' },
-    },
-    {
-      id: 'pol-sau-01',
-      stage: 'Fase de grupos',
-      group: 'Grupo C',
-      kickoff: '2026-06-19T18:00:00.000Z',
-      venue: 'Estadio a confirmar',
-      home: 'POL',
-      away: 'SAU',
-      locked: false,
-      homeTeam: { code: 'POL', name: 'Polonia', flag: '🇵🇱' },
-      awayTeam: { code: 'SAU', name: 'Arabia Saudita', flag: '🇸🇦' },
-    },
-    {
-      id: 'arg-03',
-      stage: 'Fase de grupos',
-      group: 'Grupo C',
-      kickoff: '2026-06-24T21:00:00.000Z',
-      venue: 'Estadio a confirmar',
-      home: 'POL',
-      away: 'ARG',
-      locked: false,
-      homeTeam: { code: 'POL', name: 'Polonia', flag: '🇵🇱' },
-      awayTeam: { code: 'ARG', name: 'Argentina', flag: '🇦🇷' },
-    },
-  ],
+  groups: FALLBACK_WORLD_CUP_GROUPS,
+  prizes: FALLBACK_WORLD_CUP_PRIZES,
+  matches: FALLBACK_WORLD_CUP_FIXTURE.map((match) => ({
+    ...match,
+    homeTeam: teamPayload(match.home),
+    awayTeam: teamPayload(match.away),
+    result: null,
+    locked: new Date(match.kickoff).getTime() <= Date.now(),
+  })),
 };
 
 async function apiRequest(endpoint, options = {}, token = '') {
@@ -275,8 +212,8 @@ function getFlagFallback(team) {
   }
 
   const specialFlags = {
-    ENG: '🏴',
-    SCO: '🏴',
+    ENG: 'ENG',
+    SCO: 'SCO',
   };
 
   return specialFlags[team?.code] || team?.flag || team?.code || '';
@@ -987,7 +924,7 @@ export default function WorldCup() {
                 {!adminToken || !adminFromToken ? (
                   <div className="wc-empty-state">
                     <strong>Sesion requerida.</strong>
-                    <span>Volvé a ingresar para continuar.</span>
+                    <span>Volve a ingresar para continuar.</span>
                     <button type="button" className="wc-primary-btn" onClick={() => setTab('login')}>Ingresar</button>
                   </div>
                 ) : (
@@ -1076,7 +1013,7 @@ export default function WorldCup() {
                     ) : (
                       <div className="wc-empty-state">
                         <strong>Todavia no guardaste predicciones.</strong>
-                        <span>Elegí un partido del fixture y guardá el resultado para verlo acá.</span>
+                        <span>Elegi un partido del fixture y guarda el resultado para verlo aca.</span>
                       </div>
                     )}
                     <button type="button" className="wc-primary-btn" onClick={logout}>Cerrar sesion</button>

@@ -614,6 +614,12 @@
   font-weight: 900;
 }
 
+.ec-worldcup__reward small {
+  color: rgba(21, 21, 21, 0.66);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .ec-modal__title {
   font-size: 1.45rem;
   font-weight: 800;
