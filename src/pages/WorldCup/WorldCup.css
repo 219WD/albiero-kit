@@ -1105,6 +1105,29 @@
     justify-content: center;
   }
 
+  .wc-match-bottom {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding-top: 0.15rem;
+  }
+
+  .wc-match-bottom span,
+  .wc-match-bottom small {
+    text-align: center;
+  }
+
+  .wc-match-bottom button {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 14px;
+    background:
+      linear-gradient(135deg, rgba(150,28,44,1), rgba(116,172,223,0.72)),
+      #961C2C;
+    box-shadow: 0 14px 28px rgba(150,28,44,0.28);
+  }
+
   .wc-prizes {
     max-width: none;
   }

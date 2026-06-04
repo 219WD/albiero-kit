@@ -322,28 +322,22 @@ export default function EmailCapture() {
   const [promo, setPromo] = useState(DEFAULT_PROMO);
 
   useEffect(() => {
-    const viewKey = `albiero_promo_view_${DEFAULT_PROMO.id}`;
-    if (!sessionStorage.getItem(viewKey)) {
-      sessionStorage.setItem(viewKey, "1");
-      sendMetaEvent("trackCustom", "Promo_Mundial_View", {
-        content_name: DEFAULT_PROMO.title,
-        promo_id: DEFAULT_PROMO.id,
-      }, { warnPrefix: "Pixel Promo Mundial" });
-    }
-  }, []);
-
-  useEffect(() => {
-    const yaSuscripto = localStorage.getItem("albiero_subscribed");
-    const yaVioModal = sessionStorage.getItem("albiero_modal_shown");
-    if (yaSuscripto || yaVioModal) return;
-
     const timer = setTimeout(() => {
       setModalOpen(true);
-      sessionStorage.setItem("albiero_modal_shown", "1");
     }, MODAL_DELAY);
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!modalOpen) return;
+
+    sendMetaEvent("trackCustom", "Promo_Mundial_View", {
+      content_name: promo.title,
+      promo_id: promo.id,
+    }, { warnPrefix: "Pixel Promo Mundial" });
+    recordPromoEvent(promo.id, "view");
+  }, [modalOpen, promo.id, promo.title]);
 
   const abrirModal = useCallback(() => {
     sendMetaEvent("trackCustom", "Promo_Click", {
