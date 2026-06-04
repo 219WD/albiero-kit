@@ -373,6 +373,7 @@ export default function WorldCup() {
   const [selectedGroup, setSelectedGroup] = useState('all');
   const [selectedTeam, setSelectedTeam] = useState('all');
   const [topbarScrolled, setTopbarScrolled] = useState(false);
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
 
   const predictionMap = useMemo(() => new Map(predictions.map((prediction) => [prediction.matchId, prediction])), [predictions]);
   const groupOptions = useMemo(() => normalizeGroups(fixture.groups, fixture.matches), [fixture]);
@@ -402,6 +403,12 @@ export default function WorldCup() {
     })
     .filter(Boolean)
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [fixture.matches, predictions]);
+
+  const isMatchLocked = (match) => {
+    const kickoffTime = new Date(match.kickoff).getTime();
+    if (Number.isNaN(kickoffTime)) return Boolean(match.locked);
+    return Boolean(match.locked) || kickoffTime <= currentTime;
+  };
 
   const loadPublicData = async () => {
     try {
@@ -471,6 +478,11 @@ export default function WorldCup() {
     updateTopbar();
     window.addEventListener('scroll', updateTopbar, { passive: true });
     return () => window.removeEventListener('scroll', updateTopbar);
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setCurrentTime(Date.now()), 15000);
+    return () => window.clearInterval(interval);
   }, []);
 
   const updateForm = (field, value) => {
@@ -561,6 +573,13 @@ export default function WorldCup() {
     if (existingPrediction) {
       setMessage('Este pronostico ya fue guardado y no se puede editar.');
       toast('Este pronostico ya fue guardado y no se puede editar.');
+      return;
+    }
+
+    if (isMatchLocked(match)) {
+      setError('Este partido ya empezo y el pronostico esta cerrado.');
+      toast.error('Pronostico cerrado: el partido ya empezo.');
+      await loadPublicData();
       return;
     }
 
@@ -779,7 +798,8 @@ export default function WorldCup() {
                     const prediction = predictionMap.get(match.id);
                     const draft = drafts[match.id] || {};
                     const isPredictionSaved = Boolean(prediction);
-                    const predictionDisabled = match.locked || isPredictionSaved;
+                    const matchIsLocked = isMatchLocked(match);
+                    const predictionDisabled = matchIsLocked || isPredictionSaved;
 
                     return (
                       <article className={`wc-match ${match.home === 'ARG' || match.away === 'ARG' ? 'is-arg' : ''}`} key={match.id}>
@@ -819,11 +839,11 @@ export default function WorldCup() {
                           <Team team={match.awayTeam} align="right" />
                         </div>
                         <div className="wc-match-bottom">
-                          <span>{match.result ? 'Resultado oficial cargado.' : 'Una vez guardado ya no se puede editar la prediccion.'}</span>
+                          <span>{match.result ? 'Resultado oficial cargado.' : matchIsLocked ? 'Pronostico cerrado: el partido ya empezo.' : 'Una vez guardado ya no se puede editar la prediccion.'}</span>
                           {prediction?.points !== undefined && <small>{prediction.points} pts</small>}
                           {!match.result && token && (
                             <button type="button" disabled={predictionDisabled || savingId === match.id} onClick={() => savePrediction(match)}>
-                              {isPredictionSaved ? 'Guardado' : match.locked ? 'Bloqueado' : savingId === match.id ? 'Guardando...' : 'Guardar'}
+                              {isPredictionSaved ? 'Guardado' : matchIsLocked ? 'Cerrado' : savingId === match.id ? 'Guardando...' : 'Guardar'}
                             </button>
                           )}
                           {!match.result && !token && (
