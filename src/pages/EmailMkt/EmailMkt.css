@@ -130,14 +130,26 @@
 }
 
 .em-contact-tools {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, auto) minmax(170px, auto) auto;
   align-items: center;
   gap: 12px;
   margin-bottom: 14px;
 }
 
-.em-contact-tools input {
-  flex: 1;
+.em-contact-tools input,
+.em-contact-tools select {
+  min-width: 0;
+}
+
+.em-contact-tools select {
+  border: 1px solid #252525;
+  border-radius: 8px;
+  background: #111;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  padding: 12px;
 }
 
 .em-contact-tools small {
@@ -154,7 +166,7 @@
 .em-contact-table__head,
 .em-contact-row {
   display: grid;
-  grid-template-columns: minmax(220px, 1.1fr) minmax(150px, 0.7fr) minmax(220px, 1fr) 110px;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(130px, 0.62fr) minmax(132px, 0.62fr) minmax(220px, 1fr) 110px;
   gap: 14px;
   align-items: center;
 }
@@ -583,7 +595,7 @@
 
   .em-contact-tools {
     align-items: stretch;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .em-contact-table__head {

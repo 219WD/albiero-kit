@@ -59,11 +59,19 @@ async function apiRequest(endpoint, options = {}, token = '') {
 
 function formatDate(value) {
   if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
 
   return new Intl.DateTimeFormat('es-AR', {
     dateStyle: 'short',
     timeStyle: 'short',
-  }).format(new Date(value));
+  }).format(date);
+}
+
+function getContactSavedTime(contact = {}) {
+  const value = contact.createdAt || contact.updatedAt || '';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
 }
 
 const SOURCE_LABELS = {
@@ -97,6 +105,8 @@ export default function EmailMkt() {
   const [recipients, setRecipients] = useState(null);
   const [contacts, setContacts] = useState(null);
   const [contactSearch, setContactSearch] = useState('');
+  const [contactSourceFilter, setContactSourceFilter] = useState('all');
+  const [contactSort, setContactSort] = useState('newest');
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
@@ -277,18 +287,32 @@ export default function EmailMkt() {
   const filteredContacts = useMemo(() => {
     const term = contactSearch.trim().toLowerCase();
     const rows = contacts?.contacts || [];
-    if (!term) return rows;
-
-    return rows.filter((contact) => [
-      contact.email,
-      contact.nombre,
-      formatSources(contact.sources || []),
-      contact.tipo,
-      contact.ubicacion,
-      contact.sistema,
-      contact.producto,
-    ].some((value) => String(value || '').toLowerCase().includes(term)));
-  }, [contacts, contactSearch]);
+    return rows
+      .filter((contact) => (
+        contactSourceFilter === 'all'
+        || (contact.sources || []).includes(contactSourceFilter)
+        || contact.source === contactSourceFilter
+      ))
+      .filter((contact) => {
+        if (!term) return true;
+        return [
+          contact.email,
+          contact.nombre,
+          formatSources(contact.sources || []),
+          contact.tipo,
+          contact.ubicacion,
+          contact.sistema,
+          contact.producto,
+          formatDate(contact.createdAt || contact.updatedAt),
+        ].some((value) => String(value || '').toLowerCase().includes(term));
+      })
+      .sort((left, right) => {
+        const leftTime = getContactSavedTime(left);
+        const rightTime = getContactSavedTime(right);
+        const direction = contactSort === 'oldest' ? 1 : -1;
+        return (leftTime - rightTime) * direction || left.email.localeCompare(right.email);
+      });
+  }, [contacts, contactSearch, contactSort, contactSourceFilter]);
 
   const updateButton = (index, field, value) => {
     setButtons((current) =>
@@ -589,6 +613,16 @@ export default function EmailMkt() {
                 onChange={(event) => setContactSearch(event.target.value)}
                 placeholder="Buscar por nombre, email, fuente, zona..."
               />
+              <select value={contactSourceFilter} onChange={(event) => setContactSourceFilter(event.target.value)}>
+                <option value="all">Todas las fuentes</option>
+                <option value="google_sheets">Solo Excel</option>
+                <option value="worldcup">Solo Mundial</option>
+                <option value="mongodb">Solo Base Albiero</option>
+              </select>
+              <select value={contactSort} onChange={(event) => setContactSort(event.target.value)}>
+                <option value="newest">Ultimos guardados</option>
+                <option value="oldest">Primeros guardados</option>
+              </select>
               <small>{filteredContacts.length} visibles</small>
             </div>
 
@@ -601,6 +635,7 @@ export default function EmailMkt() {
                 <div className="em-contact-table__head">
                   <span>Contacto</span>
                   <span>Fuente</span>
+                  <span>Fecha</span>
                   <span>Datos</span>
                   <span>Estado</span>
                 </div>
@@ -611,6 +646,7 @@ export default function EmailMkt() {
                       <small>{contact.email}</small>
                     </span>
                     <span>{formatSources(contact.sources || [])}</span>
+                    <span>{formatDate(contact.createdAt || contact.updatedAt)}</span>
                     <span>
                       {[contact.tipo, contact.ubicacion, contact.sistema, contact.producto]
                         .filter(Boolean)
