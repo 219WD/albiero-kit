@@ -127,6 +127,17 @@ function formatKickoff(value) {
   });
 }
 
+function formatShortDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Sin fecha';
+  return date.toLocaleString('es-AR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 function formatGroupLabel(match) {
   const labels = {
     ARG: 'Grupo Argentina',
@@ -374,6 +385,10 @@ export default function WorldCup() {
   const [selectedTeam, setSelectedTeam] = useState('all');
   const [topbarScrolled, setTopbarScrolled] = useState(false);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
+  const [adminPredictionAudit, setAdminPredictionAudit] = useState({ rows: [], byMatch: [], users: [], total: 0 });
+  const [adminPredictionMatch, setAdminPredictionMatch] = useState('all');
+  const [adminPredictionUser, setAdminPredictionUser] = useState('all');
+  const [loadingAdminPredictions, setLoadingAdminPredictions] = useState(false);
 
   const predictionMap = useMemo(() => new Map(predictions.map((prediction) => [prediction.matchId, prediction])), [predictions]);
   const groupOptions = useMemo(() => normalizeGroups(fixture.groups, fixture.matches), [fixture]);
@@ -403,6 +418,7 @@ export default function WorldCup() {
     })
     .filter(Boolean)
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [fixture.matches, predictions]);
+  const adminVoteRows = adminPredictionAudit.rows || [];
 
   const isMatchLocked = (match) => {
     const kickoffTime = new Date(match.kickoff).getTime();
@@ -431,6 +447,34 @@ export default function WorldCup() {
     if (!nextToken) return;
     const data = await apiRequest('/api/worldcup/me', {}, nextToken);
     setPredictions(data.predictions || []);
+  };
+
+  const loadAdminPredictionAudit = async (matchId = adminPredictionMatch, userId = adminPredictionUser) => {
+    if (!adminToken || !adminFromToken) return;
+
+    setLoadingAdminPredictions(true);
+    try {
+      const params = new URLSearchParams();
+      if (matchId && matchId !== 'all') params.set('matchId', matchId);
+      if (userId && userId !== 'all') params.set('userId', userId);
+      const query = params.toString() ? `?${params.toString()}` : '';
+      const data = await apiRequest(`/api/worldcup/admin/predictions${query}`, {}, adminToken);
+      setAdminPredictionAudit({
+        rows: data.rows || [],
+        byMatch: data.byMatch || [],
+        users: data.users || [],
+        total: data.total || 0,
+      });
+    } catch (err) {
+      if (err.status === 401) {
+        expireAdminSession();
+        setError('Tu sesion admin vencio o pertenece a otro backend. Inicia sesion admin de nuevo.');
+        return;
+      }
+      setError(err.message || 'No se pudieron cargar los pronosticos.');
+    } finally {
+      setLoadingAdminPredictions(false);
+    }
   };
 
   const loadAll = async () => {
@@ -472,6 +516,12 @@ export default function WorldCup() {
       setTab('fixture');
     }
   }, [adminFromToken, adminToken, tab]);
+
+  useEffect(() => {
+    if (tab !== 'admin' || !adminToken || !adminFromToken) return;
+    loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminFromToken, adminPredictionMatch, adminPredictionUser, adminToken, tab]);
 
   useEffect(() => {
     const updateTopbar = () => setTopbarScrolled(window.scrollY > 10);
@@ -669,6 +719,7 @@ export default function WorldCup() {
       });
       const leaderboardData = await apiRequest('/api/worldcup/leaderboard');
       setLeaderboard(leaderboardData.leaderboard || []);
+      await loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser);
       setMessage('Resultado oficial cargado. Queda bloqueado.');
     } catch (err) {
       if (err.status === 401) {
@@ -935,67 +986,164 @@ export default function WorldCup() {
             )}
 
             {tab === 'admin' && (
-              <section className="wc-card wc-admin-results">
-                <div className="wc-section-head">
-                  <h2>Resultados oficiales</h2>
-                  <p>Una vez cargado un resultado, queda bloqueado.</p>
-                </div>
-
-                {!adminToken || !adminFromToken ? (
-                  <div className="wc-empty-state">
-                    <strong>Sesion requerida.</strong>
-                    <span>Volve a ingresar para continuar.</span>
-                    <button type="button" className="wc-primary-btn" onClick={() => setTab('login')}>Ingresar</button>
+              <section className="wc-admin-dashboard">
+                <article className="wc-card wc-admin-results">
+                  <div className="wc-section-head">
+                    <h2>Resultados oficiales</h2>
+                    <p>Una vez cargado un resultado, queda bloqueado.</p>
                   </div>
-                ) : (
-                  <>
-                    <div className="wc-admin-status">
-                      <span>{adminFromToken.username || adminFromToken.email}</span>
-                      <button type="button" className="wc-link-btn" onClick={logoutAdmin}>Salir admin</button>
+
+                  {!adminToken || !adminFromToken ? (
+                    <div className="wc-empty-state">
+                      <strong>Sesion requerida.</strong>
+                      <span>Volve a ingresar para continuar.</span>
+                      <button type="button" className="wc-primary-btn" onClick={() => setTab('login')}>Ingresar</button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="wc-admin-status">
+                        <span>{adminFromToken.username || adminFromToken.email}</span>
+                        <button type="button" className="wc-link-btn" onClick={logoutAdmin}>Salir admin</button>
+                      </div>
+
+                      <div className="wc-admin-match-list">
+                        {fixture.matches.map((match) => {
+                          const draft = resultDrafts[match.id] || {};
+
+                          return (
+                            <article className={`wc-admin-match ${match.result ? 'is-locked' : ''}`} key={match.id}>
+                              <div>
+                                <span>{formatGroupLabel(match)}</span>
+                                <strong>{match.homeTeam.name} vs {match.awayTeam.name}</strong>
+                                <small>{formatKickoff(match.kickoff)}</small>
+                              </div>
+                              <div className="wc-admin-score">
+                                {match.result ? (
+                                  <strong>{match.result.homeScore} - {match.result.awayScore}</strong>
+                                ) : (
+                                  <>
+                                    <ScoreControl
+                                      label={`${match.homeTeam.name} resultado oficial`}
+                                      value={draft.homeScore}
+                                      onChange={(value) => setResultScore(match.id, 'homeScore', value)}
+                                    />
+                                    <span>:</span>
+                                    <ScoreControl
+                                      label={`${match.awayTeam.name} resultado oficial`}
+                                      value={draft.awayScore}
+                                      onChange={(value) => setResultScore(match.id, 'awayScore', value)}
+                                    />
+                                  </>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                disabled={Boolean(match.result) || savingResultId === match.id}
+                                onClick={() => saveOfficialResult(match)}
+                              >
+                                {match.result ? 'Bloqueado' : savingResultId === match.id ? 'Guardando...' : 'Guardar resultado'}
+                              </button>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </article>
+
+                {adminToken && adminFromToken && (
+                  <article className="wc-card wc-admin-audit">
+                    <div className="wc-section-head">
+                      <h2>Quien voto a quien</h2>
+                      <p>Auditoria de pronosticos guardados por usuario y partido.</p>
                     </div>
 
-                    <div className="wc-admin-match-list">
-                      {fixture.matches.map((match) => {
-                        const draft = resultDrafts[match.id] || {};
-
-                        return (
-                          <article className={`wc-admin-match ${match.result ? 'is-locked' : ''}`} key={match.id}>
-                            <div>
-                              <span>{formatGroupLabel(match)}</span>
-                              <strong>{match.homeTeam.name} vs {match.awayTeam.name}</strong>
-                              <small>{formatKickoff(match.kickoff)}</small>
-                            </div>
-                            <div className="wc-admin-score">
-                              {match.result ? (
-                                <strong>{match.result.homeScore} - {match.result.awayScore}</strong>
-                              ) : (
-                                <>
-                                  <ScoreControl
-                                    label={`${match.homeTeam.name} resultado oficial`}
-                                    value={draft.homeScore}
-                                    onChange={(value) => setResultScore(match.id, 'homeScore', value)}
-                                  />
-                                  <span>:</span>
-                                  <ScoreControl
-                                    label={`${match.awayTeam.name} resultado oficial`}
-                                    value={draft.awayScore}
-                                    onChange={(value) => setResultScore(match.id, 'awayScore', value)}
-                                  />
-                                </>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              disabled={Boolean(match.result) || savingResultId === match.id}
-                              onClick={() => saveOfficialResult(match)}
-                            >
-                              {match.result ? 'Bloqueado' : savingResultId === match.id ? 'Guardando...' : 'Guardar resultado'}
-                            </button>
-                          </article>
-                        );
-                      })}
+                    <div className="wc-admin-audit-tools">
+                      <label>
+                        Usuario
+                        <select
+                          value={adminPredictionUser}
+                          onChange={(event) => setAdminPredictionUser(event.target.value)}
+                        >
+                          <option value="all">Todos los usuarios</option>
+                          {(adminPredictionAudit.users || []).map((user) => (
+                            <option value={user.id} key={user.id}>
+                              {user.name || user.email} - {user.predictions} votos
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        Partido
+                        <select
+                          value={adminPredictionMatch}
+                          onChange={(event) => setAdminPredictionMatch(event.target.value)}
+                        >
+                          <option value="all">Todos los partidos</option>
+                          {fixture.matches.map((match) => (
+                            <option value={match.id} key={match.id}>
+                              {formatGroupLabel(match)} - {match.homeTeam.name} vs {match.awayTeam.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button
+                        type="button"
+                        className="wc-primary-btn"
+                        onClick={() => loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser)}
+                        disabled={loadingAdminPredictions}
+                      >
+                        {loadingAdminPredictions ? 'Actualizando...' : 'Actualizar'}
+                      </button>
                     </div>
-                  </>
+
+                    <div className="wc-admin-audit-stats">
+                      <div>
+                        <strong>{adminPredictionAudit.total || 0}</strong>
+                        <span>pronosticos</span>
+                      </div>
+                      <div>
+                        <strong>{adminPredictionAudit.byMatch?.length || 0}</strong>
+                        <span>partidos con votos</span>
+                      </div>
+                      <div>
+                        <strong>{(adminPredictionAudit.users || []).filter((user) => user.predictions > 0).length}</strong>
+                        <span>usuarios con votos</span>
+                      </div>
+                    </div>
+
+                    <div className="wc-admin-vote-list">
+                      {loadingAdminPredictions ? (
+                        <p className="wc-muted">Cargando pronosticos...</p>
+                      ) : adminVoteRows.length ? adminVoteRows.map((row) => (
+                        <article className="wc-admin-vote-row" key={row.id}>
+                          <div className="wc-admin-vote-user">
+                            <strong>{row.user?.name || row.user?.email || 'Sin nombre'}</strong>
+                            <span>{row.user?.email || 'Sin email'}</span>
+                            <small>{row.updatedAt ? `Guardado ${formatShortDateTime(row.updatedAt)}` : 'Sin fecha'}</small>
+                          </div>
+                          <div className="wc-admin-vote-match">
+                            <span>{row.match ? formatGroupLabel(row.match) : row.matchId}</span>
+                            {row.match ? (
+                              <div>
+                                <TeamInline team={row.match.homeTeam} />
+                                <b>{row.homeScore} - {row.awayScore}</b>
+                                <TeamInline team={row.match.awayTeam} />
+                              </div>
+                            ) : (
+                              <strong>{row.homeScore} - {row.awayScore}</strong>
+                            )}
+                          </div>
+                          <em>{row.points === null || row.points === undefined ? 'Pendiente' : `${row.points} pts`}</em>
+                        </article>
+                      )) : (
+                        <div className="wc-empty-state">
+                          <strong>No hay pronosticos para este filtro.</strong>
+                          <span>Cuando un usuario guarde un resultado, va a aparecer aca.</span>
+                        </div>
+                      )}
+                    </div>
+                  </article>
                 )}
               </section>
             )}
