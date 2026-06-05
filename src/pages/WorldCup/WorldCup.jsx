@@ -438,7 +438,6 @@ export default function WorldCup() {
     } catch (err) {
       setFixture(LOCAL_FIXTURE_FALLBACK);
       setLeaderboard([]);
-      setMessage('Modo local: fixture demo visible hasta levantar o desplegar el backend del Mundial.');
       return false;
     }
   };
