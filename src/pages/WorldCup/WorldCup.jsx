@@ -744,6 +744,7 @@ export default function WorldCup() {
     { key: 'grupos', label: 'Grupos' },
     { key: 'ranking', label: 'Ranking' },
     { key: 'premios', label: 'Premios' },
+    { key: 'reglas', label: 'Como jugar' },
     ...(adminToken && adminFromToken ? [{ key: 'admin', label: 'Admin' }] : []),
     { key: 'login', label: token ? 'Mis predicciones' : 'Ingresar' },
   ];
@@ -981,6 +982,62 @@ export default function WorldCup() {
                     </div>
                   </article>
                 ))}
+              </section>
+            )}
+
+            {tab === 'reglas' && (
+              <section className="wc-rules">
+                <article className="wc-card wc-rules-hero">
+                  <div>
+                    <p className="wc-brand">Reglamento Mundial Albiero</p>
+                    <h2>Como participar</h2>
+                    <p>
+                      Crea tu cuenta, elegi los resultados del fixture y suma puntos segun tus aciertos.
+                      El ranking define los ganadores cuando termine la competencia.
+                    </p>
+                  </div>
+                  <button type="button" className="wc-primary-btn" onClick={() => setTab(token ? 'fixture' : 'login')}>
+                    {token ? 'Ir al fixture' : 'Crear cuenta'}
+                  </button>
+                </article>
+
+                <div className="wc-rules-grid">
+                  <article className="wc-card wc-rule-card">
+                    <span>01</span>
+                    <h3>Pronosticos</h3>
+                    <p>Elegis el marcador de cada partido. Una vez guardado, no se puede editar.</p>
+                  </article>
+                  <article className="wc-card wc-rule-card">
+                    <span>02</span>
+                    <h3>Cierre por horario</h3>
+                    <p>Cada partido se bloquea automaticamente cuando llega la hora de inicio.</p>
+                  </article>
+                  <article className="wc-card wc-rule-card">
+                    <span>03</span>
+                    <h3>Puntaje</h3>
+                    <p>Exacto: 5 pts. Resultado y diferencia: 4 pts. Resultado correcto: 3 pts. Errado: -1 pt.</p>
+                  </article>
+                  <article className="wc-card wc-rule-card">
+                    <span>04</span>
+                    <h3>Ranking</h3>
+                    <p>El ranking se actualiza cuando Albiero carga los resultados oficiales.</p>
+                  </article>
+                </div>
+
+                <article className="wc-card wc-terms">
+                  <div className="wc-section-head">
+                    <h2>Terminos y condiciones</h2>
+                    <p>Resumen simple para participar sin vueltas raras.</p>
+                  </div>
+                  <div className="wc-terms-list">
+                    <p>Participa una persona por cuenta registrada. Albiero puede revisar usuarios duplicados o datos falsos.</p>
+                    <p>Los pronosticos quedan firmes al guardarse y no se modifican manualmente despues.</p>
+                    <p>Los resultados oficiales son cargados por el administrador segun el resultado final del partido.</p>
+                    <p>Ante empate en puntos, se priorizan exactos, cantidad de pronosticos acertados y criterio administrativo razonable.</p>
+                    <p>Los premios corresponden al primer, segundo y tercer puesto del ranking final.</p>
+                    <p>Albiero puede contactar a los ganadores por email para coordinar la entrega del premio.</p>
+                  </div>
+                </article>
               </section>
             )}
 
