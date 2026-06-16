@@ -677,13 +677,33 @@
 }
 
 .wc-rank-row {
+  width: 100%;
   display: grid;
   grid-template-columns: 52px minmax(0, 1fr) 90px 170px;
   gap: 0.75rem;
   align-items: center;
+  border: 0;
   border-radius: 12px;
   background: rgba(255,255,255,0.055);
+  color: inherit;
+  font: inherit;
   padding: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+
+.wc-rank-row:hover,
+.wc-rank-row:focus-visible {
+  background: rgba(255,255,255,0.082);
+  transform: translateY(-1px);
+}
+
+.wc-rank-row:focus-visible {
+  outline: 2px solid rgba(116,172,223,0.72);
+  outline-offset: 2px;
 }
 
 .wc-rank-row strong {
@@ -1071,7 +1091,7 @@
 
 .wc-admin-audit-tools {
   display: grid;
-  grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1fr) auto;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 0.85rem;
   align-items: end;
 }
@@ -1099,7 +1119,7 @@
 
 .wc-admin-audit-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 0.75rem;
 }
 
@@ -1137,7 +1157,7 @@
 
 .wc-admin-vote-row {
   display: grid;
-  grid-template-columns: minmax(190px, 0.85fr) minmax(0, 1.3fr) auto;
+  grid-template-columns: minmax(178px, 0.78fr) minmax(0, 1.15fr) minmax(0, 1.05fr) minmax(190px, 0.82fr);
   gap: 0.9rem;
   align-items: center;
   border: 1px solid rgba(255,255,255,0.08);
@@ -1149,7 +1169,9 @@
 }
 
 .wc-admin-vote-user,
-.wc-admin-vote-match {
+.wc-admin-vote-match,
+.wc-admin-vote-result,
+.wc-admin-vote-scorecard {
   display: grid;
   gap: 0.25rem;
   min-width: 0;
@@ -1165,7 +1187,9 @@
 
 .wc-admin-vote-user span,
 .wc-admin-vote-user small,
-.wc-admin-vote-match > span {
+.wc-admin-vote-match > span,
+.wc-admin-vote-result > span,
+.wc-admin-vote-scorecard > span {
   overflow: hidden;
   color: rgba(255,255,255,0.52);
   font-size: 0.76rem;
@@ -1174,20 +1198,24 @@
   white-space: nowrap;
 }
 
-.wc-admin-vote-match > div {
+.wc-admin-vote-match > div,
+.wc-admin-vote-result > div {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 0.55rem;
   align-items: center;
 }
 
-.wc-admin-vote-match > div .wc-team-inline:last-child {
+.wc-admin-vote-match > div .wc-team-inline:last-child,
+.wc-admin-vote-result > div .wc-team-inline:last-child {
   justify-content: end;
   text-align: right;
 }
 
 .wc-admin-vote-match b,
-.wc-admin-vote-match > strong {
+.wc-admin-vote-match > strong,
+.wc-admin-vote-result b,
+.wc-admin-vote-result > strong {
   min-width: 62px;
   border-radius: 12px;
   background: rgba(150,28,44,0.88);
@@ -1198,16 +1226,52 @@
   padding: 0.48rem 0.56rem;
 }
 
-.wc-admin-vote-row > em {
-  min-width: 82px;
+.wc-admin-vote-result b,
+.wc-admin-vote-result > strong {
+  background: rgba(116,172,223,0.16);
+  border: 1px solid rgba(116,172,223,0.16);
+}
+
+.wc-admin-vote-scorecard {
+  align-content: center;
+  border: 1px solid rgba(246,200,95,0.18);
+  border-radius: 14px;
+  background: rgba(246,200,95,0.08);
+  padding: 0.65rem;
+}
+
+.wc-admin-vote-scorecard > strong {
+  width: fit-content;
+  min-width: 86px;
   border: 1px solid rgba(246,200,95,0.22);
   border-radius: 999px;
   background: rgba(246,200,95,0.12);
   color: #f6c85f;
-  font-style: normal;
   font-weight: 950;
   padding: 0.48rem 0.7rem;
   text-align: center;
+}
+
+.wc-admin-vote-scorecard.is-exact {
+  border-color: rgba(70,216,161,0.24);
+  background: rgba(70,216,161,0.08);
+}
+
+.wc-admin-vote-scorecard.is-exact > strong {
+  border-color: rgba(70,216,161,0.28);
+  background: rgba(70,216,161,0.13);
+  color: #79f2bf;
+}
+
+.wc-admin-vote-scorecard.is-miss {
+  border-color: rgba(255,95,120,0.22);
+  background: rgba(255,95,120,0.08);
+}
+
+.wc-admin-vote-scorecard.is-miss > strong {
+  border-color: rgba(255,95,120,0.28);
+  background: rgba(255,95,120,0.12);
+  color: #ff9aa9;
 }
 
 .wc-auth {
@@ -1310,13 +1374,18 @@
     grid-template-columns: 1fr;
   }
 
+  .wc-admin-audit-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .wc-admin-audit-tools,
   .wc-admin-vote-row {
     grid-template-columns: 1fr;
   }
 
   .wc-admin-audit-tools .wc-primary-btn,
-  .wc-admin-vote-row > em {
+  .wc-admin-vote-scorecard,
+  .wc-admin-vote-scorecard > strong {
     width: 100%;
   }
 

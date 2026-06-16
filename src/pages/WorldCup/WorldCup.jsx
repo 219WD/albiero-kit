@@ -385,9 +385,11 @@ export default function WorldCup() {
   const [selectedTeam, setSelectedTeam] = useState('all');
   const [topbarScrolled, setTopbarScrolled] = useState(false);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
-  const [adminPredictionAudit, setAdminPredictionAudit] = useState({ rows: [], byMatch: [], users: [], total: 0 });
+  const [adminPredictionAudit, setAdminPredictionAudit] = useState({ rows: [], byMatch: [], users: [], total: 0, summary: {} });
   const [adminPredictionMatch, setAdminPredictionMatch] = useState('all');
   const [adminPredictionUser, setAdminPredictionUser] = useState('all');
+  const [adminPredictionResultStatus, setAdminPredictionResultStatus] = useState('all');
+  const [adminPredictionScoreCode, setAdminPredictionScoreCode] = useState('all');
   const [loadingAdminPredictions, setLoadingAdminPredictions] = useState(false);
 
   const predictionMap = useMemo(() => new Map(predictions.map((prediction) => [prediction.matchId, prediction])), [predictions]);
@@ -448,7 +450,12 @@ export default function WorldCup() {
     setPredictions(data.predictions || []);
   };
 
-  const loadAdminPredictionAudit = async (matchId = adminPredictionMatch, userId = adminPredictionUser) => {
+  const loadAdminPredictionAudit = async (
+    matchId = adminPredictionMatch,
+    userId = adminPredictionUser,
+    resultStatus = adminPredictionResultStatus,
+    scoreCode = adminPredictionScoreCode,
+  ) => {
     if (!adminToken || !adminFromToken) return;
 
     setLoadingAdminPredictions(true);
@@ -456,6 +463,8 @@ export default function WorldCup() {
       const params = new URLSearchParams();
       if (matchId && matchId !== 'all') params.set('matchId', matchId);
       if (userId && userId !== 'all') params.set('userId', userId);
+      if (resultStatus && resultStatus !== 'all') params.set('resultStatus', resultStatus);
+      if (scoreCode && scoreCode !== 'all') params.set('scoreCode', scoreCode);
       const query = params.toString() ? `?${params.toString()}` : '';
       const data = await apiRequest(`/api/worldcup/admin/predictions${query}`, {}, adminToken);
       setAdminPredictionAudit({
@@ -463,6 +472,7 @@ export default function WorldCup() {
         byMatch: data.byMatch || [],
         users: data.users || [],
         total: data.total || 0,
+        summary: data.summary || {},
       });
     } catch (err) {
       if (err.status === 401) {
@@ -518,9 +528,9 @@ export default function WorldCup() {
 
   useEffect(() => {
     if (tab !== 'admin' || !adminToken || !adminFromToken) return;
-    loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser);
+    loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser, adminPredictionResultStatus, adminPredictionScoreCode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [adminFromToken, adminPredictionMatch, adminPredictionUser, adminToken, tab]);
+  }, [adminFromToken, adminPredictionMatch, adminPredictionResultStatus, adminPredictionScoreCode, adminPredictionUser, adminToken, tab]);
 
   useEffect(() => {
     const updateTopbar = () => setTopbarScrolled(window.scrollY > 10);
@@ -739,6 +749,20 @@ export default function WorldCup() {
     setError('Inicia sesion para cargar o cambiar pronosticos.');
   };
 
+  const openParticipantBreakdown = (participant) => {
+    if (!adminToken || !adminFromToken) {
+      return;
+    }
+
+    setAdminPredictionUser(participant.user.id);
+    setAdminPredictionMatch('all');
+    setAdminPredictionResultStatus('all');
+    setAdminPredictionScoreCode('all');
+    setTab('admin');
+    setMessage(`Mostrando desglose de ${participant.user.name}.`);
+    setError('');
+  };
+
   const tabs = [
     { key: 'fixture', label: 'Fixture' },
     { key: 'grupos', label: 'Grupos' },
@@ -941,16 +965,21 @@ export default function WorldCup() {
               <section className="wc-card">
                 <div className="wc-section-head">
                   <h2>Ranking general</h2>
-                  <p>Exacto: 5 pts. Resultado y diferencia: 4 pts. Resultado: 3 pts. Errado: -1 pt.</p>
+                  <p>Exacto: 5 pts. Resultado y diferencia: 4 pts. Resultado: 3 pts. Errado: -1 pt. Como admin, toca un participante para ver su desglose.</p>
                 </div>
                 <div className="wc-ranking">
                   {leaderboard.length ? leaderboard.map((row) => (
-                    <div className={`wc-rank-row wc-rank-row--${row.position}`} key={row.user.id}>
+                    <button
+                      type="button"
+                      className={`wc-rank-row wc-rank-row--${row.position}`}
+                      key={row.user.id}
+                      onClick={() => openParticipantBreakdown(row)}
+                    >
                       <strong>#{row.position}</strong>
                       <span>{row.user.name}</span>
                       <em>{row.points} pts</em>
                       <small>{row.exact} exactos / {row.predictions} pronosticos</small>
-                    </div>
+                    </button>
                   )) : (
                     <p className="wc-muted">Todavia no hay participantes.</p>
                   )}
@@ -1111,7 +1140,7 @@ export default function WorldCup() {
                   <article className="wc-card wc-admin-audit">
                     <div className="wc-section-head">
                       <h2>Quien voto a quien</h2>
-                      <p>Auditoria de pronosticos guardados por usuario y partido.</p>
+                    <p>Auditoria de pronosticos, resultados oficiales y puntos asignados.</p>
                     </div>
 
                     <div className="wc-admin-audit-tools">
@@ -1143,13 +1172,50 @@ export default function WorldCup() {
                           ))}
                         </select>
                       </label>
+                      <label>
+                        Estado partido
+                        <select
+                          value={adminPredictionResultStatus}
+                          onChange={(event) => setAdminPredictionResultStatus(event.target.value)}
+                        >
+                          <option value="all">Todos</option>
+                          <option value="finished">Finalizados</option>
+                          <option value="pending">Pendientes</option>
+                        </select>
+                      </label>
+                      <label>
+                        Puntaje
+                        <select
+                          value={adminPredictionScoreCode}
+                          onChange={(event) => setAdminPredictionScoreCode(event.target.value)}
+                        >
+                          <option value="all">Todos</option>
+                          <option value="exact">Resultado exacto</option>
+                          <option value="difference">Ganador + diferencia</option>
+                          <option value="outcome">Ganador/empate</option>
+                          <option value="miss">Errados</option>
+                          <option value="pending">Sin resultado oficial</option>
+                        </select>
+                      </label>
                       <button
                         type="button"
                         className="wc-primary-btn"
-                        onClick={() => loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser)}
+                        onClick={() => loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser, adminPredictionResultStatus, adminPredictionScoreCode)}
                         disabled={loadingAdminPredictions}
                       >
                         {loadingAdminPredictions ? 'Actualizando...' : 'Actualizar'}
+                      </button>
+                      <button
+                        type="button"
+                        className="wc-link-btn"
+                        onClick={() => {
+                          setAdminPredictionUser('all');
+                          setAdminPredictionMatch('all');
+                          setAdminPredictionResultStatus('all');
+                          setAdminPredictionScoreCode('all');
+                        }}
+                      >
+                        Limpiar
                       </button>
                     </div>
 
@@ -1166,6 +1232,18 @@ export default function WorldCup() {
                         <strong>{(adminPredictionAudit.users || []).filter((user) => user.predictions > 0).length}</strong>
                         <span>usuarios con votos</span>
                       </div>
+                      <div>
+                        <strong>{adminPredictionAudit.summary?.points ?? 0}</strong>
+                        <span>puntos del filtro</span>
+                      </div>
+                      <div>
+                        <strong>{adminPredictionAudit.summary?.exact ?? 0}</strong>
+                        <span>exactos</span>
+                      </div>
+                      <div>
+                        <strong>{adminPredictionAudit.summary?.pending ?? 0}</strong>
+                        <span>pendientes</span>
+                      </div>
                     </div>
 
                     <div className="wc-admin-vote-list">
@@ -1179,7 +1257,7 @@ export default function WorldCup() {
                             <small>{row.updatedAt ? `Guardado ${formatShortDateTime(row.updatedAt)}` : 'Sin fecha'}</small>
                           </div>
                           <div className="wc-admin-vote-match">
-                            <span>{row.match ? formatGroupLabel(row.match) : row.matchId}</span>
+                            <span>{row.match ? `${formatGroupLabel(row.match)} - ${formatShortDateTime(row.match.kickoff)}` : row.matchId}</span>
                             {row.match ? (
                               <div>
                                 <TeamInline team={row.match.homeTeam} />
@@ -1190,7 +1268,24 @@ export default function WorldCup() {
                               <strong>{row.homeScore} - {row.awayScore}</strong>
                             )}
                           </div>
-                          <em>{row.points === null || row.points === undefined ? 'Pendiente' : `${row.points} pts`}</em>
+                          <div className="wc-admin-vote-result">
+                            <span>Resultado oficial</span>
+                            {row.result && row.match ? (
+                              <div>
+                                <TeamInline team={row.match.homeTeam} />
+                                <b>{row.result.homeScore} - {row.result.awayScore}</b>
+                                <TeamInline team={row.match.awayTeam} />
+                              </div>
+                            ) : row.result ? (
+                              <strong>{row.result.homeScore} - {row.result.awayScore}</strong>
+                            ) : (
+                              <strong>Pendiente</strong>
+                            )}
+                          </div>
+                          <div className={`wc-admin-vote-scorecard is-${row.score?.code || 'pending'}`}>
+                            <strong>{row.points === null || row.points === undefined ? 'Pendiente' : `${row.points} pts`}</strong>
+                            <span>{row.score?.reason || 'Sin detalle de puntaje.'}</span>
+                          </div>
                         </article>
                       )) : (
                         <div className="wc-empty-state">
