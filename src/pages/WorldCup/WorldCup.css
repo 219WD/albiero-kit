@@ -1034,8 +1034,11 @@
   border: 1px solid rgba(255,255,255,0.08);
 }
 
-.wc-admin-match.is-locked {
-  opacity: 0.72;
+.wc-admin-match.has-result {
+  border-color: rgba(246,200,95,0.18);
+  background:
+    linear-gradient(135deg, rgba(246,200,95,0.06), rgba(255,255,255,0.035)),
+    rgba(255,255,255,0.05);
 }
 
 .wc-admin-match > div:first-child {

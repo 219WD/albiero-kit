@@ -695,13 +695,11 @@ export default function WorldCup() {
       return;
     }
 
-    if (match.result) {
-      setError('Ese resultado ya fue cargado y no se puede modificar.');
-      return;
-    }
-
     const draft = resultDrafts[match.id] || {};
-    if (draft.homeScore === '' || draft.awayScore === '' || draft.homeScore === undefined || draft.awayScore === undefined) {
+    const homeScore = draft.homeScore ?? match.result?.homeScore ?? '';
+    const awayScore = draft.awayScore ?? match.result?.awayScore ?? '';
+
+    if (homeScore === '' || awayScore === '' || homeScore === undefined || awayScore === undefined) {
       setError('Carga los dos goles oficiales antes de guardar.');
       return;
     }
@@ -713,7 +711,7 @@ export default function WorldCup() {
     try {
       const data = await apiRequest(`/api/worldcup/matches/${encodeURIComponent(match.id)}/result`, {
         method: 'PATCH',
-        body: JSON.stringify(draft),
+        body: JSON.stringify({ homeScore, awayScore }),
       }, adminToken);
       setFixture((current) => ({
         ...current,
@@ -728,8 +726,8 @@ export default function WorldCup() {
       });
       const leaderboardData = await apiRequest('/api/worldcup/leaderboard');
       setLeaderboard(leaderboardData.leaderboard || []);
-      await loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser);
-      setMessage('Resultado oficial cargado. Queda bloqueado.');
+      await loadAdminPredictionAudit(adminPredictionMatch, adminPredictionUser, adminPredictionResultStatus, adminPredictionScoreCode);
+      setMessage(match.result ? 'Resultado oficial actualizado. Ranking recalculado.' : 'Resultado oficial cargado.');
     } catch (err) {
       if (err.status === 401) {
         expireAdminSession();
@@ -1075,7 +1073,7 @@ export default function WorldCup() {
                 <article className="wc-card wc-admin-results">
                   <div className="wc-section-head">
                     <h2>Resultados oficiales</h2>
-                    <p>Una vez cargado un resultado, queda bloqueado.</p>
+                    <p>Como admin podes cargar o corregir resultados oficiales. El ranking se recalcula al guardar.</p>
                   </div>
 
                   {!adminToken || !adminFromToken ? (
@@ -1094,39 +1092,35 @@ export default function WorldCup() {
                       <div className="wc-admin-match-list">
                         {fixture.matches.map((match) => {
                           const draft = resultDrafts[match.id] || {};
+                          const homeResultValue = draft.homeScore ?? match.result?.homeScore;
+                          const awayResultValue = draft.awayScore ?? match.result?.awayScore;
 
                           return (
-                            <article className={`wc-admin-match ${match.result ? 'is-locked' : ''}`} key={match.id}>
+                            <article className={`wc-admin-match ${match.result ? 'has-result' : ''}`} key={match.id}>
                               <div>
                                 <span>{formatGroupLabel(match)}</span>
                                 <strong>{match.homeTeam.name} vs {match.awayTeam.name}</strong>
                                 <small>{formatKickoff(match.kickoff)}</small>
                               </div>
                               <div className="wc-admin-score">
-                                {match.result ? (
-                                  <strong>{match.result.homeScore} - {match.result.awayScore}</strong>
-                                ) : (
-                                  <>
-                                    <ScoreControl
-                                      label={`${match.homeTeam.name} resultado oficial`}
-                                      value={draft.homeScore}
-                                      onChange={(value) => setResultScore(match.id, 'homeScore', value)}
-                                    />
-                                    <span>:</span>
-                                    <ScoreControl
-                                      label={`${match.awayTeam.name} resultado oficial`}
-                                      value={draft.awayScore}
-                                      onChange={(value) => setResultScore(match.id, 'awayScore', value)}
-                                    />
-                                  </>
-                                )}
+                                <ScoreControl
+                                  label={`${match.homeTeam.name} resultado oficial`}
+                                  value={homeResultValue}
+                                  onChange={(value) => setResultScore(match.id, 'homeScore', value)}
+                                />
+                                <span>:</span>
+                                <ScoreControl
+                                  label={`${match.awayTeam.name} resultado oficial`}
+                                  value={awayResultValue}
+                                  onChange={(value) => setResultScore(match.id, 'awayScore', value)}
+                                />
                               </div>
                               <button
                                 type="button"
-                                disabled={Boolean(match.result) || savingResultId === match.id}
+                                disabled={savingResultId === match.id}
                                 onClick={() => saveOfficialResult(match)}
                               >
-                                {match.result ? 'Bloqueado' : savingResultId === match.id ? 'Guardando...' : 'Guardar resultado'}
+                                {savingResultId === match.id ? 'Guardando...' : match.result ? 'Actualizar resultado' : 'Guardar resultado'}
                               </button>
                             </article>
                           );
