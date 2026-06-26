@@ -19,6 +19,13 @@ const RANGES = [
 ];
 const PAGE_SIZE = 50;
 
+function formatInputDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 async function apiRequest(endpoint, options = {}, token = '') {
   const response = await fetch(`${API_BASE}${endpoint}`, {
     ...options,
@@ -110,14 +117,24 @@ export default function Leads() {
     setToken('');
   };
 
-  const loadLeads = async () => {
+  const loadLeads = async ({ silent = false } = {}) => {
     if (!token) {
       setLoading(false);
       return;
     }
 
-    setLoading(true);
-    setError('');
+    if (range === 'custom' && (!from || !to)) {
+      if (!silent) {
+        setLoading(false);
+        setError('Elegí fecha desde y hasta para aplicar el rango.');
+      }
+      return;
+    }
+
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
 
     try {
       const query = buildQuery({
@@ -135,9 +152,15 @@ export default function Leads() {
         localStorage.removeItem(ADMIN_TOKEN_KEY);
         setToken('');
       }
-      setError(err.message);
+      if (!silent) {
+        setError(err.message);
+      } else {
+        console.warn('[Leads] No se pudo refrescar la tabla en segundo plano.', err);
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
@@ -162,6 +185,15 @@ export default function Leads() {
     setFilters({ producto: '', tipo: '', ubicacion: '', sistema: '', status: '', search: '' });
   };
 
+  const applyCurrentMonth = () => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    setRange('custom');
+    setFrom(formatInputDate(firstDay));
+    setTo(formatInputDate(today));
+    setPage(1);
+  };
+
   const updateStatus = async (lead, status) => {
     if (!lead.rowNumber) {
       setError('Este lead no trae numero de fila desde el backend.');
@@ -178,8 +210,34 @@ export default function Leads() {
         method: 'PATCH',
         body: JSON.stringify({ status }),
       }, token);
+      setData((current) => {
+        if (!current?.leads) return current;
+
+        const previousStatus = lead.estado || 'Nuevo';
+        const nextLeads = current.leads
+          .map((item) => (item.rowNumber === lead.rowNumber ? { ...item, estado: status } : item))
+          .filter((item) => !filters.status || item.estado === filters.status);
+
+        const statusCounts = (current.statusCounts || []).map((item) => {
+          if (item.label === previousStatus && previousStatus !== status) {
+            return { ...item, count: Math.max(0, item.count - 1) };
+          }
+          if (item.label === status && previousStatus !== status) {
+            return { ...item, count: item.count + 1 };
+          }
+          return item;
+        });
+
+        return {
+          ...current,
+          leads: nextLeads,
+          statusCounts,
+        };
+      });
       setMessage(`Lead actualizado a ${status}.`);
-      await loadLeads();
+      loadLeads({ silent: true }).catch((err) => {
+        console.warn('[Leads] Estado guardado, pero no se pudo refrescar la tabla.', err);
+      });
     } catch (err) {
       setError(err.message || 'No se pudo guardar el estado.');
     } finally {
@@ -252,6 +310,9 @@ export default function Leads() {
                 {item.label}
               </button>
             ))}
+            <button type="button" onClick={applyCurrentMonth}>
+              Este mes
+            </button>
           </div>
 
           {range === 'custom' && (

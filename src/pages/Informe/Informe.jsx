@@ -56,6 +56,114 @@ function compactPercent(value) {
   return `${Number(value || 0)}%`;
 }
 
+function normalizeKey(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function productLabel(value) {
+  const key = normalizeKey(value);
+  const labels = {
+    gps: 'GPS',
+    seguimientovehicular: 'GPS',
+    seguridadvehicular: 'Seguridad Vehicular',
+    kitalarmacamera: 'Kit Alarma y Camara',
+    kitalarmaycamara: 'Kit Alarma y Camara',
+    camaras: 'Camaras',
+    camara: 'Camaras',
+    alarmas: 'Alarmas',
+    alarma: 'Alarmas',
+    seguridadintegral: 'Seguridad Integral',
+  };
+
+  return labels[key] || value || 'Producto';
+}
+
+function inferProductFromType(type, fallback = '') {
+  const key = normalizeKey(type);
+  const vehicleTypes = new Set(['auto', 'moto', 'camion', 'flota', 'vehiculo', 'vehiculos']);
+
+  if (vehicleTypes.has(key)) return 'GPS';
+  if (
+    key.includes('deposito')
+    || key.includes('predio')
+    || key.includes('empresa')
+    || key.includes('propiedadparticular')
+    || key.includes('consorcio')
+    || key.includes('industria')
+    || key.includes('campo')
+  ) {
+    return 'Seguridad Integral';
+  }
+
+  return productLabel(fallback || 'Kit Alarma y Camara');
+}
+
+function inferProductFromSystem(system, fallback = '') {
+  const key = normalizeKey(system);
+  const standaloneCameraSystems = new Set(['chico', 'mediano', 'grande', 'personalizado']);
+
+  if (key.startsWith('kit')) return 'Kit Alarma y Camara';
+  if (key.startsWith('gps')) return 'GPS';
+  if (key.startsWith('camara')) return 'Camaras';
+  if (key.startsWith('alarma')) return 'Alarmas';
+  if (standaloneCameraSystems.has(key)) return 'Camaras';
+  if (
+    key.includes('control')
+    || key.includes('perimetral')
+    || key.includes('integral')
+    || key.includes('incendio')
+  ) {
+    return 'Seguridad Integral';
+  }
+
+  return productLabel(fallback || 'Kit Alarma y Camara');
+}
+
+function buildServiceLookup(groups = [], inferService) {
+  return groups.reduce((lookup, group) => {
+    const service = productLabel(group.label);
+    (group.rows || []).forEach((row) => {
+      const key = normalizeKey(row.label);
+      const inferred = inferService?.(row.label);
+
+      if (!lookup[key]) lookup[key] = service;
+      if (inferred && inferred !== 'Producto' && inferred !== 'Kit Alarma y Camara') {
+        lookup[key] = inferred;
+      }
+    });
+    return lookup;
+  }, {});
+}
+
+function enrichBreakdownRows(rows = [], lookup = {}, inferService) {
+  return rows.map((row) => ({
+    ...row,
+    serviceLabel: lookup[normalizeKey(row.label)] || inferService?.(row.label) || 'Producto',
+  }));
+}
+
+function InformeTooltip({ active, payload, label, lookup = {}, inferService, noun = 'Dato' }) {
+  if (!active || !payload?.length) return null;
+
+  const point = payload[0]?.payload || {};
+  const itemLabel = point.label || label || payload[0]?.name || 'Sin dato';
+  const service = point.serviceLabel || lookup[normalizeKey(itemLabel)] || inferService?.(itemLabel) || 'Producto';
+
+  return (
+    <div className="informe-tooltip">
+      <p>{service}</p>
+      <span>{noun}: <strong>{itemLabel}</strong></span>
+      <span>Leads: <strong>{point.count || payload[0]?.value || 0}</strong></span>
+      <span>Porcentaje: <strong>{point.percent || 0}%</strong></span>
+    </div>
+  );
+}
+
 export default function Informe() {
   const { token } = useParams();
   const [data, setData] = useState(null);
@@ -90,6 +198,22 @@ export default function Informe() {
   const funnel = summary?.funnel || [];
   const locationConversion = summary?.locationConversion || [];
   const filters = useMemo(() => Object.entries(report?.filters || {}).filter(([, value]) => value), [report]);
+  const typeLookup = useMemo(
+    () => buildServiceLookup(breakdowns.tipoPorProducto, (value) => inferProductFromType(value, report?.filters?.producto)),
+    [breakdowns.tipoPorProducto, report?.filters?.producto]
+  );
+  const systemLookup = useMemo(
+    () => buildServiceLookup(breakdowns.sistemaPorProducto, (value) => inferProductFromSystem(value, report?.filters?.producto)),
+    [breakdowns.sistemaPorProducto, report?.filters?.producto]
+  );
+  const typeChartData = useMemo(
+    () => enrichBreakdownRows(breakdowns.tipo, typeLookup, (value) => inferProductFromType(value, report?.filters?.producto)),
+    [breakdowns.tipo, typeLookup, report?.filters?.producto]
+  );
+  const systemChartData = useMemo(
+    () => enrichBreakdownRows(breakdowns.sistema, systemLookup, (value) => inferProductFromSystem(value, report?.filters?.producto)),
+    [breakdowns.sistema, systemLookup, report?.filters?.producto]
+  );
 
   if (loading) {
     return (
@@ -192,17 +316,25 @@ export default function Informe() {
             <div className="informe-chart">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={breakdowns.tipo || []} dataKey="count" nameKey="label" innerRadius={58} outerRadius={86} paddingAngle={4}>
-                    {(breakdowns.tipo || []).map((entry, index) => (
+                  <Pie data={typeChartData} dataKey="count" nameKey="label" innerRadius={58} outerRadius={86} paddingAngle={4}>
+                    {typeChartData.map((entry, index) => (
                       <Cell key={entry.label} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip
+                    content={
+                      <InformeTooltip
+                        lookup={typeLookup}
+                        inferService={(value) => inferProductFromType(value, report.filters?.producto)}
+                        noun="Tipo"
+                      />
+                    }
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="informe-legend">
-              {(breakdowns.tipo || []).map((item, index) => (
+              {typeChartData.map((item, index) => (
                 <span key={item.label}><i style={{ background: COLORS[index % COLORS.length] }} />{item.label}: {item.percent}%</span>
               ))}
             </div>
@@ -212,11 +344,19 @@ export default function Informe() {
             <h2>Sistemas elegidos</h2>
             <div className="informe-chart">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={breakdowns.sistema || []} margin={{ top: 8, right: 8, bottom: 0, left: -20 }}>
+                <BarChart data={systemChartData} margin={{ top: 8, right: 8, bottom: 0, left: -20 }}>
                   <CartesianGrid stroke="rgba(0,0,0,0.08)" vertical={false} />
                   <XAxis dataKey="label" tickLine={false} axisLine={false} />
                   <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
-                  <Tooltip />
+                  <Tooltip
+                    content={
+                      <InformeTooltip
+                        lookup={systemLookup}
+                        inferService={(value) => inferProductFromSystem(value, report.filters?.producto)}
+                        noun="Sistema"
+                      />
+                    }
+                  />
                   <Bar dataKey="count" fill="#E0B85A" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>

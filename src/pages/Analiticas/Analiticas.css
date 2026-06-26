@@ -404,6 +404,62 @@
 
 .an-two-col .an-card { margin-bottom: 0; }
 
+.an-service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.an-service-block {
+  display: grid;
+  gap: 0.85rem;
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.035);
+  padding: 1rem;
+}
+
+.an-service-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.an-service-head strong {
+  color: rgba(255,255,255,0.88);
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+.an-service-head span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(150,28,44,0.18);
+  color: #f0a0aa;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.25rem 0.5rem;
+}
+
+.an-service-chart {
+  height: 170px;
+  min-height: 170px;
+}
+
+.an-card-note {
+  margin: 1rem 0 0;
+  color: rgba(255,255,255,0.36);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.an-service-block .an-desglose-row {
+  grid-template-columns: minmax(86px, 0.9fr) 1fr minmax(64px, auto);
+  gap: 0.55rem;
+}
+
 /* ── Producto tabs ───────────────────────────────────────────────────────────── */
 .an-prod-tabs {
   display: flex;
@@ -503,6 +559,15 @@
   .an-title       { font-size: 1.5rem; }
   .an-filters     { grid-template-columns: 1fr; }
   .an-funnel      { grid-template-columns: 1fr; }
+  .an-service-grid { grid-template-columns: 1fr; }
+  .an-service-head { flex-direction: column; }
+  .an-service-block .an-desglose-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .an-service-block .an-desglose-count {
+    text-align: left;
+  }
 }
 
 /* ── Desglose table ──────────────────────────────────────────────────────────── */

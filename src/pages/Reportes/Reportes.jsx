@@ -59,6 +59,27 @@ function buildPublicUrl(token) {
   return `${window.location.origin}/informe/${token}`;
 }
 
+function reportFingerprint(report = {}) {
+  return JSON.stringify({
+    title: report.title || '',
+    periodLabel: report.periodLabel || '',
+    range: report.range || '',
+    from: report.from || '',
+    to: report.to || '',
+    filters: report.filters || {},
+  });
+}
+
+function uniqueReports(items = []) {
+  const seen = new Set();
+  return items.filter((item) => {
+    const key = reportFingerprint(item) || item.id || item.token;
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 const initialDates = getPreviousMonthDefaults();
 
 export default function Reportes() {
@@ -96,7 +117,7 @@ export default function Reportes() {
 
     try {
       const data = await apiRequest('/api/reports', {}, token);
-      setReports(data.reports || []);
+      setReports(uniqueReports(data.reports || []));
     } catch (err) {
       if (err.status === 401) {
         localStorage.removeItem(ADMIN_TOKEN_KEY);
@@ -140,7 +161,7 @@ export default function Reportes() {
           },
         }),
       }, token);
-      setReports((current) => [data.report, ...current]);
+      setReports((current) => uniqueReports([data.report, ...current]));
       setMessage('Informe creado. Ya podes compartir el link publico.');
     } catch (err) {
       setError(err.message || 'No se pudo crear el informe.');

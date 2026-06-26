@@ -2,11 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
-  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -39,6 +36,65 @@ const RANGOS = [
 
 const formatNumber = (value) => Number(value || 0).toLocaleString('es-AR');
 
+const normalizeKey = (value) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
+
+const normalizeProductLabel = (value) => {
+  const key = normalizeKey(value);
+  const labels = {
+    gps: 'GPS',
+    seguimientovehicular: 'GPS',
+    seguridadvehicular: 'GPS',
+    kitalarmacamera: 'Kit Alarma y Camara',
+    kitalarmaycamara: 'Kit Alarma y Camara',
+    camaras: 'Camaras',
+    camara: 'Camaras',
+    alarmas: 'Alarmas',
+    alarma: 'Alarmas',
+    seguridadintegral: 'Seguridad Integral',
+  };
+
+  return labels[key] || value || 'Producto';
+};
+
+const inferServiceFromType = (type, fallbackService) => {
+  const key = normalizeKey(type);
+  const vehicleTypes = new Set(['auto', 'moto', 'camion', 'flota', 'vehiculo', 'vehiculos']);
+  const integralTypes = new Set([
+    'depositopredio',
+    'deposito',
+    'predio',
+    'empresa',
+    'propiedadparticular',
+    'consorcio',
+    'industria',
+    'campo',
+  ]);
+
+  if (vehicleTypes.has(key)) return 'GPS';
+  if (
+    integralTypes.has(key)
+    || key.includes('deposito')
+    || key.includes('predio')
+    || key.includes('propiedadparticular')
+  ) {
+    return 'Seguridad Integral';
+  }
+  return normalizeProductLabel(fallbackService);
+};
+
+const formatInputDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const formatDateTime = (value) => {
   if (!value) return '-';
   const date = new Date(value);
@@ -62,6 +118,27 @@ const CustomTooltip = ({ active, payload, label }) => {
           {p.name}: <strong>{formatNumber(p.value)}</strong>
         </p>
       ))}
+    </div>
+  );
+};
+
+const ServicePieTooltip = ({ active, payload, service }) => {
+  if (!active || !payload?.length) return null;
+
+  const item = payload[0]?.payload || {};
+  const serviceLabel = item.serviceLabel || normalizeProductLabel(service);
+  return (
+    <div className="an-tooltip an-tooltip--service">
+      <p className="an-tooltip-label">{serviceLabel}</p>
+      <p>
+        Tipo: <strong>{item.label || 'Sin dato'}</strong>
+      </p>
+      <p>
+        Leads: <strong>{formatNumber(item.count)}</strong>
+      </p>
+      <p>
+        Porcentaje: <strong>{item.percent || 0}%</strong>
+      </p>
     </div>
   );
 };
@@ -103,6 +180,72 @@ const BreakdownTable = ({ rows = [] }) => (
         <span className="an-desglose-count">
           {row.count} <span className="an-desglose-pct">({row.percent}%)</span>
         </span>
+      </div>
+    ))}
+  </div>
+);
+
+const groupedFallback = (label, count, rows = []) => {
+  if (!rows.length) return [];
+
+  const service = normalizeProductLabel(label);
+  return [{
+    label: service,
+    count,
+    percent: 100,
+    rows: rows.map(row => ({
+      ...row,
+      serviceLabel: inferServiceFromType(row.label, service),
+    })),
+  }];
+};
+
+const GroupedPieBreakdown = ({ groups = [] }) => (
+  <div className="an-service-grid">
+    {groups.map((group, groupIndex) => (
+      <div className="an-service-block" key={`${group.label}-${groupIndex}`}>
+        <div className="an-service-head">
+          <strong>{group.label}</strong>
+          <span>{formatNumber(group.count)} leads</span>
+        </div>
+
+        <div className="an-service-chart">
+          <ResponsiveContainer width="100%" height={170}>
+            <PieChart>
+              <Pie
+                data={group.rows}
+                cx="50%"
+                cy="50%"
+                innerRadius={42}
+                outerRadius={66}
+                dataKey="count"
+                nameKey="label"
+                paddingAngle={3}
+              >
+                {group.rows.map((_, index) => (
+                  <Cell key={index} fill={COLORES[(index + groupIndex) % COLORES.length]} />
+                ))}
+              </Pie>
+              <Tooltip content={<ServicePieTooltip service={group.label} />} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <BreakdownTable rows={group.rows} />
+      </div>
+    ))}
+  </div>
+);
+
+const GroupedBreakdown = ({ groups = [] }) => (
+  <div className="an-service-grid">
+    {groups.map((group, groupIndex) => (
+      <div className="an-service-block" key={`${group.label}-${groupIndex}`}>
+        <div className="an-service-head">
+          <strong>{group.label}</strong>
+          <span>{formatNumber(group.count)} leads</span>
+        </div>
+        <BreakdownTable rows={group.rows} />
       </div>
     ))}
   </div>
@@ -170,8 +313,28 @@ const Analiticas = () => {
   const topLocation = breakdowns.ubicacion?.[0];
   const topType = breakdowns.tipo?.[0];
   const filterOptions = summary?.filterOptions || {};
+  const fallbackServiceLabel =
+    filters.producto
+    || breakdowns.producto?.[0]?.label
+    || 'Producto';
+  const tipoPorProducto = breakdowns.tipoPorProducto?.length
+    ? breakdowns.tipoPorProducto
+    : groupedFallback(fallbackServiceLabel, totals.leads, breakdowns.tipo);
+  const sistemaPorProducto = breakdowns.sistemaPorProducto?.length
+    ? breakdowns.sistemaPorProducto
+    : groupedFallback(fallbackServiceLabel, totals.leads, breakdowns.sistema);
 
   const applyRange = () => setActiveRange(range);
+  const applyCurrentMonth = () => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const fromDate = formatInputDate(firstDay);
+    const toDate = formatInputDate(today);
+    setRange('custom');
+    setFrom(fromDate);
+    setTo(toDate);
+    setActiveRange('custom');
+  };
   const logout = () => {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
     setToken('');
@@ -375,6 +538,9 @@ const Analiticas = () => {
               {item.label}
             </button>
           ))}
+          <button className="an-range-btn" onClick={applyCurrentMonth}>
+            Este mes
+          </button>
 
           {range === 'custom' && (
             <div className="an-date-inputs">
@@ -471,19 +637,16 @@ const Analiticas = () => {
 
           <div className="an-two-col">
             <div className="an-card">
-              <h2 className="an-card-title">Casa vs Comercio</h2>
-              {!breakdowns.tipo?.length ? (
+              <h2 className="an-card-title">Tipo por servicio</h2>
+              {!tipoPorProducto.length ? (
                 <EmptyState />
               ) : (
-                <ResponsiveContainer width="100%" height={240}>
-                  <PieChart>
-                    <Pie data={breakdowns.tipo} cx="50%" cy="50%" innerRadius={60} outerRadius={90} dataKey="count" nameKey="label" paddingAngle={3}>
-                      {breakdowns.tipo.map((_, index) => <Cell key={index} fill={COLORES[index % COLORES.length]} />)}
-                    </Pie>
-                    <Tooltip formatter={(value, name) => [formatNumber(value), name]} />
-                    <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{ color: '#ccc', fontSize: 12 }}>{value}</span>} />
-                  </PieChart>
-                </ResponsiveContainer>
+                <>
+                  <GroupedPieBreakdown groups={tipoPorProducto} />
+                  <p className="an-card-note">
+                    Cada torta separa primero el servicio y despues muestra el tipo de consulta dentro de ese servicio.
+                  </p>
+                </>
               )}
             </div>
 
@@ -495,19 +658,16 @@ const Analiticas = () => {
 
           <div className="an-two-col">
             <div className="an-card">
-              <h2 className="an-card-title">Sistemas elegidos</h2>
-              {!breakdowns.sistema?.length ? (
+              <h2 className="an-card-title">Sistema elegido por servicio</h2>
+              {!sistemaPorProducto.length ? (
                 <EmptyState />
               ) : (
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={breakdowns.sistema} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                    <XAxis dataKey="label" tick={{ fill: '#888', fontSize: 10 }} tickLine={false} axisLine={false} />
-                    <YAxis allowDecimals={false} tick={{ fill: '#888', fontSize: 11 }} tickLine={false} axisLine={false} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="count" name="Leads" fill={ROJO} radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <>
+                  <GroupedBreakdown groups={sistemaPorProducto} />
+                  <p className="an-card-note">
+                    El porcentaje se calcula dentro de cada servicio para no mezclar GPS, camaras, alarmas y kits.
+                  </p>
+                </>
               )}
             </div>
 
