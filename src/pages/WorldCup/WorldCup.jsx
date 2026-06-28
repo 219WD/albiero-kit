@@ -26,6 +26,7 @@ const API_BASE =
 
 const SCORE_OPTIONS = Array.from({ length: 11 }, (_, index) => index);
 const CAMERA_INFO = 'Camara interior A1 de 2 MP con audio bidireccional en tiempo real, vision nocturna HD, deteccion de movimiento, seguimiento automatico, deteccion de audio y deteccion de cuerpo humano. Su giro e inclinacion cubren 360 grados para ver interiores en vivo desde Cygnus Mobile Viewer. Incluye vision nocturna IR, vigilancia 24 horas y multiples metodos de deteccion.';
+const ROUND_OF_32_STAGE = 'Eliminatoria de 32';
 
 const FLAG_CODES = {
   ALG: 'dz',
@@ -83,16 +84,59 @@ const FLAG_CODES = {
 
 const teamPayload = (code) => FALLBACK_WORLD_CUP_TEAMS[code] || { code, name: code, flag: '' };
 
+const ROUND_OF_32_MATCHES = [
+  { id: 'r32-001', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'RSA', away: 'CAN', kickoff: '2026-06-28T16:00:00-03:00' },
+  { id: 'r32-002', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'BRA', away: 'JPN', kickoff: '2026-06-29T14:00:00-03:00' },
+  { id: 'r32-003', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'GER', away: 'PAR', kickoff: '2026-06-29T17:30:00-03:00' },
+  { id: 'r32-004', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'NED', away: 'MAR', kickoff: '2026-06-29T22:00:00-03:00' },
+  { id: 'r32-005', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'CIV', away: 'NOR', kickoff: '2026-06-30T14:00:00-03:00' },
+  { id: 'r32-006', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'FRA', away: 'SWE', kickoff: '2026-06-30T18:00:00-03:00' },
+  { id: 'r32-007', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'MEX', away: 'ECU', kickoff: '2026-06-30T22:00:00-03:00' },
+  { id: 'r32-008', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'ENG', away: 'COD', kickoff: '2026-07-01T13:00:00-03:00' },
+  { id: 'r32-009', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'BEL', away: 'SEN', kickoff: '2026-07-01T17:00:00-03:00' },
+  { id: 'r32-010', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'USA', away: 'BIH', kickoff: '2026-07-01T21:00:00-03:00' },
+  { id: 'r32-011', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'ESP', away: 'AUT', kickoff: '2026-07-02T16:00:00-03:00' },
+  { id: 'r32-012', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'POR', away: 'CRO', kickoff: '2026-07-02T20:00:00-03:00' },
+  { id: 'r32-013', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'SUI', away: 'ALG', kickoff: '2026-07-03T00:00:00-03:00' },
+  { id: 'r32-014', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'AUS', away: 'EGY', kickoff: '2026-07-03T15:00:00-03:00' },
+  { id: 'r32-015', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'ARG', away: 'CPV', kickoff: '2026-07-03T19:00:00-03:00' },
+  { id: 'r32-016', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'COL', away: 'GHA', kickoff: '2026-07-03T22:30:00-03:00' },
+];
+
+function hydrateWorldCupMatch(match) {
+  return {
+    ...match,
+    homeTeam: match.homeTeam || teamPayload(match.home),
+    awayTeam: match.awayTeam || teamPayload(match.away),
+    result: match.result || null,
+    locked: Boolean(match.locked) || new Date(match.kickoff).getTime() <= Date.now(),
+  };
+}
+
+function isRoundOf32Match(match) {
+  return match.stage === ROUND_OF_32_STAGE || match.round === 'round-of-32';
+}
+
+function withRoundOf32Matches(fixtureData = {}) {
+  const currentMatches = (fixtureData.matches || []).map(hydrateWorldCupMatch);
+  const existingKeys = new Set(currentMatches.map((match) => `${match.home}-${match.away}-${match.kickoff}`));
+  const existingIds = new Set(currentMatches.map((match) => match.id));
+  const roundOf32 = ROUND_OF_32_MATCHES
+    .filter((match) => !existingIds.has(match.id) && !existingKeys.has(`${match.home}-${match.away}-${match.kickoff}`))
+    .map(hydrateWorldCupMatch);
+
+  return {
+    ...fixtureData,
+    groups: fixtureData.groups || FALLBACK_WORLD_CUP_GROUPS,
+    prizes: fixtureData.prizes || FALLBACK_WORLD_CUP_PRIZES,
+    matches: [...roundOf32, ...currentMatches],
+  };
+}
+
 const LOCAL_FIXTURE_FALLBACK = {
   groups: FALLBACK_WORLD_CUP_GROUPS,
   prizes: FALLBACK_WORLD_CUP_PRIZES,
-  matches: FALLBACK_WORLD_CUP_FIXTURE.map((match) => ({
-    ...match,
-    homeTeam: teamPayload(match.home),
-    awayTeam: teamPayload(match.away),
-    result: null,
-    locked: new Date(match.kickoff).getTime() <= Date.now(),
-  })),
+  matches: [...ROUND_OF_32_MATCHES, ...FALLBACK_WORLD_CUP_FIXTURE].map(hydrateWorldCupMatch),
 };
 
 async function apiRequest(endpoint, options = {}, token = '') {
@@ -145,9 +189,9 @@ function formatGroupLabel(match) {
     HOSTS: 'Anfitriones y candidatos',
   };
   const group = labels[match.group] || (match.group ? `Grupo ${match.group}` : match.stage);
-  const isArgentinaMatch = match.home === 'ARG' || match.away === 'ARG';
+  const isArgentinaGroupMatch = Boolean(match.group) && (match.home === 'ARG' || match.away === 'ARG');
 
-  return isArgentinaMatch ? `${group} / ARG` : group;
+  return isArgentinaGroupMatch ? `${group} / ARG` : group;
 }
 
 function ScoreControl({ value, onChange, disabled, onFocus, label }) {
@@ -383,6 +427,7 @@ export default function WorldCup() {
   const [error, setError] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('all');
   const [selectedTeam, setSelectedTeam] = useState('all');
+  const [groupStageOpen, setGroupStageOpen] = useState(false);
   const [topbarScrolled, setTopbarScrolled] = useState(false);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
   const [adminPredictionAudit, setAdminPredictionAudit] = useState({ rows: [], byMatch: [], users: [], total: 0, summary: {} });
@@ -405,10 +450,17 @@ export default function WorldCup() {
   }, [fixture.matches]);
   const filteredMatches = useMemo(() => fixture.matches.filter((match) => {
     const activeGroup = groupOptions.find((group) => group.id === selectedGroup);
-    const groupMatch = selectedGroup === 'all' || (activeGroup ? isGroupMatch(match, activeGroup) : match.group === selectedGroup);
+    const groupMatch = selectedGroup === 'all' || (!isRoundOf32Match(match) && (activeGroup ? isGroupMatch(match, activeGroup) : match.group === selectedGroup));
     const teamMatch = selectedTeam === 'all' || match.home === selectedTeam || match.away === selectedTeam;
     return groupMatch && teamMatch;
   }), [fixture.matches, groupOptions, selectedGroup, selectedTeam]);
+  const roundOf32Matches = useMemo(() => filteredMatches
+    .filter((match) => isRoundOf32Match(match) && selectedGroup === 'all')
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [filteredMatches, selectedGroup]);
+  const groupStageMatches = useMemo(() => filteredMatches
+    .filter((match) => !isRoundOf32Match(match))
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [filteredMatches]);
+  const shouldShowGroupStage = groupStageOpen || selectedGroup !== 'all' || selectedTeam !== 'all';
   const selectedTeamSchedule = useMemo(() => {
     if (selectedTeam === 'all') return [];
     return fixture.matches.filter((match) => match.home === selectedTeam || match.away === selectedTeam);
@@ -434,7 +486,7 @@ export default function WorldCup() {
         apiRequest('/api/worldcup/fixture'),
         apiRequest('/api/worldcup/leaderboard'),
       ]);
-      setFixture(fixtureData);
+      setFixture(withRoundOf32Matches(fixtureData));
       setLeaderboard(leaderboardData.leaderboard || []);
       return true;
     } catch (err) {
@@ -761,6 +813,66 @@ export default function WorldCup() {
     setError('');
   };
 
+  const renderMatchCard = (match) => {
+    const prediction = predictionMap.get(match.id);
+    const draft = drafts[match.id] || {};
+    const isPredictionSaved = Boolean(prediction);
+    const matchIsLocked = isMatchLocked(match);
+    const predictionDisabled = matchIsLocked || isPredictionSaved;
+
+    return (
+      <article className={`wc-match ${match.home === 'ARG' || match.away === 'ARG' ? 'is-arg' : ''}`} key={match.id}>
+        <div className="wc-match-top">
+          <span>{formatGroupLabel(match)}</span>
+          <small>{formatKickoff(match.kickoff)}</small>
+        </div>
+        <div className="wc-match-main">
+          <Team team={match.homeTeam} />
+          <div className="wc-score">
+            {match.result ? (
+              <strong>{match.result.homeScore} - {match.result.awayScore}</strong>
+            ) : !token ? (
+              <button type="button" className="wc-score-login" onClick={goToLogin}>
+                Pronosticar
+              </button>
+            ) : (
+              <>
+                <PredictionSelect
+                  label={`${match.homeTeam.name} goles`}
+                  value={draft.homeScore ?? prediction?.homeScore}
+                  disabled={predictionDisabled}
+                  onFocus={!token ? goToLogin : undefined}
+                  onChange={(value) => setDraftScore(match.id, 'homeScore', value)}
+                />
+                <span>:</span>
+                <PredictionSelect
+                  label={`${match.awayTeam.name} goles`}
+                  value={draft.awayScore ?? prediction?.awayScore}
+                  disabled={predictionDisabled}
+                  onFocus={!token ? goToLogin : undefined}
+                  onChange={(value) => setDraftScore(match.id, 'awayScore', value)}
+                />
+              </>
+            )}
+          </div>
+          <Team team={match.awayTeam} align="right" />
+        </div>
+        <div className="wc-match-bottom">
+          <span>{match.result ? 'Resultado oficial cargado.' : matchIsLocked ? 'Pronostico cerrado: el partido ya empezo.' : 'Una vez guardado ya no se puede editar la prediccion.'}</span>
+          {prediction?.points !== undefined && <small>{prediction.points} pts</small>}
+          {!match.result && token && (
+            <button type="button" disabled={predictionDisabled || savingId === match.id} onClick={() => savePrediction(match)}>
+              {isPredictionSaved ? 'Guardado' : matchIsLocked ? 'Cerrado' : savingId === match.id ? 'Guardando...' : 'Guardar'}
+            </button>
+          )}
+          {!match.result && !token && (
+            <button type="button" onClick={goToLogin}>Entrar para jugar</button>
+          )}
+        </div>
+      </article>
+    );
+  };
+
   const tabs = [
     { key: 'fixture', label: 'Fixture' },
     { key: 'grupos', label: 'Grupos' },
@@ -849,7 +961,7 @@ export default function WorldCup() {
                   <section className="wc-card wc-team-schedule">
                     <div className="wc-section-head">
                       <h2>Camino de {teamOptions.find((team) => team.code === selectedTeam)?.name}</h2>
-                      <p>{selectedTeamSchedule.length} partidos de fase de grupos.</p>
+                      <p>{selectedTeamSchedule.length} partidos del fixture.</p>
                     </div>
                     <div className="wc-team-route">
                       {selectedTeamSchedule.map((match) => {
@@ -866,66 +978,39 @@ export default function WorldCup() {
                   </section>
                 )}
 
-                <section className="wc-fixture">
-                  {filteredMatches.map((match) => {
-                    const prediction = predictionMap.get(match.id);
-                    const draft = drafts[match.id] || {};
-                    const isPredictionSaved = Boolean(prediction);
-                    const matchIsLocked = isMatchLocked(match);
-                    const predictionDisabled = matchIsLocked || isPredictionSaved;
+                {selectedGroup === 'all' && (
+                  <section className="wc-stage-section wc-stage-section--knockout">
+                    <div className="wc-stage-title">
+                      <div>
+                        <span>Fase eliminatoria</span>
+                        <h2>{ROUND_OF_32_STAGE}</h2>
+                      </div>
+                      <small>{roundOf32Matches.length} partidos</small>
+                    </div>
+                    <section className="wc-fixture">
+                      {roundOf32Matches.map(renderMatchCard)}
+                    </section>
+                  </section>
+                )}
 
-                    return (
-                      <article className={`wc-match ${match.home === 'ARG' || match.away === 'ARG' ? 'is-arg' : ''}`} key={match.id}>
-                        <div className="wc-match-top">
-                          <span>{formatGroupLabel(match)}</span>
-                          <small>{formatKickoff(match.kickoff)}</small>
-                        </div>
-                        <div className="wc-match-main">
-                          <Team team={match.homeTeam} />
-                          <div className="wc-score">
-                            {match.result ? (
-                              <strong>{match.result.homeScore} - {match.result.awayScore}</strong>
-                            ) : !token ? (
-                              <button type="button" className="wc-score-login" onClick={goToLogin}>
-                                Pronosticar
-                              </button>
-                            ) : (
-                              <>
-                                <PredictionSelect
-                                  label={`${match.homeTeam.name} goles`}
-                                  value={draft.homeScore ?? prediction?.homeScore}
-                                  disabled={predictionDisabled}
-                                  onFocus={!token ? goToLogin : undefined}
-                                  onChange={(value) => setDraftScore(match.id, 'homeScore', value)}
-                                />
-                                <span>:</span>
-                                <PredictionSelect
-                                  label={`${match.awayTeam.name} goles`}
-                                  value={draft.awayScore ?? prediction?.awayScore}
-                                  disabled={predictionDisabled}
-                                  onFocus={!token ? goToLogin : undefined}
-                                  onChange={(value) => setDraftScore(match.id, 'awayScore', value)}
-                                />
-                              </>
-                            )}
-                          </div>
-                          <Team team={match.awayTeam} align="right" />
-                        </div>
-                        <div className="wc-match-bottom">
-                          <span>{match.result ? 'Resultado oficial cargado.' : matchIsLocked ? 'Pronostico cerrado: el partido ya empezo.' : 'Una vez guardado ya no se puede editar la prediccion.'}</span>
-                          {prediction?.points !== undefined && <small>{prediction.points} pts</small>}
-                          {!match.result && token && (
-                            <button type="button" disabled={predictionDisabled || savingId === match.id} onClick={() => savePrediction(match)}>
-                              {isPredictionSaved ? 'Guardado' : matchIsLocked ? 'Cerrado' : savingId === match.id ? 'Guardando...' : 'Guardar'}
-                            </button>
-                          )}
-                          {!match.result && !token && (
-                            <button type="button" onClick={goToLogin}>Entrar para jugar</button>
-                          )}
-                        </div>
-                      </article>
-                    );
-                  })}
+                <section className="wc-stage-section wc-stage-section--groups">
+                  <button
+                    type="button"
+                    className="wc-stage-toggle"
+                    aria-expanded={shouldShowGroupStage}
+                    onClick={() => setGroupStageOpen((current) => !current)}
+                  >
+                    <span>
+                      <small>Fixture completo</small>
+                      <strong>Fase de Grupos</strong>
+                    </span>
+                    <b>{shouldShowGroupStage ? 'Ocultar' : 'Ver partidos'}</b>
+                  </button>
+                  {shouldShowGroupStage && (
+                    <section className="wc-fixture">
+                      {groupStageMatches.map(renderMatchCard)}
+                    </section>
+                  )}
                 </section>
               </>
             )}

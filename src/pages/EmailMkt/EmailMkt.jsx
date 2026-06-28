@@ -81,8 +81,27 @@ const SOURCE_LABELS = {
   sin_fuente: 'Sin fuente',
 };
 
+const AUDIENCE_OPTIONS = [
+  { value: 'all', label: 'Todos los contactos', detail: 'Excel, base Albiero y Mundial' },
+  { value: 'worldcup', label: 'Solo Mundial', detail: 'Participantes registrados del torneo' },
+  { value: 'google_sheets', label: 'Solo Excel', detail: 'Leads y emails cargados desde Sheets' },
+  { value: 'mongodb', label: 'Solo Base Albiero', detail: 'Contactos guardados en la base' },
+];
+
 function formatSources(sources = []) {
   return sources.map((source) => SOURCE_LABELS[source] || source).join(', ');
+}
+
+function getAudienceOption(value) {
+  return AUDIENCE_OPTIONS.find((option) => option.value === value) || AUDIENCE_OPTIONS[0];
+}
+
+function buildEmailMktQuery({ campaignId = '', source = 'all' } = {}) {
+  const params = new URLSearchParams();
+  if (campaignId.trim()) params.set('campaignId', campaignId.trim());
+  if (source && source !== 'all') params.set('source', source);
+  const query = params.toString();
+  return query ? `?${query}` : '';
 }
 
 export default function EmailMkt() {
@@ -102,6 +121,7 @@ export default function EmailMkt() {
   const [templateName, setTemplateName] = useState('');
   const [templates, setTemplates] = useState([]);
   const [view, setView] = useState('send');
+  const [audienceSource, setAudienceSource] = useState('all');
   const [recipients, setRecipients] = useState(null);
   const [contacts, setContacts] = useState(null);
   const [contactSearch, setContactSearch] = useState('');
@@ -148,7 +168,7 @@ export default function EmailMkt() {
 
     setLoadingRecipients(true);
 
-    const query = campaignId.trim() ? `?campaignId=${encodeURIComponent(campaignId.trim())}` : '';
+    const query = buildEmailMktQuery({ campaignId, source: audienceSource });
 
     apiRequest(`/api/emailmkt/recipients${query}`, {}, token)
       .then((data) => {
@@ -166,7 +186,7 @@ export default function EmailMkt() {
     return () => {
       active = false;
     };
-  }, [token, campaignId]);
+  }, [token, campaignId, audienceSource]);
 
   const loadCampaigns = async () => {
     if (!token) return;
@@ -191,7 +211,7 @@ export default function EmailMkt() {
     setError('');
 
     try {
-      const query = campaignId.trim() ? `?campaignId=${encodeURIComponent(campaignId.trim())}` : '';
+      const query = buildEmailMktQuery({ campaignId, source: audienceSource });
       const data = await apiRequest(`/api/emailmkt/contacts${query}`, {}, token);
       setContacts(data);
     } catch (err) {
@@ -274,13 +294,14 @@ export default function EmailMkt() {
     if (token && view === 'contacts') {
       loadContacts();
     }
-  }, [token, view, campaignId]);
+  }, [token, view, campaignId, audienceSource]);
 
   const validButtons = useMemo(
     () => buttons.filter((button) => button.label.trim() && button.url.trim()),
     [buttons]
   );
 
+  const selectedAudience = getAudienceOption(audienceSource);
   const canSend = campaignId.trim() && subject.trim() && title.trim() && content.trim() && !sending;
   const effectiveTemplateName = templateName.trim() || campaignId.trim();
   const canSaveTemplate = effectiveTemplateName && subject.trim() && title.trim() && content.trim() && !savingTemplate;
@@ -383,7 +404,7 @@ export default function EmailMkt() {
     if (!canSend) return;
 
     const confirmed = window.confirm(
-      `Vas a enviar la campana "${campaignId}" a ${recipients?.eligible ?? recipients?.recipients ?? 0} emails nuevos. Confirmas el envio?`
+      `Vas a enviar la campana "${campaignId}" a ${recipients?.eligible ?? recipients?.recipients ?? 0} emails nuevos de "${selectedAudience.label}". Confirmas el envio?`
     );
 
     if (!confirmed) return;
@@ -402,6 +423,7 @@ export default function EmailMkt() {
           preheader,
           content,
           buttons: validButtons,
+          source: audienceSource === 'all' ? undefined : audienceSource,
         }),
       }, token);
 
@@ -563,12 +585,12 @@ export default function EmailMkt() {
           <p className="em-kicker">Email marketing</p>
           <h1>Campanas Albiero</h1>
         </div>
-        <div className="em-count">
-          {loadingRecipients
-            ? 'Cargando...'
-            : `${recipients?.eligible ?? recipients?.recipients ?? 0} nuevos / ${recipients?.recipients || 0} total`}
-          <button className="em-logout" onClick={logout}>Salir</button>
-        </div>
+          <div className="em-count">
+            {loadingRecipients
+              ? 'Cargando...'
+            : `${recipients?.eligible ?? recipients?.recipients ?? 0} nuevos / ${recipients?.recipients || 0} total - ${selectedAudience.label}`}
+            <button className="em-logout" onClick={logout}>Salir</button>
+          </div>
       </section>
 
       {error && <div className="em-alert em-alert--error">{error}</div>}
@@ -608,6 +630,11 @@ export default function EmailMkt() {
             </div>
 
             <div className="em-contact-tools">
+              <select value={audienceSource} onChange={(event) => setAudienceSource(event.target.value)}>
+                {AUDIENCE_OPTIONS.map((option) => (
+                  <option value={option.value} key={option.value}>{option.label}</option>
+                ))}
+              </select>
               <input
                 value={contactSearch}
                 onChange={(event) => setContactSearch(event.target.value)}
@@ -782,6 +809,19 @@ export default function EmailMkt() {
                 Eliminar
               </button>
             </div>
+          </div>
+
+          <div className="em-audience-card">
+            <div>
+              <span>Audiencia</span>
+              <strong>{selectedAudience.label}</strong>
+              <small>{selectedAudience.detail}</small>
+            </div>
+            <select value={audienceSource} onChange={(event) => setAudienceSource(event.target.value)}>
+              {AUDIENCE_OPTIONS.map((option) => (
+                <option value={option.value} key={option.value}>{option.label}</option>
+              ))}
+            </select>
           </div>
 
           <label>
