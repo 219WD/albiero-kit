@@ -133,6 +133,10 @@ function withRoundOf32Matches(fixtureData = {}) {
   };
 }
 
+function isBackendMissingMatchError(err) {
+  return err?.status === 404 || String(err?.message || '').toLowerCase().includes('partido invalido');
+}
+
 const LOCAL_FIXTURE_FALLBACK = {
   groups: FALLBACK_WORLD_CUP_GROUPS,
   prizes: FALLBACK_WORLD_CUP_PRIZES,
@@ -723,7 +727,9 @@ export default function WorldCup() {
       toast.success('Pronostico guardado.');
       await loadPublicData();
     } catch (err) {
-      setError(err.message || 'No se pudo guardar el pronostico.');
+      setError(isBackendMissingMatchError(err)
+        ? 'Este partido ya se ve en el fixture, pero todavia no esta cargado en el backend. Hay que actualizar la API para guardar pronosticos.'
+        : err.message || 'No se pudo guardar el pronostico.');
     } finally {
       setSavingId('');
     }
@@ -786,7 +792,9 @@ export default function WorldCup() {
         setError('Tu sesion admin vencio o pertenece a otro backend. Inicia sesion admin de nuevo.');
         return;
       }
-      setError(err.message || 'No se pudo cargar el resultado.');
+      setError(isBackendMissingMatchError(err)
+        ? 'Este partido ya se ve en el fixture, pero todavia no esta cargado en el backend. Hay que actualizar la API para guardar resultados.'
+        : err.message || 'No se pudo cargar el resultado.');
     } finally {
       setSavingResultId('');
     }
