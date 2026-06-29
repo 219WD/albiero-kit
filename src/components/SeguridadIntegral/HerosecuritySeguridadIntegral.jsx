@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import useSecurityHeroGsap from "../../hooks/useSecurityHeroGsap.js";
-import "./HerosecuritySeguridadIntegral.css";
+import "./HerosecurityAlarmas.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBuilding,
@@ -16,6 +16,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useFacebookPixelSeguridadIntegral from "../../hooks/useFacebookPixelSeguridadIntegral.js";
 import useGoogleAnalyticsSeguridadIntegral from "../../hooks/useGoogleAnalyticsSeguridadIntegral.js";
+import LeadContactStep from "../common/LeadContactStep.jsx";
+import { openWhatsAppLead, persistLeadContact, validateLeadContact } from "../../utils/leadContact.js";
 
 const VIDEO_MP4 =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
@@ -23,6 +25,22 @@ const VIDEO_WEBM =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,vc_vp9/v1772819547/video-bg-compr_a6c1oj.webm";
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
+
+const TIPO_LABELS = {
+  empresa: "Empresa",
+  comercio: "Comercio",
+  barrio: "Barrio privado",
+  deposito: "Deposito / predio",
+  particular: "Propiedad particular",
+};
+
+const SISTEMA_LABELS = {
+  guardias: "Seguridad fisica con guardias",
+  perimetral: "Proteccion perimetral electronica",
+  accesos: "Control de accesos",
+  integral: "Sistema integral completo",
+  personalizado: "Asesoramiento personalizado",
+};
 
 const HerosecuritySeguridadIntegral = () => {
   useSecurityHeroGsap();
@@ -46,7 +64,11 @@ const HerosecuritySeguridadIntegral = () => {
     tipo:      "",
     ubicacion: "",
     sistema:   "",
+    nombre:    "",
+    email:     "",
+    telefono:  "",
   });
+  const [formError, setFormError] = useState("");
   const submittedLeadKey = useRef("");
 
   const handleOptionSelect = (field, value) => {
@@ -62,40 +84,48 @@ const HerosecuritySeguridadIntegral = () => {
     } else if (field === "sistema") {
       trackSistemaSelected(newData.tipo, newData.ubicacion, value);
       trackSistemaSelectedGA4(newData.tipo, newData.ubicacion, value);
-      handleSubmit(newData);
     }
 
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setTimeout(() => setCurrentStep(currentStep + 1), 300);
     }
   };
 
+  const handleContactChange = (field, value) => {
+    setFormData((current) => ({ ...current, [field]: value }));
+    if (formError) setFormError("");
+  };
+
   const handleSubmit = (selectedData = formData) => {
-    const submissionKey = `${selectedData.tipo}|${selectedData.ubicacion}|${selectedData.sistema}`;
+    const contact = validateLeadContact(selectedData);
+    if (contact.error) {
+      setFormError(contact.error);
+      return;
+    }
+
+    const completeData = { ...selectedData, ...contact };
+    const submissionKey = `${completeData.tipo}|${completeData.ubicacion}|${completeData.sistema}|${completeData.email}|${completeData.telefono}`;
     if (submittedLeadKey.current === submissionKey) return;
     submittedLeadKey.current = submissionKey;
 
-    trackFormComplete(selectedData);
-    trackLeadGA4(selectedData);
+    persistLeadContact(contact);
+    trackFormComplete(completeData);
+    trackLeadGA4(completeData);
 
-    const tipoTexto = {
-      empresa:    "Empresa",
-      comercio:   "Comercio",
-      barrio:     "Barrio privado",
-      deposito:   "Depósito / predio",
-      particular: "Propiedad particular",
-    }[selectedData.tipo] || selectedData.tipo;
+    const tipoTexto = TIPO_LABELS[completeData.tipo] || completeData.tipo;
+    const sistemaTexto = SISTEMA_LABELS[completeData.sistema] || completeData.sistema;
 
-    const sistemaTexto = {
-      guardias:     "Seguridad física con guardias",
-      perimetral:   "Protección perimetral electrónica",
-      accesos:      "Control de accesos",
-      integral:     "Sistema integral completo",
-      personalizado:"Asesoramiento personalizado",
-    }[selectedData.sistema] || selectedData.sistema;
-
-    const mensaje = `Hola! Quiero asesoramiento por el sistema de seguridad integral.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${selectedData.ubicacion}%0A• Solución: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
-    window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
+    openWhatsAppLead({
+      intro: "Hola! Quiero asesoramiento por el sistema de seguridad integral.",
+      details: [
+        ["Nombre", completeData.nombre],
+        ["Email", completeData.email],
+        ["WhatsApp", completeData.telefono],
+        ["Para", tipoTexto],
+        ["Ubicacion", completeData.ubicacion],
+        ["Solucion", sistemaTexto],
+      ],
+    });
   };
 
   return (
@@ -151,10 +181,10 @@ const HerosecuritySeguridadIntegral = () => {
 
         <div className="security-derecha">
           <div className="security-form">
-            <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
+            <h3 className="form-titulo">Configurá tu Sistema en 4 Pasos</h3>
 
             <div className="form-steps-indicator">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div
                   key={step}
                   className={`step-dot ${currentStep >= step ? "active" : ""}`}
@@ -249,6 +279,17 @@ const HerosecuritySeguridadIntegral = () => {
                 </button>
               </div>
             )}
+
+            {currentStep === 4 && (
+              <LeadContactStep
+                formData={formData}
+                formError={formError}
+                onChange={handleContactChange}
+                onBack={() => setCurrentStep(3)}
+                onSubmit={() => handleSubmit(formData)}
+              />
+            )}
+
           </div>
         </div>
 

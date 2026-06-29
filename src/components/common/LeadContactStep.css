@@ -1,0 +1,54 @@
+.contact-fields {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.8rem;
+}
+
+.contact-field {
+  display: grid;
+  gap: 0.35rem;
+  text-align: left;
+}
+
+.contact-field span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #1a1a1a;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.contact-field span svg {
+  color: #c91d2b;
+}
+
+.contact-field input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(26, 26, 26, 0.12);
+  border-radius: 0;
+  background: #f5f5f5;
+  color: #1a1a1a;
+  padding: 0 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.contact-field input::placeholder {
+  color: rgba(26, 26, 26, 0.45);
+}
+
+.contact-field input:focus {
+  border-color: rgba(150, 28, 44, 0.78);
+  background: #ffffff;
+}
+
+.form-error {
+  margin: 0.75rem 0 0;
+  color: #961c2c;
+  font-size: 0.9rem;
+  font-weight: 700;
+}

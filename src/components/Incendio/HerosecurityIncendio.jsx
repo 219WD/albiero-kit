@@ -14,6 +14,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useFacebookPixelIncendio from "../../hooks/useFacebookPixelIncendio.js";
 import useGoogleAnalyticsIncendio from "../../hooks/useGoogleAnalyticsIncendio.js";
+import LeadContactStep from "../common/LeadContactStep.jsx";
+import { openWhatsAppLead, persistLeadContact, validateLeadContact } from "../../utils/leadContact.js";
 
 const VIDEO_MP4 =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
@@ -21,6 +23,13 @@ const VIDEO_WEBM =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,vc_vp9/v1772819547/video-bg-compr_a6c1oj.webm";
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
+
+const SISTEMA_LABELS = {
+  chico: "Mini (ambientes reducidos)",
+  mediano: "Basico (propiedad estandar)",
+  grande: "Premium (propiedad amplia)",
+  personalizado: "Asesoramiento personalizado",
+};
 
 const HerosecurityIncendio = () => {
   useSecurityHeroGsap();
@@ -44,7 +53,11 @@ const HerosecurityIncendio = () => {
     tipo:      "",
     ubicacion: "",
     sistema:   "",
+    nombre:    "",
+    email:     "",
+    telefono:  "",
   });
+  const [formError, setFormError] = useState("");
   const submittedLeadKey = useRef("");
 
   const handleOptionSelect = (field, value) => {
@@ -60,33 +73,48 @@ const HerosecurityIncendio = () => {
     } else if (field === "sistema") {
       trackSistemaSelected(newData.tipo, newData.ubicacion, value);
       trackSistemaSelectedGA4(newData.tipo, newData.ubicacion, value);
-      handleSubmit(newData);
     }
 
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setTimeout(() => setCurrentStep(currentStep + 1), 300);
     }
   };
 
+  const handleContactChange = (field, value) => {
+    setFormData((current) => ({ ...current, [field]: value }));
+    if (formError) setFormError("");
+  };
+
   const handleSubmit = (selectedData = formData) => {
-    const submissionKey = `${selectedData.tipo}|${selectedData.ubicacion}|${selectedData.sistema}`;
+    const contact = validateLeadContact(selectedData);
+    if (contact.error) {
+      setFormError(contact.error);
+      return;
+    }
+
+    const completeData = { ...selectedData, ...contact };
+    const submissionKey = `${completeData.tipo}|${completeData.ubicacion}|${completeData.sistema}|${completeData.email}|${completeData.telefono}`;
     if (submittedLeadKey.current === submissionKey) return;
     submittedLeadKey.current = submissionKey;
 
-    trackFormComplete(selectedData);
-    trackLeadGA4(selectedData);
+    persistLeadContact(contact);
+    trackFormComplete(completeData);
+    trackLeadGA4(completeData);
 
-    const tipoTexto    = selectedData.tipo === "casa" ? "Casa" : "Comercio";
-    const sistemaTexto =
-      {
-        chico:         "Mini (espacios reducidos)",
-        mediano:       "Básico (propiedad estándar)",
-        grande:        "Premium (propiedad amplia)",
-        personalizado: "Asesoramiento personalizado",
-      }[selectedData.sistema] || selectedData.sistema;
+    const tipoTexto = completeData.tipo === "casa" ? "Casa" : "Comercio";
+    const sistemaTexto = SISTEMA_LABELS[completeData.sistema] || completeData.sistema;
 
-    const mensaje = `Hola! Quiero asesoramiento por el sistema de detección de incendios.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${selectedData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
-    window.open(`https://wa.me/5493813522339?text=${mensaje}`, "_blank");
+    openWhatsAppLead({
+      intro: "Hola! Quiero asesoramiento por el sistema de deteccion de incendios.",
+      details: [
+        ["Nombre", completeData.nombre],
+        ["Email", completeData.email],
+        ["WhatsApp", completeData.telefono],
+        ["Para", tipoTexto],
+        ["Ubicacion", completeData.ubicacion],
+        ["Sistema", sistemaTexto],
+      ],
+    });
   };
 
   return (
@@ -142,10 +170,10 @@ const HerosecurityIncendio = () => {
 
         <div className="security-derecha">
           <div className="security-form">
-            <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
+            <h3 className="form-titulo">Configurá tu Sistema en 4 Pasos</h3>
 
             <div className="form-steps-indicator">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div
                   key={step}
                   className={`step-dot ${currentStep >= step ? "active" : ""}`}
@@ -237,6 +265,17 @@ const HerosecurityIncendio = () => {
                 </button>
               </div>
             )}
+
+            {currentStep === 4 && (
+              <LeadContactStep
+                formData={formData}
+                formError={formError}
+                onChange={handleContactChange}
+                onBack={() => setCurrentStep(3)}
+                onSubmit={() => handleSubmit(formData)}
+              />
+            )}
+
           </div>
         </div>
 
