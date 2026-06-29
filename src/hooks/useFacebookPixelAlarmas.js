@@ -7,7 +7,7 @@
 //
 // Audiencias que podés crear:
 //   - Visitantes del formulario de alarmas (Paso1_Alarmas_TipoSeleccionado)
-//   - Casa + Yerba Buena + Kit Mediano que NO enviaron (retargeting)
+//   - Casa + Yerba Buena + Básico que NO enviaron (retargeting)
 //   - Leads completos de alarmas vs leads de Kit Alarma+Cámara
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -22,15 +22,15 @@ const buildContentName = (tipo, ubicacion, sistema) => {
   const partes = [];
   if (tipo)      partes.push(tipo === 'casa' ? 'Casa' : 'Comercio');
   if (ubicacion) partes.push(ubicacion.replace(/[\s/]+/g, ''));
-  if (sistema)   partes.push(sistema.charAt(0).toUpperCase() + sistema.slice(1));
+  if (sistema)   partes.push((SISTEMA_LABELS[sistema] || sistema).replace(/\s+/g, ''));
   return `Alarmas_${partes.join('_')}`;
   // Ej: "Alarmas_Casa_YerbaBuena_Mediano"
 };
 
 const SISTEMA_LABELS = {
-  chico:         'Kit Chico',
-  mediano:       'Kit Mediano',
-  grande:        'Kit Grande',
+  chico:         'Mini',
+  mediano:       'Básico',
+  grande:        'Premium',
   personalizado: 'Personalizado',
 };
 

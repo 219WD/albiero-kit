@@ -4,9 +4,9 @@ const DEFAULT_TYPE_LABELS = {
 };
 
 const DEFAULT_SYSTEM_LABELS = {
-  chico: 'Chico',
-  mediano: 'Mediano',
-  grande: 'Grande',
+  chico: 'Mini',
+  mediano: 'Básico',
+  grande: 'Premium',
   personalizado: 'Personalizado',
 };
 

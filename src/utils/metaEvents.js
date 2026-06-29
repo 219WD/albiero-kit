@@ -1,4 +1,15 @@
-const CAPI_ENDPOINT = import.meta.env.VITE_META_CAPI_ENDPOINT;
+const PROD_API_BASE = "https://albi-backend-nine.vercel.app";
+const configuredApiBase = import.meta.env.VITE_ANALYTICS_API_URL || "";
+const isLocalHost =
+  typeof window !== "undefined" &&
+  ["localhost", "127.0.0.1"].includes(window.location.hostname);
+const API_BASE =
+  typeof window !== "undefined" && window.location.hostname === "albiero.com.ar"
+    ? PROD_API_BASE
+    : configuredApiBase || (isLocalHost ? "http://localhost:4000" : PROD_API_BASE);
+const configuredCapiEndpoint = import.meta.env.VITE_META_CAPI_ENDPOINT || "";
+const CAPI_ENDPOINT = (configuredCapiEndpoint || `${API_BASE}/api/events/track`)
+  .replace(/\/meta\/capi$/, "/api/events/track");
 const META_TEST_EVENT_CODE = import.meta.env.VITE_META_TEST_EVENT_CODE;
 
 const readCookie = (name) => {
@@ -57,19 +68,58 @@ const normalizeName = (value = "") =>
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
+const normalizePhone = (value = "") => {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("549")) return digits;
+  if (digits.startsWith("54")) return `549${digits.slice(2)}`;
+  return `549${digits}`;
+};
+
+const getExternalId = () => {
+  if (typeof window === "undefined") return "";
+
+  const stored = localStorage.getItem("albiero_external_id");
+  if (stored) return stored;
+
+  const next =
+    typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `albiero-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+  localStorage.setItem("albiero_external_id", next);
+  return next;
+};
+
+const getLocationMatchData = (ubicacion = "") => {
+  const city = normalizeName(ubicacion || "San Miguel de Tucuman") || "san miguel de tucuman";
+
+  return {
+    ct: city,
+    st: "tucuman",
+    country: "ar",
+    zp: "4000",
+  };
+};
+
 export const getMetaAdvancedMatchingData = (extraData = {}) => {
   if (typeof window === "undefined") return {};
 
   const email = normalizeEmail(extraData.email || localStorage.getItem("albiero_email"));
   const nombre = normalizeName(extraData.nombre || localStorage.getItem("albiero_nombre"));
+  const phone = normalizePhone(extraData.telefono || extraData.phone || localStorage.getItem("albiero_telefono"));
   const nameParts = nombre.split(/\s+/).filter(Boolean);
   const firstName = nameParts[0] || "";
   const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+  const locationData = getLocationMatchData(extraData.ubicacion);
 
   return {
     ...(email ? { em: email } : {}),
+    ...(phone ? { ph: phone } : {}),
     ...(firstName ? { fn: firstName } : {}),
     ...(lastName ? { ln: lastName } : {}),
+    ...locationData,
+    external_id: getExternalId(),
   };
 };
 
@@ -151,6 +201,7 @@ const getStoredLeadData = (eventName) => {
   return {
     email: localStorage.getItem("albiero_email") || "-",
     nombre: localStorage.getItem("albiero_nombre") || "-",
+    telefono: localStorage.getItem("albiero_telefono") || "-",
     codigo: localStorage.getItem("albiero_codigo") || "-",
     bienvenida_enviada: localStorage.getItem("albiero_subscribed") ? "Si" : "",
   };

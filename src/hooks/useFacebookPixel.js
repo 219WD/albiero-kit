@@ -12,15 +12,15 @@ const buildContentName = (tipo, ubicacion, sistema) => {
   const partes = [];
   if (tipo)      partes.push(tipo === 'casa' ? 'Casa' : 'Comercio');
   if (ubicacion) partes.push(ubicacion.replace(/\s+/g, ''));
-  if (sistema)   partes.push(sistema.charAt(0).toUpperCase() + sistema.slice(1));
+  if (sistema)   partes.push((SISTEMA_LABELS[sistema] || sistema).replace(/\s+/g, ''));
   return `${PRODUCTO}_${partes.join('_')}`;
   // Ej: "KitAlarmaCamara_Casa_YerbaBuena_Mediano"
 };
 
 const SISTEMA_LABELS = {
-  chico:         'Kit Chico',
-  mediano:       'Kit Mediano',
-  grande:        'Kit Grande',
+  chico:         'Mini',
+  mediano:       'Básico',
+  grande:        'Premium',
   personalizado: 'Personalizado',
 };
 
@@ -121,6 +121,9 @@ const useFacebookPixel = () => {
       ubicacion:        formData.ubicacion,
       sistema:          sistemaLabel,
       producto:         PRODUCTO,
+      nombre:           formData.nombre,
+      email:            formData.email,
+      telefono:         formData.telefono,
     });
 
     firePixel('trackCustom', 'FormularioEnviado_WhatsApp', {
@@ -129,6 +132,9 @@ const useFacebookPixel = () => {
       ubicacion:    formData.ubicacion,
       sistema:      sistemaLabel,
       producto:     PRODUCTO,
+      nombre:       formData.nombre,
+      email:        formData.email,
+      telefono:     formData.telefono,
       value:        1.0,
       valor_lead:   1.0,
       currency:     'ARS',

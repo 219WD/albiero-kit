@@ -79,9 +79,9 @@ const HerosecurityCamaras = () => {
     const tipoTexto    = selectedData.tipo === "casa" ? "Casa" : "Comercio";
     const sistemaTexto =
       {
-        chico:         "Kit Chico (espacios reducidos)",
-        mediano:       "Kit Mediano (propiedad estándar)",
-        grande:        "Kit Grande (propiedad amplia)",
+        chico:         "Mini (espacios reducidos)",
+        mediano:       "Básico (propiedad estándar)",
+        grande:        "Premium (propiedad amplia)",
         personalizado: "Asesoramiento personalizado",
       }[selectedData.sistema] || selectedData.sistema;
 
@@ -212,9 +212,9 @@ const HerosecurityCamaras = () => {
                 <h4 className="step-titulo">Paso 3: ¿Qué tipo de sistema buscás?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    { value: "chico",         label: "Kit Chico",    desc: "(espacios reducidos)"  },
-                    { value: "mediano",        label: "Kit Mediano",  desc: "(propiedad estándar)"  },
-                    { value: "grande",         label: "Kit Grande",   desc: "(propiedad amplia)"    },
+                    { value: "chico",         label: "Mini",    desc: "(espacios reducidos)"  },
+                    { value: "mediano",        label: "Básico",  desc: "(propiedad estándar)"  },
+                    { value: "grande",         label: "Premium",   desc: "(propiedad amplia)"    },
                     { value: "personalizado",  label: "Necesito asesoramiento personalizado", desc: "" },
                   ].map((opcion) => (
                     <button

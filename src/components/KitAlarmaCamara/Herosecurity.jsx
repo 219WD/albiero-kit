@@ -12,6 +12,9 @@ import {
   faCar,
   faClock,
   faChevronDown,
+  faUser,
+  faEnvelope,
+  faPhone,
 } from "@fortawesome/free-solid-svg-icons";
 import useFacebookPixel from "../../hooks/useFacebookPixel";
 import useGoogleAnalytics from "../../hooks/useGoogleAnalytics";
@@ -22,6 +25,16 @@ const VIDEO_WEBM =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,vc_vp9/v1772819547/video-bg-compr_a6c1oj.webm";
 const VIDEO_POSTER =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
+
+const SISTEMA_LABELS = {
+  chico: "Mini",
+  mediano: "Básico",
+  grande: "Premium",
+  personalizado: "Asesoramiento personalizado",
+};
+
+const normalizePhone = (value = "") => String(value || "").replace(/\D/g, "");
+const isValidEmail = (value = "") => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
 
 const HeroSecurity = () => {
   useSecurityHeroGsap();
@@ -45,12 +58,17 @@ const HeroSecurity = () => {
     tipo: "",
     ubicacion: "",
     sistema: "",
+    nombre: "",
+    email: "",
+    telefono: "",
   });
+  const [formError, setFormError] = useState("");
   const submittedLeadKey = useRef("");
 
   const handleOptionSelect = (field, value) => {
     const newData = { ...formData, [field]: value };
     setFormData(newData);
+    setFormError("");
 
     if (field === "tipo") {
       trackTipoSelected(value);
@@ -61,32 +79,64 @@ const HeroSecurity = () => {
     } else if (field === "sistema") {
       trackSistemaSelected(newData.tipo, newData.ubicacion, value);
       trackSistemaSelectedGA4(newData.tipo, newData.ubicacion, value);
-      handleSubmit(newData);
     }
 
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setTimeout(() => setCurrentStep(currentStep + 1), 300);
     }
   };
 
+  const handleContactChange = (field, value) => {
+    setFormData((current) => ({ ...current, [field]: value }));
+    setFormError("");
+  };
+
   const handleSubmit = (selectedData = formData) => {
-    const submissionKey = `${selectedData.tipo}|${selectedData.ubicacion}|${selectedData.sistema}`;
+    const nombre = String(selectedData.nombre || "").trim();
+    const email = String(selectedData.email || "").trim().toLowerCase();
+    const telefono = normalizePhone(selectedData.telefono);
+
+    if (nombre.length < 2) {
+      setFormError("Ingresá tu nombre para identificar la consulta.");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setFormError("Ingresá un email válido.");
+      return;
+    }
+
+    if (telefono.length < 8) {
+      setFormError("Ingresá un teléfono válido con característica.");
+      return;
+    }
+
+    const completeData = { ...selectedData, nombre, email, telefono };
+    const submissionKey = `${completeData.tipo}|${completeData.ubicacion}|${completeData.sistema}|${email}|${telefono}`;
     if (submittedLeadKey.current === submissionKey) return;
     submittedLeadKey.current = submissionKey;
 
-    trackFormComplete(selectedData);
-    trackLeadGA4(selectedData);
+    localStorage.setItem("albiero_nombre", nombre);
+    localStorage.setItem("albiero_email", email);
+    localStorage.setItem("albiero_telefono", telefono);
 
-    const tipoTexto = selectedData.tipo === "casa" ? "Casa" : "Comercio";
-    const sistemaTexto =
-      {
-        chico:         "Kit Chico (ambientes reducidos)",
-        mediano:       "Kit Mediano (propiedad estándar)",
-        grande:        "Kit Grande (propiedad amplia)",
-        personalizado: "Asesoramiento personalizado",
-      }[selectedData.sistema] || selectedData.sistema;
+    trackFormComplete(completeData);
+    trackLeadGA4(completeData);
 
-    const mensaje = `Hola! Quiero asesoramiento por el Kit de Alarma y Cámara.%0A%0A📋 *Mi consulta:*%0A• Para: ${tipoTexto}%0A• Ubicación: ${selectedData.ubicacion}%0A• Sistema: ${sistemaTexto}%0A%0AQuiero recibir información sin compromiso.`;
+    const tipoTexto = completeData.tipo === "casa" ? "Casa" : "Comercio";
+    const sistemaTexto = SISTEMA_LABELS[completeData.sistema] || completeData.sistema;
+
+    const mensaje = encodeURIComponent(
+      `Hola! Quiero asesoramiento por el Kit de Alarma y Cámara.\n\n` +
+      `Mi consulta:\n` +
+      `Nombre: ${nombre}\n` +
+      `Email: ${email}\n` +
+      `Teléfono: ${telefono}\n` +
+      `Para: ${tipoTexto}\n` +
+      `Ubicación: ${completeData.ubicacion}\n` +
+      `Sistema: ${sistemaTexto}\n\n` +
+      `Quiero recibir información sin compromiso.`
+    );
     const whatsappUrl = `https://wa.me/5493813522339?text=${mensaje}`;
     const whatsappWindow = window.open("about:blank", "_blank");
 
@@ -98,7 +148,6 @@ const HeroSecurity = () => {
       }
     }, 1500);
   };
-
   return (
     <section className="hero-security">
       <div className="security-video-fondo">
@@ -158,7 +207,7 @@ const HeroSecurity = () => {
             <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
 
             <div className="form-steps-indicator">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div
                   key={step}
                   className={`step-dot ${currentStep >= step ? "active" : ""}`}
@@ -226,9 +275,9 @@ const HeroSecurity = () => {
                 <h4 className="step-titulo">Paso 3: ¿Qué tipo de sistema buscás?</h4>
                 <div className="step-opciones vertical">
                   {[
-                    { value: "chico",         label: "Kit Chico",    desc: "(ambientes reducidos)" },
-                    { value: "mediano",        label: "Kit Mediano",  desc: "(propiedad estándar)"  },
-                    { value: "grande",         label: "Kit Grande",   desc: "(propiedad amplia)"    },
+                    { value: "chico",         label: "Mini",    desc: "(ambientes reducidos)" },
+                    { value: "mediano",        label: "Básico",  desc: "(propiedad estándar)"  },
+                    { value: "grande",         label: "Premium",   desc: "(propiedad amplia)"    },
                     { value: "personalizado",  label: "Necesito asesoramiento personalizado", desc: "" },
                   ].map((opcion) => (
                     <button
@@ -246,6 +295,59 @@ const HeroSecurity = () => {
                   onClick={() => setCurrentStep(2)}
                   className="btn-volver"
                   aria-label="Volver al paso 2"
+                >
+                  <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />{" "}Volver
+                </button>
+              </div>
+            )}
+
+            {currentStep === 4 && (
+              <div className="form-step">
+                <h4 className="step-titulo">Datos de contacto</h4>
+                <div className="contact-fields">
+                  <label className="contact-field">
+                    <span><FontAwesomeIcon icon={faUser} aria-hidden="true" /> Nombre</span>
+                    <input
+                      type="text"
+                      value={formData.nombre}
+                      onChange={(event) => handleContactChange("nombre", event.target.value)}
+                      autoComplete="name"
+                      placeholder="Tu nombre"
+                    />
+                  </label>
+                  <label className="contact-field">
+                    <span><FontAwesomeIcon icon={faPhone} aria-hidden="true" /> Teléfono</span>
+                    <input
+                      type="tel"
+                      value={formData.telefono}
+                      onChange={(event) => handleContactChange("telefono", event.target.value)}
+                      autoComplete="tel"
+                      inputMode="tel"
+                      placeholder="381 123 4567"
+                    />
+                  </label>
+                  <label className="contact-field">
+                    <span><FontAwesomeIcon icon={faEnvelope} aria-hidden="true" /> Email</span>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(event) => handleContactChange("email", event.target.value)}
+                      autoComplete="email"
+                      placeholder="tu@email.com"
+                    />
+                  </label>
+                </div>
+                {formError && <p className="form-error">{formError}</p>}
+                <div className="form-cta">
+                  <button className="cta-principal" type="button" onClick={() => handleSubmit(formData)}>
+                    Enviar por WhatsApp
+                  </button>
+                  <p className="cta-subtexto">Usamos estos datos solo para responder tu consulta y mejorar el seguimiento.</p>
+                </div>
+                <button
+                  onClick={() => setCurrentStep(3)}
+                  className="btn-volver"
+                  aria-label="Volver al paso 3"
                 >
                   <FontAwesomeIcon icon={faArrowLeft} aria-hidden="true" />{" "}Volver
                 </button>
@@ -273,4 +375,5 @@ const HeroSecurity = () => {
 };
 
 export default HeroSecurity;
+
 
