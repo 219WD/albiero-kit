@@ -542,6 +542,9 @@ export default function WorldCup() {
     })
     .filter(Boolean)
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [fixture.matches, predictions]);
+  const missingPredictionMatches = useMemo(() => fixture.matches
+    .filter((match) => !predictionMap.has(match.id))
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [fixture.matches, predictionMap]);
   const adminVoteRows = adminPredictionAudit.rows || [];
 
   const isMatchLocked = (match) => {
@@ -1211,7 +1214,9 @@ export default function WorldCup() {
                       <strong>#{row.position}</strong>
                       <span>{row.user.name}</span>
                       <em>{row.points} pts</em>
-                      <small>{row.exact} exactos / {row.predictions} pronosticos</small>
+                      <small>
+                        {row.exact} exactos / {row.fixturePredictions ?? row.predictions}/{row.totalMatches || fixture.matches.length || '?'} pronosticos
+                      </small>
                     </button>
                   )) : (
                     <p className="wc-muted">Todavia no hay participantes.</p>
@@ -1560,7 +1565,27 @@ export default function WorldCup() {
                       <h2>Mis predicciones</h2>
                       <p>{userFromToken.email}</p>
                     </div>
-                    <p className="wc-muted">{userFromToken.name}</p>
+                    <div className="wc-prediction-summary">
+                      <div>
+                        <strong>{savedPredictionMatches.length}/{fixture.matches.length}</strong>
+                        <span>pronosticos del fixture actual</span>
+                      </div>
+                      <p>{userFromToken.name}</p>
+                    </div>
+                    {missingPredictionMatches.length > 0 && (
+                      <details className="wc-missing-predictions">
+                        <summary>Te faltan {missingPredictionMatches.length} partidos</summary>
+                        <div>
+                          {missingPredictionMatches.map((match) => (
+                            <button type="button" key={match.id} onClick={() => setTab('fixture')}>
+                              <span>{formatGroupLabel(match)}</span>
+                              <b>{match.homeTeam.name} vs {match.awayTeam.name}</b>
+                              <small>{formatKickoff(match.kickoff)}</small>
+                            </button>
+                          ))}
+                        </div>
+                      </details>
+                    )}
                     {savedPredictionMatches.length > 0 ? (
                       <div className="wc-prediction-grid">
                         {savedPredictionMatches.map((match) => (
