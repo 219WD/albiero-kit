@@ -24,7 +24,7 @@ const API_BASE =
     ? PROD_API_BASE
     : configuredApiBase || (isLocalHost ? 'http://localhost:4000' : PROD_API_BASE);
 
-const SCORE_OPTIONS = Array.from({ length: 11 }, (_, index) => index);
+const SCORE_OPTIONS = Array.from({ length: 21 }, (_, index) => index);
 const CAMERA_INFO = 'Camara interior A1 de 2 MP con audio bidireccional en tiempo real, vision nocturna HD, deteccion de movimiento, seguimiento automatico, deteccion de audio y deteccion de cuerpo humano. Su giro e inclinacion cubren 360 grados para ver interiores en vivo desde Cygnus Mobile Viewer. Incluye vision nocturna IR, vigilancia 24 horas y multiples metodos de deteccion.';
 const ROUND_OF_32_STAGE = 'Eliminatoria de 32';
 
@@ -196,6 +196,71 @@ function formatGroupLabel(match) {
   const isArgentinaGroupMatch = Boolean(match.group) && (match.home === 'ARG' || match.away === 'ARG');
 
   return isArgentinaGroupMatch ? `${group} / ARG` : group;
+}
+
+function hasScoreValue(value) {
+  return value !== '' && value !== undefined && value !== null;
+}
+
+function isDrawScore(homeScore, awayScore) {
+  return hasScoreValue(homeScore) && hasScoreValue(awayScore) && Number(homeScore) === Number(awayScore);
+}
+
+function formatResultScore(result) {
+  if (!result) return '';
+  const baseScore = `${result.homeScore} - ${result.awayScore}`;
+  if (hasScoreValue(result.homePenaltyScore) && hasScoreValue(result.awayPenaltyScore)) {
+    return `${baseScore} (${result.homePenaltyScore} - ${result.awayPenaltyScore})`;
+  }
+  return baseScore;
+}
+
+function getMatchWinnerTeam(match) {
+  if (!match?.result) return null;
+  const homeScore = Number(match.result.homeScore);
+  const awayScore = Number(match.result.awayScore);
+  if (homeScore > awayScore) return match.homeTeam;
+  if (awayScore > homeScore) return match.awayTeam;
+
+  if (hasScoreValue(match.result.homePenaltyScore) && hasScoreValue(match.result.awayPenaltyScore)) {
+    return Number(match.result.homePenaltyScore) > Number(match.result.awayPenaltyScore) ? match.homeTeam : match.awayTeam;
+  }
+
+  return null;
+}
+
+function buildNextRound(matches, stage) {
+  const nextMatches = [];
+  for (let index = 0; index < matches.length; index += 2) {
+    const left = matches[index];
+    const right = matches[index + 1];
+    nextMatches.push({
+      id: `${stage}-${index / 2}`,
+      stage,
+      homeTeam: left ? getMatchWinnerTeam(left) : null,
+      awayTeam: right ? getMatchWinnerTeam(right) : null,
+      sourceMatches: [left, right].filter(Boolean),
+    });
+  }
+  return nextMatches;
+}
+
+function buildKnockoutBracket(matches = []) {
+  const roundOf32 = matches
+    .filter(isRoundOf32Match)
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const roundOf16 = buildNextRound(roundOf32, 'Octavos');
+  const quarterFinals = buildNextRound(roundOf16, 'Cuartos');
+  const semifinals = buildNextRound(quarterFinals, 'Semifinales');
+  const final = buildNextRound(semifinals, 'Final');
+
+  return [
+    { key: 'r32', title: ROUND_OF_32_STAGE, matches: roundOf32 },
+    { key: 'r16', title: 'Octavos', matches: roundOf16 },
+    { key: 'qf', title: 'Cuartos', matches: quarterFinals },
+    { key: 'sf', title: 'Semifinales', matches: semifinals },
+    { key: 'final', title: 'Final', matches: final },
+  ];
 }
 
 function ScoreControl({ value, onChange, disabled, onFocus, label }) {
@@ -464,6 +529,7 @@ export default function WorldCup() {
   const groupStageMatches = useMemo(() => filteredMatches
     .filter((match) => !isRoundOf32Match(match))
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [filteredMatches]);
+  const knockoutBracket = useMemo(() => buildKnockoutBracket(fixture.matches), [fixture.matches]);
   const shouldShowGroupStage = groupStageOpen || selectedGroup !== 'all' || selectedTeam !== 'all';
   const selectedTeamSchedule = useMemo(() => {
     if (selectedTeam === 'all') return [];
@@ -735,13 +801,17 @@ export default function WorldCup() {
     }
   };
 
-  const setResultScore = (matchId, field, value) => {
+  const setResultScore = (match, field, value) => {
+    const matchId = match.id;
     setResultDrafts((current) => ({
       ...current,
       [matchId]: {
-        homeScore: current[matchId]?.homeScore ?? '',
-        awayScore: current[matchId]?.awayScore ?? '',
+        homeScore: current[matchId]?.homeScore ?? match.result?.homeScore ?? '',
+        awayScore: current[matchId]?.awayScore ?? match.result?.awayScore ?? '',
+        homePenaltyScore: current[matchId]?.homePenaltyScore ?? match.result?.homePenaltyScore ?? '',
+        awayPenaltyScore: current[matchId]?.awayPenaltyScore ?? match.result?.awayPenaltyScore ?? '',
         [field]: value,
+        ...(field === 'homeScore' || field === 'awayScore' ? { homePenaltyScore: '', awayPenaltyScore: '' } : {}),
       },
     }));
   };
@@ -756,9 +826,17 @@ export default function WorldCup() {
     const draft = resultDrafts[match.id] || {};
     const homeScore = draft.homeScore ?? match.result?.homeScore ?? '';
     const awayScore = draft.awayScore ?? match.result?.awayScore ?? '';
+    const homePenaltyScore = draft.homePenaltyScore ?? match.result?.homePenaltyScore ?? '';
+    const awayPenaltyScore = draft.awayPenaltyScore ?? match.result?.awayPenaltyScore ?? '';
 
     if (homeScore === '' || awayScore === '' || homeScore === undefined || awayScore === undefined) {
       setError('Carga los dos goles oficiales antes de guardar.');
+      return;
+    }
+
+    const shouldSavePenalties = isDrawScore(homeScore, awayScore) && (hasScoreValue(homePenaltyScore) || hasScoreValue(awayPenaltyScore));
+    if (shouldSavePenalties && (!hasScoreValue(homePenaltyScore) || !hasScoreValue(awayPenaltyScore))) {
+      setError('Carga los dos penales o dejalos vacios.');
       return;
     }
 
@@ -769,7 +847,12 @@ export default function WorldCup() {
     try {
       const data = await apiRequest(`/api/worldcup/matches/${encodeURIComponent(match.id)}/result`, {
         method: 'PATCH',
-        body: JSON.stringify({ homeScore, awayScore }),
+        body: JSON.stringify({
+          homeScore,
+          awayScore,
+          homePenaltyScore: shouldSavePenalties ? homePenaltyScore : null,
+          awayPenaltyScore: shouldSavePenalties ? awayPenaltyScore : null,
+        }),
       }, adminToken);
       setFixture((current) => ({
         ...current,
@@ -838,7 +921,7 @@ export default function WorldCup() {
           <Team team={match.homeTeam} />
           <div className="wc-score">
             {match.result ? (
-              <strong>{match.result.homeScore} - {match.result.awayScore}</strong>
+              <strong>{formatResultScore(match.result)}</strong>
             ) : !token ? (
               <button type="button" className="wc-score-login" onClick={goToLogin}>
                 Pronosticar
@@ -881,9 +964,49 @@ export default function WorldCup() {
     );
   };
 
+  const renderBracketTeam = (team) => (
+    <div className={`wc-bracket-team ${team ? '' : 'is-pending'}`}>
+      {team ? (
+        <TeamInline team={team} />
+      ) : (
+        <>
+          <span className="wc-bracket-placeholder" aria-hidden="true" />
+          <b>A definir</b>
+        </>
+      )}
+    </div>
+  );
+
+  const renderBracketMatch = (match) => {
+    const isOfficialMatch = Boolean(match.homeTeam && match.awayTeam && match.kickoff);
+    const winner = isOfficialMatch ? getMatchWinnerTeam(match) : null;
+
+    return (
+      <article className={`wc-bracket-match ${match.result ? 'has-result' : ''}`} key={match.id}>
+        <div className="wc-bracket-match-top">
+          <span>{isOfficialMatch ? formatShortDateTime(match.kickoff) : 'A definir'}</span>
+          {match.result && <small>{hasScoreValue(match.result.homePenaltyScore) ? 'Fin (P)' : 'Fin'}</small>}
+        </div>
+        <div className="wc-bracket-row">
+          {renderBracketTeam(match.homeTeam)}
+          {match.result && <strong className={winner?.code === match.homeTeam?.code ? 'is-winner' : ''}>{match.result.homeScore}</strong>}
+        </div>
+        <div className="wc-bracket-row">
+          {renderBracketTeam(match.awayTeam)}
+          {match.result && <strong className={winner?.code === match.awayTeam?.code ? 'is-winner' : ''}>{match.result.awayScore}</strong>}
+        </div>
+        {match.result && hasScoreValue(match.result.homePenaltyScore) && (
+          <div className="wc-bracket-penalties">
+            Penales {match.result.homePenaltyScore} - {match.result.awayPenaltyScore}
+          </div>
+        )}
+      </article>
+    );
+  };
+
   const tabs = [
     { key: 'fixture', label: 'Fixture' },
-    { key: 'grupos', label: 'Grupos' },
+    { key: 'grupos', label: 'Llaves' },
     { key: 'ranking', label: 'Ranking' },
     { key: 'premios', label: 'Premios' },
     { key: 'reglas', label: 'Como jugar' },
@@ -1024,32 +1147,51 @@ export default function WorldCup() {
             )}
 
             {tab === 'grupos' && (
-              <section className="wc-groups">
-                {groupTables.map((group) => (
-                  <article className="wc-card wc-group-table" key={group.id}>
-                    <div className="wc-section-head">
-                      <h2>{group.name}</h2>
-                      <p>{fixture.matches.filter((match) => isGroupMatch(match, group)).length} partidos programados.</p>
-                    </div>
-                    <div className="wc-standings">
-                      <div className="wc-standings-head">
-                        <span>Seleccion</span>
-                        <span>PJ</span>
-                        <span>DG</span>
-                        <span>Pts</span>
-                      </div>
-                      {group.standings.map((row) => (
-                        <div className={`wc-standings-row ${row.team.code === 'ARG' ? 'is-arg' : ''}`} key={row.team.code}>
-                          <TeamInline team={row.team} />
-                          <span>{row.played}</span>
-                          <span>{row.goalDifference}</span>
-                          <strong>{row.points}</strong>
+              <>
+                <section className="wc-card wc-knockout-map">
+                  <div className="wc-section-head">
+                    <h2>Llave eliminatoria</h2>
+                    <p>Los cruces futuros se completan automaticamente cuando se cargan los resultados oficiales.</p>
+                  </div>
+                  <div className="wc-bracket" aria-label="Llave eliminatoria Mundial Albiero">
+                    {knockoutBracket.map((round) => (
+                      <div className="wc-bracket-round" key={round.key}>
+                        <h3>{round.title}</h3>
+                        <div className="wc-bracket-stack">
+                          {round.matches.map(renderBracketMatch)}
                         </div>
-                      ))}
-                    </div>
-                  </article>
-                ))}
-              </section>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="wc-groups">
+                  {groupTables.map((group) => (
+                    <article className="wc-card wc-group-table" key={group.id}>
+                      <div className="wc-section-head">
+                        <h2>{group.name}</h2>
+                        <p>{fixture.matches.filter((match) => isGroupMatch(match, group)).length} partidos programados.</p>
+                      </div>
+                      <div className="wc-standings">
+                        <div className="wc-standings-head">
+                          <span>Seleccion</span>
+                          <span>PJ</span>
+                          <span>DG</span>
+                          <span>Pts</span>
+                        </div>
+                        {group.standings.map((row) => (
+                          <div className={`wc-standings-row ${row.team.code === 'ARG' ? 'is-arg' : ''}`} key={row.team.code}>
+                            <TeamInline team={row.team} />
+                            <span>{row.played}</span>
+                            <span>{row.goalDifference}</span>
+                            <strong>{row.points}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </section>
+              </>
             )}
 
             {tab === 'ranking' && (
@@ -1187,6 +1329,9 @@ export default function WorldCup() {
                           const draft = resultDrafts[match.id] || {};
                           const homeResultValue = draft.homeScore ?? match.result?.homeScore;
                           const awayResultValue = draft.awayScore ?? match.result?.awayScore;
+                          const homePenaltyValue = draft.homePenaltyScore ?? match.result?.homePenaltyScore;
+                          const awayPenaltyValue = draft.awayPenaltyScore ?? match.result?.awayPenaltyScore;
+                          const showPenaltyControls = isDrawScore(homeResultValue, awayResultValue);
 
                           return (
                             <article className={`wc-admin-match ${match.result ? 'has-result' : ''}`} key={match.id}>
@@ -1195,18 +1340,38 @@ export default function WorldCup() {
                                 <strong>{match.homeTeam.name} vs {match.awayTeam.name}</strong>
                                 <small>{formatKickoff(match.kickoff)}</small>
                               </div>
-                              <div className="wc-admin-score">
-                                <ScoreControl
-                                  label={`${match.homeTeam.name} resultado oficial`}
-                                  value={homeResultValue}
-                                  onChange={(value) => setResultScore(match.id, 'homeScore', value)}
-                                />
-                                <span>:</span>
-                                <ScoreControl
-                                  label={`${match.awayTeam.name} resultado oficial`}
-                                  value={awayResultValue}
-                                  onChange={(value) => setResultScore(match.id, 'awayScore', value)}
-                                />
+                              <div className="wc-admin-score-stack">
+                                <div className="wc-admin-score">
+                                  <ScoreControl
+                                    label={`${match.homeTeam.name} resultado oficial`}
+                                    value={homeResultValue}
+                                    onChange={(value) => setResultScore(match, 'homeScore', value)}
+                                  />
+                                  <span>:</span>
+                                  <ScoreControl
+                                    label={`${match.awayTeam.name} resultado oficial`}
+                                    value={awayResultValue}
+                                    onChange={(value) => setResultScore(match, 'awayScore', value)}
+                                  />
+                                </div>
+                                {showPenaltyControls && (
+                                  <div className="wc-admin-penalties">
+                                    <span>Penales</span>
+                                    <div className="wc-admin-score">
+                                      <ScoreControl
+                                        label={`${match.homeTeam.name} penales`}
+                                        value={homePenaltyValue}
+                                        onChange={(value) => setResultScore(match, 'homePenaltyScore', value)}
+                                      />
+                                      <span>:</span>
+                                      <ScoreControl
+                                        label={`${match.awayTeam.name} penales`}
+                                        value={awayPenaltyValue}
+                                        onChange={(value) => setResultScore(match, 'awayPenaltyScore', value)}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                               <button
                                 type="button"
@@ -1360,11 +1525,11 @@ export default function WorldCup() {
                             {row.result && row.match ? (
                               <div>
                                 <TeamInline team={row.match.homeTeam} />
-                                <b>{row.result.homeScore} - {row.result.awayScore}</b>
+                                <b>{formatResultScore(row.result)}</b>
                                 <TeamInline team={row.match.awayTeam} />
                               </div>
                             ) : row.result ? (
-                              <strong>{row.result.homeScore} - {row.result.awayScore}</strong>
+                              <strong>{formatResultScore(row.result)}</strong>
                             ) : (
                               <strong>Pendiente</strong>
                             )}

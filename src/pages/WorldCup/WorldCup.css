@@ -510,6 +510,179 @@
   white-space: nowrap;
 }
 
+.wc-knockout-map {
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.wc-bracket {
+  --bracket-gap: 1.35rem;
+  display: grid;
+  grid-template-columns: minmax(250px, 1.25fr) repeat(4, minmax(220px, 1fr));
+  gap: var(--bracket-gap);
+  overflow-x: auto;
+  padding: 0 0.4rem 0.35rem;
+}
+
+.wc-bracket-round {
+  display: grid;
+  align-content: start;
+  gap: 0.8rem;
+  min-width: 220px;
+  overflow: visible;
+}
+
+.wc-bracket-round h3 {
+  margin: 0;
+  color: #74acdf;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wc-bracket-stack {
+  display: grid;
+  gap: 0.72rem;
+  overflow: visible;
+}
+
+.wc-bracket-round:nth-child(2) .wc-bracket-stack {
+  padding-top: 2.6rem;
+  gap: 3.1rem;
+}
+
+.wc-bracket-round:nth-child(3) .wc-bracket-stack {
+  padding-top: 7.4rem;
+  gap: 8.6rem;
+}
+
+.wc-bracket-round:nth-child(4) .wc-bracket-stack {
+  padding-top: 17rem;
+  gap: 18rem;
+}
+
+.wc-bracket-round:nth-child(5) .wc-bracket-stack {
+  padding-top: 36rem;
+}
+
+.wc-bracket-match {
+  position: relative;
+  display: grid;
+  gap: 0.55rem;
+  min-height: 104px;
+  padding: 0.78rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035)),
+    rgba(18,20,28,0.88);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.18);
+  z-index: 1;
+}
+
+.wc-bracket-round:not(:first-child) .wc-bracket-match::before,
+.wc-bracket-match::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(var(--bracket-gap) + 2px);
+  border-top: 1px solid rgba(116,172,223,0.22);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wc-bracket-round:not(:first-child) .wc-bracket-match::before {
+  left: calc((var(--bracket-gap) + 2px) * -1);
+}
+
+.wc-bracket-match::after {
+  right: calc((var(--bracket-gap) + 2px) * -1);
+}
+
+.wc-bracket-round:last-child .wc-bracket-match::after {
+  display: none;
+}
+
+.wc-bracket-round:not(:first-child) .wc-bracket-match {
+  box-shadow:
+    -18px 0 0 -17px rgba(116,172,223,0.22),
+    0 14px 28px rgba(0,0,0,0.18);
+}
+
+.wc-bracket-match.has-result {
+  border-color: rgba(246,200,95,0.26);
+}
+
+.wc-bracket-match-top,
+.wc-bracket-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.wc-bracket-match-top span,
+.wc-bracket-match-top small,
+.wc-bracket-penalties {
+  color: rgba(255,255,255,0.52);
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.wc-bracket-match-top small {
+  padding: 0.16rem 0.48rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.11);
+  color: rgba(255,255,255,0.72);
+}
+
+.wc-bracket-row strong {
+  min-width: 20px;
+  color: rgba(255,255,255,0.5);
+  font-size: 1rem;
+  text-align: right;
+}
+
+.wc-bracket-row strong.is-winner {
+  color: #f6c85f;
+}
+
+.wc-bracket-team {
+  min-width: 0;
+}
+
+.wc-bracket-team.is-pending {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.55rem;
+}
+
+.wc-bracket-team.is-pending b {
+  overflow: hidden;
+  color: rgba(255,255,255,0.68);
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wc-bracket-placeholder {
+  width: 30px;
+  height: 22px;
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04)),
+    rgba(255,255,255,0.08);
+  clip-path: polygon(50% 0, 92% 16%, 82% 82%, 50% 100%, 18% 82%, 8% 16%);
+  flex: 0 0 auto;
+}
+
+.wc-bracket-penalties {
+  justify-self: start;
+  color: #bce9ff;
+}
+
 .wc-groups {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -672,6 +845,9 @@
 
 .wc-score strong {
   font-size: 1.5rem;
+  min-width: 118px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .wc-score-control {
@@ -1145,6 +1321,30 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
+}
+
+.wc-admin-score-stack {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: center;
+}
+
+.wc-admin-penalties {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: center;
+  padding: 0.55rem;
+  border: 1px solid rgba(116,172,223,0.18);
+  border-radius: 14px;
+  background: rgba(116,172,223,0.075);
+}
+
+.wc-admin-penalties > span {
+  color: #bce9ff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .wc-admin-score > strong {
