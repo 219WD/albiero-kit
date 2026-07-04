@@ -26,6 +26,7 @@ const API_BASE =
 
 const SCORE_OPTIONS = Array.from({ length: 21 }, (_, index) => index);
 const CAMERA_INFO = 'Camara interior A1 de 2 MP con audio bidireccional en tiempo real, vision nocturna HD, deteccion de movimiento, seguimiento automatico, deteccion de audio y deteccion de cuerpo humano. Su giro e inclinacion cubren 360 grados para ver interiores en vivo desde Cygnus Mobile Viewer. Incluye vision nocturna IR, vigilancia 24 horas y multiples metodos de deteccion.';
+const ROUND_OF_16_STAGE = 'Octavos de final';
 const ROUND_OF_32_STAGE = 'Eliminatoria de 32';
 
 const FLAG_CODES = {
@@ -103,6 +104,19 @@ const ROUND_OF_32_MATCHES = [
   { id: 'r32-016', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'COL', away: 'GHA', kickoff: '2026-07-03T22:30:00-03:00' },
 ];
 
+const ROUND_OF_16_MATCHES = [
+  { id: 'r16-001', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'CAN', away: 'MAR', kickoff: '2026-07-04T14:00:00-03:00' },
+  { id: 'r16-002', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'PAR', away: 'FRA', kickoff: '2026-07-04T18:00:00-03:00' },
+  { id: 'r16-003', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'BRA', away: 'NOR', kickoff: '2026-07-05T17:00:00-03:00' },
+  { id: 'r16-004', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'MEX', away: 'ENG', kickoff: '2026-07-05T21:00:00-03:00' },
+  { id: 'r16-005', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'POR', away: 'ESP', kickoff: '2026-07-06T16:00:00-03:00' },
+  { id: 'r16-006', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'USA', away: 'BEL', kickoff: '2026-07-06T21:00:00-03:00' },
+  { id: 'r16-007', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'ARG', away: 'EGY', kickoff: '2026-07-07T13:00:00-03:00' },
+  { id: 'r16-008', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'SUI', away: 'COL', kickoff: '2026-07-07T17:00:00-03:00' },
+];
+
+const KNOCKOUT_FALLBACK_MATCHES = [...ROUND_OF_16_MATCHES, ...ROUND_OF_32_MATCHES];
+
 function hydrateWorldCupMatch(match) {
   return {
     ...match,
@@ -117,11 +131,19 @@ function isRoundOf32Match(match) {
   return match.stage === ROUND_OF_32_STAGE || match.round === 'round-of-32';
 }
 
-function withRoundOf32Matches(fixtureData = {}) {
+function isRoundOf16Match(match) {
+  return match.stage === ROUND_OF_16_STAGE || match.round === 'round-of-16';
+}
+
+function isKnockoutMatch(match) {
+  return isRoundOf16Match(match) || isRoundOf32Match(match);
+}
+
+function withKnockoutFallbackMatches(fixtureData = {}) {
   const currentMatches = (fixtureData.matches || []).map(hydrateWorldCupMatch);
   const existingKeys = new Set(currentMatches.map((match) => `${match.home}-${match.away}-${match.kickoff}`));
   const existingIds = new Set(currentMatches.map((match) => match.id));
-  const roundOf32 = ROUND_OF_32_MATCHES
+  const fallbackKnockout = KNOCKOUT_FALLBACK_MATCHES
     .filter((match) => !existingIds.has(match.id) && !existingKeys.has(`${match.home}-${match.away}-${match.kickoff}`))
     .map(hydrateWorldCupMatch);
 
@@ -129,7 +151,7 @@ function withRoundOf32Matches(fixtureData = {}) {
     ...fixtureData,
     groups: fixtureData.groups || FALLBACK_WORLD_CUP_GROUPS,
     prizes: fixtureData.prizes || FALLBACK_WORLD_CUP_PRIZES,
-    matches: [...roundOf32, ...currentMatches],
+    matches: [...fallbackKnockout, ...currentMatches],
   };
 }
 
@@ -140,7 +162,7 @@ function isBackendMissingMatchError(err) {
 const LOCAL_FIXTURE_FALLBACK = {
   groups: FALLBACK_WORLD_CUP_GROUPS,
   prizes: FALLBACK_WORLD_CUP_PRIZES,
-  matches: [...ROUND_OF_32_MATCHES, ...FALLBACK_WORLD_CUP_FIXTURE].map(hydrateWorldCupMatch),
+  matches: [...KNOCKOUT_FALLBACK_MATCHES, ...FALLBACK_WORLD_CUP_FIXTURE].map(hydrateWorldCupMatch),
 };
 
 async function apiRequest(endpoint, options = {}, token = '') {
@@ -215,6 +237,11 @@ function formatResultScore(result) {
   return baseScore;
 }
 
+function formatPredictionScore(prediction) {
+  if (!prediction) return '';
+  return formatResultScore(prediction);
+}
+
 function getMatchWinnerTeam(match) {
   if (!match?.result) return null;
   const homeScore = Number(match.result.homeScore);
@@ -249,18 +276,25 @@ function buildKnockoutBracket(matches = []) {
   const roundOf32 = matches
     .filter(isRoundOf32Match)
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
-  const roundOf16 = buildNextRound(roundOf32, 'Octavos');
+  const roundOf16Matches = matches
+    .filter(isRoundOf16Match)
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const roundOf16 = roundOf16Matches.length ? roundOf16Matches : buildNextRound(roundOf32, ROUND_OF_16_STAGE);
   const quarterFinals = buildNextRound(roundOf16, 'Cuartos');
   const semifinals = buildNextRound(quarterFinals, 'Semifinales');
   const final = buildNextRound(semifinals, 'Final');
 
   return [
     { key: 'r32', title: ROUND_OF_32_STAGE, matches: roundOf32 },
-    { key: 'r16', title: 'Octavos', matches: roundOf16 },
+    { key: 'r16', title: ROUND_OF_16_STAGE, matches: roundOf16 },
     { key: 'qf', title: 'Cuartos', matches: quarterFinals },
     { key: 'sf', title: 'Semifinales', matches: semifinals },
     { key: 'final', title: 'Final', matches: final },
   ];
+}
+
+function requiresPenaltyWinner(match = {}) {
+  return isKnockoutMatch(match);
 }
 
 function ScoreControl({ value, onChange, disabled, onFocus, label }) {
@@ -519,15 +553,27 @@ export default function WorldCup() {
   }, [fixture.matches]);
   const filteredMatches = useMemo(() => fixture.matches.filter((match) => {
     const activeGroup = groupOptions.find((group) => group.id === selectedGroup);
-    const groupMatch = selectedGroup === 'all' || (!isRoundOf32Match(match) && (activeGroup ? isGroupMatch(match, activeGroup) : match.group === selectedGroup));
+    const groupMatch = selectedGroup === 'all' || (!isKnockoutMatch(match) && (activeGroup ? isGroupMatch(match, activeGroup) : match.group === selectedGroup));
     const teamMatch = selectedTeam === 'all' || match.home === selectedTeam || match.away === selectedTeam;
     return groupMatch && teamMatch;
   }), [fixture.matches, groupOptions, selectedGroup, selectedTeam]);
-  const roundOf32Matches = useMemo(() => filteredMatches
-    .filter((match) => isRoundOf32Match(match) && selectedGroup === 'all')
-    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [filteredMatches, selectedGroup]);
+  const knockoutStageSections = useMemo(() => [
+    {
+      title: ROUND_OF_16_STAGE,
+      matches: filteredMatches.filter((match) => isRoundOf16Match(match) && selectedGroup === 'all'),
+    },
+    {
+      title: ROUND_OF_32_STAGE,
+      matches: filteredMatches.filter((match) => isRoundOf32Match(match) && selectedGroup === 'all'),
+    },
+  ]
+    .map((section) => ({
+      ...section,
+      matches: section.matches.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()),
+    }))
+    .filter((section) => section.matches.length > 0), [filteredMatches, selectedGroup]);
   const groupStageMatches = useMemo(() => filteredMatches
-    .filter((match) => !isRoundOf32Match(match))
+    .filter((match) => !isKnockoutMatch(match))
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [filteredMatches]);
   const knockoutBracket = useMemo(() => buildKnockoutBracket(fixture.matches), [fixture.matches]);
   const shouldShowGroupStage = groupStageOpen || selectedGroup !== 'all' || selectedTeam !== 'all';
@@ -559,11 +605,11 @@ export default function WorldCup() {
         apiRequest('/api/worldcup/fixture'),
         apiRequest('/api/worldcup/leaderboard'),
       ]);
-      setFixture(withRoundOf32Matches(fixtureData));
+      setFixture(withKnockoutFallbackMatches(fixtureData));
       setLeaderboard(leaderboardData.leaderboard || []);
       return true;
     } catch (err) {
-      setFixture(LOCAL_FIXTURE_FALLBACK);
+      setFixture(withKnockoutFallbackMatches(LOCAL_FIXTURE_FALLBACK));
       setLeaderboard([]);
       return false;
     }
@@ -640,6 +686,8 @@ export default function WorldCup() {
       nextDrafts[prediction.matchId] = {
         homeScore: prediction.homeScore,
         awayScore: prediction.awayScore,
+        homePenaltyScore: prediction.homePenaltyScore ?? '',
+        awayPenaltyScore: prediction.awayPenaltyScore ?? '',
       };
     });
     setDrafts(nextDrafts);
@@ -747,7 +795,10 @@ export default function WorldCup() {
       [matchId]: {
         homeScore: current[matchId]?.homeScore ?? '',
         awayScore: current[matchId]?.awayScore ?? '',
+        homePenaltyScore: current[matchId]?.homePenaltyScore ?? '',
+        awayPenaltyScore: current[matchId]?.awayPenaltyScore ?? '',
         [field]: value,
+        ...(field === 'homeScore' || field === 'awayScore' ? { homePenaltyScore: '', awayPenaltyScore: '' } : {}),
       },
     }));
   };
@@ -779,6 +830,22 @@ export default function WorldCup() {
       return;
     }
 
+    const shouldSavePenalties = requiresPenaltyWinner(match) && isDrawScore(draft.homeScore, draft.awayScore);
+    if (shouldSavePenalties && (!hasScoreValue(draft.homePenaltyScore) || !hasScoreValue(draft.awayPenaltyScore))) {
+      setError('Si el partido queda empatado, elegi los penales para definir ganador.');
+      return;
+    }
+
+    if (
+      shouldSavePenalties
+      && hasScoreValue(draft.homePenaltyScore)
+      && hasScoreValue(draft.awayPenaltyScore)
+      && Number(draft.homePenaltyScore) === Number(draft.awayPenaltyScore)
+    ) {
+      setError('Los penales no pueden quedar empatados.');
+      return;
+    }
+
     setSavingId(match.id);
     setError('');
     setMessage('');
@@ -786,7 +853,12 @@ export default function WorldCup() {
     try {
       const data = await apiRequest(`/api/worldcup/predictions/${encodeURIComponent(match.id)}`, {
         method: 'PUT',
-        body: JSON.stringify(draft),
+        body: JSON.stringify({
+          homeScore: draft.homeScore,
+          awayScore: draft.awayScore,
+          homePenaltyScore: shouldSavePenalties ? draft.homePenaltyScore : null,
+          awayPenaltyScore: shouldSavePenalties ? draft.awayPenaltyScore : null,
+        }),
       }, token);
       setPredictions((current) => {
         const without = current.filter((prediction) => prediction.matchId !== match.id);
@@ -837,9 +909,14 @@ export default function WorldCup() {
       return;
     }
 
-    const shouldSavePenalties = isDrawScore(homeScore, awayScore) && (hasScoreValue(homePenaltyScore) || hasScoreValue(awayPenaltyScore));
+    const shouldSavePenalties = isDrawScore(homeScore, awayScore) && (requiresPenaltyWinner(match) || hasScoreValue(homePenaltyScore) || hasScoreValue(awayPenaltyScore));
     if (shouldSavePenalties && (!hasScoreValue(homePenaltyScore) || !hasScoreValue(awayPenaltyScore))) {
-      setError('Carga los dos penales o dejalos vacios.');
+      setError(requiresPenaltyWinner(match) ? 'Carga los penales para definir el ganador.' : 'Carga los dos penales o dejalos vacios.');
+      return;
+    }
+
+    if (shouldSavePenalties && Number(homePenaltyScore) === Number(awayPenaltyScore)) {
+      setError('Los penales no pueden quedar empatados.');
       return;
     }
 
@@ -913,6 +990,12 @@ export default function WorldCup() {
     const isPredictionSaved = Boolean(prediction);
     const matchIsLocked = isMatchLocked(match);
     const predictionDisabled = matchIsLocked || isPredictionSaved;
+    const homeDraftScore = draft.homeScore ?? prediction?.homeScore;
+    const awayDraftScore = draft.awayScore ?? prediction?.awayScore;
+    const showPredictionPenalties = !match.result
+      && token
+      && requiresPenaltyWinner(match)
+      && isDrawScore(homeDraftScore, awayDraftScore);
 
     return (
       <article className={`wc-match ${match.home === 'ARG' || match.away === 'ARG' ? 'is-arg' : ''}`} key={match.id}>
@@ -922,7 +1005,7 @@ export default function WorldCup() {
         </div>
         <div className="wc-match-main">
           <Team team={match.homeTeam} />
-          <div className="wc-score">
+          <div className={`wc-score ${showPredictionPenalties ? 'has-penalties' : ''}`}>
             {match.result ? (
               <strong>{formatResultScore(match.result)}</strong>
             ) : !token ? (
@@ -933,7 +1016,7 @@ export default function WorldCup() {
               <>
                 <PredictionSelect
                   label={`${match.homeTeam.name} goles`}
-                  value={draft.homeScore ?? prediction?.homeScore}
+                  value={homeDraftScore}
                   disabled={predictionDisabled}
                   onFocus={!token ? goToLogin : undefined}
                   onChange={(value) => setDraftScore(match.id, 'homeScore', value)}
@@ -941,11 +1024,29 @@ export default function WorldCup() {
                 <span>:</span>
                 <PredictionSelect
                   label={`${match.awayTeam.name} goles`}
-                  value={draft.awayScore ?? prediction?.awayScore}
+                  value={awayDraftScore}
                   disabled={predictionDisabled}
                   onFocus={!token ? goToLogin : undefined}
                   onChange={(value) => setDraftScore(match.id, 'awayScore', value)}
                 />
+                {showPredictionPenalties && (
+                  <div className="wc-penalty-pick" aria-label="Definicion por penales">
+                    <span>Penales</span>
+                    <PredictionSelect
+                      label={`${match.homeTeam.name} penales`}
+                      value={draft.homePenaltyScore ?? prediction?.homePenaltyScore}
+                      disabled={predictionDisabled}
+                      onChange={(value) => setDraftScore(match.id, 'homePenaltyScore', value)}
+                    />
+                    <b>:</b>
+                    <PredictionSelect
+                      label={`${match.awayTeam.name} penales`}
+                      value={draft.awayPenaltyScore ?? prediction?.awayPenaltyScore}
+                      disabled={predictionDisabled}
+                      onChange={(value) => setDraftScore(match.id, 'awayPenaltyScore', value)}
+                    />
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -1112,20 +1213,20 @@ export default function WorldCup() {
                   </section>
                 )}
 
-                {selectedGroup === 'all' && (
-                  <section className="wc-stage-section wc-stage-section--knockout">
+                {selectedGroup === 'all' && knockoutStageSections.map((section) => (
+                  <section className="wc-stage-section wc-stage-section--knockout" key={section.title}>
                     <div className="wc-stage-title">
                       <div>
                         <span>Fase eliminatoria</span>
-                        <h2>{ROUND_OF_32_STAGE}</h2>
+                        <h2>{section.title}</h2>
                       </div>
-                      <small>{roundOf32Matches.length} partidos</small>
+                      <small>{section.matches.length} partidos</small>
                     </div>
                     <section className="wc-fixture">
-                      {roundOf32Matches.map(renderMatchCard)}
+                      {section.matches.map(renderMatchCard)}
                     </section>
                   </section>
-                )}
+                ))}
 
                 <section className="wc-stage-section wc-stage-section--groups">
                   <button
@@ -1518,11 +1619,11 @@ export default function WorldCup() {
                             {row.match ? (
                               <div>
                                 <TeamInline team={row.match.homeTeam} />
-                                <b>{row.homeScore} - {row.awayScore}</b>
+                                <b>{formatPredictionScore(row)}</b>
                                 <TeamInline team={row.match.awayTeam} />
                               </div>
                             ) : (
-                              <strong>{row.homeScore} - {row.awayScore}</strong>
+                              <strong>{formatPredictionScore(row)}</strong>
                             )}
                           </div>
                           <div className="wc-admin-vote-result">
@@ -1596,7 +1697,7 @@ export default function WorldCup() {
                             </div>
                             <div className="wc-prediction-main">
                               <TeamInline team={match.homeTeam} />
-                              <strong>{match.prediction.homeScore} - {match.prediction.awayScore}</strong>
+                              <strong>{formatPredictionScore(match.prediction)}</strong>
                               <TeamInline team={match.awayTeam} />
                             </div>
                             <div className="wc-prediction-meta">

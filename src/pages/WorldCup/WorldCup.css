@@ -922,6 +922,12 @@
   gap: 0.4rem;
 }
 
+.wc-score.has-penalties {
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 290px;
+}
+
 .wc-score strong {
   font-size: 1.5rem;
   min-width: 118px;
@@ -984,6 +990,40 @@
   height: 46px;
   padding: 0 0.9rem;
   box-shadow: 0 12px 24px rgba(150,28,44,0.28);
+}
+
+.wc-penalty-pick {
+  display: grid;
+  grid-template-columns: auto auto 12px auto;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.4rem;
+  border: 1px solid rgba(116,172,223,0.2);
+  border-radius: 16px;
+  background: rgba(116,172,223,0.08);
+}
+
+.wc-penalty-pick > span {
+  color: rgba(255,255,255,0.72);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.wc-penalty-pick .wc-score-control {
+  grid-template-columns: 24px 34px 24px;
+  height: 38px;
+  border-radius: 12px;
+}
+
+.wc-penalty-pick .wc-score-control .wc-score-value {
+  font-size: 1rem;
+}
+
+.wc-penalty-pick b {
+  text-align: center;
+  color: rgba(255,255,255,0.72);
 }
 
 .wc-match-bottom button {
