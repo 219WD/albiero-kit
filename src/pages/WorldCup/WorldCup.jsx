@@ -26,6 +26,10 @@ const API_BASE =
 
 const SCORE_OPTIONS = Array.from({ length: 21 }, (_, index) => index);
 const CAMERA_INFO = 'Camara interior A1 de 2 MP con audio bidireccional en tiempo real, vision nocturna HD, deteccion de movimiento, seguimiento automatico, deteccion de audio y deteccion de cuerpo humano. Su giro e inclinacion cubren 360 grados para ver interiores en vivo desde Cygnus Mobile Viewer. Incluye vision nocturna IR, vigilancia 24 horas y multiples metodos de deteccion.';
+const FINAL_STAGE = 'Final';
+const THIRD_PLACE_STAGE = 'Eliminatoria por el tercer lugar';
+const SEMIFINAL_STAGE = 'Semifinales';
+const QUARTER_FINAL_STAGE = 'Cuartos de final';
 const ROUND_OF_16_STAGE = 'Octavos de final';
 const ROUND_OF_32_STAGE = 'Eliminatoria de 32';
 
@@ -83,7 +87,7 @@ const FLAG_CODES = {
   UZB: 'uz',
 };
 
-const teamPayload = (code) => FALLBACK_WORLD_CUP_TEAMS[code] || { code, name: code, flag: '' };
+const teamPayload = (code) => (code ? FALLBACK_WORLD_CUP_TEAMS[code] || { code, name: code, flag: '' } : { code: '', name: 'A definir', flag: '' });
 
 const ROUND_OF_32_MATCHES = [
   { id: 'r32-001', stage: ROUND_OF_32_STAGE, round: 'round-of-32', home: 'RSA', away: 'CAN', kickoff: '2026-06-28T16:00:00-03:00' },
@@ -115,13 +119,29 @@ const ROUND_OF_16_MATCHES = [
   { id: 'r16-008', stage: ROUND_OF_16_STAGE, round: 'round-of-16', home: 'SUI', away: 'COL', kickoff: '2026-07-07T17:00:00-03:00' },
 ];
 
-const KNOCKOUT_FALLBACK_MATCHES = [...ROUND_OF_16_MATCHES, ...ROUND_OF_32_MATCHES];
+const FUTURE_KNOCKOUT_MATCHES = [
+  { id: 'qf-001', stage: QUARTER_FINAL_STAGE, round: 'quarter-final', home: 'FRA', away: 'MAR', kickoff: '2026-07-09T17:00:00-03:00' },
+  { id: 'qf-002', stage: QUARTER_FINAL_STAGE, round: 'quarter-final', kickoff: '2026-07-10T16:00:00-03:00' },
+  { id: 'qf-003', stage: QUARTER_FINAL_STAGE, round: 'quarter-final', home: 'NOR', away: 'ENG', kickoff: '2026-07-11T18:00:00-03:00' },
+  { id: 'qf-004', stage: QUARTER_FINAL_STAGE, round: 'quarter-final', kickoff: '2026-07-11T22:00:00-03:00' },
+  { id: 'sf-001', stage: SEMIFINAL_STAGE, round: 'semi-final', kickoff: '2026-07-14T16:00:00-03:00' },
+  { id: 'sf-002', stage: SEMIFINAL_STAGE, round: 'semi-final', kickoff: '2026-07-15T16:00:00-03:00' },
+  { id: 'third-001', stage: THIRD_PLACE_STAGE, round: 'third-place', kickoff: '2026-07-18T18:00:00-03:00' },
+  { id: 'final-001', stage: FINAL_STAGE, round: 'final', kickoff: '2026-07-19T16:00:00-03:00' },
+];
+
+const KNOCKOUT_FALLBACK_MATCHES = [...FUTURE_KNOCKOUT_MATCHES, ...ROUND_OF_16_MATCHES, ...ROUND_OF_32_MATCHES];
 
 function hydrateWorldCupMatch(match) {
+  const home = match.home || '';
+  const away = match.away || '';
   return {
     ...match,
-    homeTeam: match.homeTeam || teamPayload(match.home),
-    awayTeam: match.awayTeam || teamPayload(match.away),
+    home,
+    away,
+    homeTeam: match.homeTeam || teamPayload(home),
+    awayTeam: match.awayTeam || teamPayload(away),
+    ready: match.ready ?? Boolean(home && away),
     result: match.result || null,
     locked: Boolean(match.locked) || new Date(match.kickoff).getTime() <= Date.now(),
   };
@@ -135,8 +155,29 @@ function isRoundOf16Match(match) {
   return match.stage === ROUND_OF_16_STAGE || match.round === 'round-of-16';
 }
 
+function isQuarterFinalMatch(match) {
+  return match.stage === QUARTER_FINAL_STAGE || match.round === 'quarter-final';
+}
+
+function isSemiFinalMatch(match) {
+  return match.stage === SEMIFINAL_STAGE || match.round === 'semi-final';
+}
+
+function isThirdPlaceMatch(match) {
+  return match.stage === THIRD_PLACE_STAGE || match.round === 'third-place';
+}
+
+function isFinalMatch(match) {
+  return match.stage === FINAL_STAGE || match.round === 'final';
+}
+
 function isKnockoutMatch(match) {
-  return isRoundOf16Match(match) || isRoundOf32Match(match);
+  return isFinalMatch(match)
+    || isThirdPlaceMatch(match)
+    || isSemiFinalMatch(match)
+    || isQuarterFinalMatch(match)
+    || isRoundOf16Match(match)
+    || isRoundOf32Match(match);
 }
 
 function withKnockoutFallbackMatches(fixtureData = {}) {
@@ -280,21 +321,38 @@ function buildKnockoutBracket(matches = []) {
     .filter(isRoundOf16Match)
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
   const roundOf16 = roundOf16Matches.length ? roundOf16Matches : buildNextRound(roundOf32, ROUND_OF_16_STAGE);
-  const quarterFinals = buildNextRound(roundOf16, 'Cuartos');
-  const semifinals = buildNextRound(quarterFinals, 'Semifinales');
-  const final = buildNextRound(semifinals, 'Final');
+  const quarterFinalMatches = matches
+    .filter(isQuarterFinalMatch)
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const quarterFinals = quarterFinalMatches.length ? quarterFinalMatches : buildNextRound(roundOf16, QUARTER_FINAL_STAGE);
+  const semifinalMatches = matches
+    .filter(isSemiFinalMatch)
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const semifinals = semifinalMatches.length ? semifinalMatches : buildNextRound(quarterFinals, SEMIFINAL_STAGE);
+  const thirdPlace = matches
+    .filter(isThirdPlaceMatch)
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const finalMatches = matches
+    .filter(isFinalMatch)
+    .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  const final = finalMatches.length ? finalMatches : buildNextRound(semifinals, FINAL_STAGE);
 
   return [
     { key: 'r32', title: ROUND_OF_32_STAGE, matches: roundOf32 },
     { key: 'r16', title: ROUND_OF_16_STAGE, matches: roundOf16 },
-    { key: 'qf', title: 'Cuartos', matches: quarterFinals },
-    { key: 'sf', title: 'Semifinales', matches: semifinals },
-    { key: 'final', title: 'Final', matches: final },
+    { key: 'qf', title: QUARTER_FINAL_STAGE, matches: quarterFinals },
+    { key: 'sf', title: SEMIFINAL_STAGE, matches: semifinals },
+    { key: 'third', title: '3er lugar', matches: thirdPlace },
+    { key: 'final', title: FINAL_STAGE, matches: final },
   ];
 }
 
 function requiresPenaltyWinner(match = {}) {
   return isKnockoutMatch(match);
+}
+
+function isMatchReady(match = {}) {
+  return match.ready !== false && Boolean(match.home && match.away);
 }
 
 function ScoreControl({ value, onChange, disabled, onFocus, label }) {
@@ -546,8 +604,8 @@ export default function WorldCup() {
   const teamOptions = useMemo(() => {
     const teams = new Map();
     fixture.matches.forEach((match) => {
-      teams.set(match.home, match.homeTeam);
-      teams.set(match.away, match.awayTeam);
+      if (match.home) teams.set(match.home, match.homeTeam);
+      if (match.away) teams.set(match.away, match.awayTeam);
     });
     return [...teams.values()].sort((a, b) => a.name.localeCompare(b.name, 'es'));
   }, [fixture.matches]);
@@ -558,6 +616,22 @@ export default function WorldCup() {
     return groupMatch && teamMatch;
   }), [fixture.matches, groupOptions, selectedGroup, selectedTeam]);
   const knockoutStageSections = useMemo(() => [
+    {
+      title: QUARTER_FINAL_STAGE,
+      matches: filteredMatches.filter((match) => isQuarterFinalMatch(match) && selectedGroup === 'all'),
+    },
+    {
+      title: SEMIFINAL_STAGE,
+      matches: filteredMatches.filter((match) => isSemiFinalMatch(match) && selectedGroup === 'all'),
+    },
+    {
+      title: THIRD_PLACE_STAGE,
+      matches: filteredMatches.filter((match) => isThirdPlaceMatch(match) && selectedGroup === 'all'),
+    },
+    {
+      title: FINAL_STAGE,
+      matches: filteredMatches.filter((match) => isFinalMatch(match) && selectedGroup === 'all'),
+    },
     {
       title: ROUND_OF_16_STAGE,
       matches: filteredMatches.filter((match) => isRoundOf16Match(match) && selectedGroup === 'all'),
@@ -589,7 +663,7 @@ export default function WorldCup() {
     .filter(Boolean)
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [fixture.matches, predictions]);
   const missingPredictionMatches = useMemo(() => fixture.matches
-    .filter((match) => !predictionMap.has(match.id))
+    .filter((match) => match.ready !== false && match.home && match.away && !predictionMap.has(match.id))
     .sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()), [fixture.matches, predictionMap]);
   const adminVoteRows = adminPredictionAudit.rows || [];
 
@@ -818,6 +892,11 @@ export default function WorldCup() {
       return;
     }
 
+    if (!isMatchReady(match)) {
+      setError('Este partido todavia no tiene equipos definidos.');
+      return;
+    }
+
     if (!token) {
       setTab('login');
       setError('Inicia sesion para cargar tu pronostico.');
@@ -989,7 +1068,8 @@ export default function WorldCup() {
     const draft = drafts[match.id] || {};
     const isPredictionSaved = Boolean(prediction);
     const matchIsLocked = isMatchLocked(match);
-    const predictionDisabled = matchIsLocked || isPredictionSaved;
+    const matchReady = isMatchReady(match);
+    const predictionDisabled = !matchReady || matchIsLocked || isPredictionSaved;
     const homeDraftScore = draft.homeScore ?? prediction?.homeScore;
     const awayDraftScore = draft.awayScore ?? prediction?.awayScore;
     const showPredictionPenalties = !match.result
@@ -1008,6 +1088,8 @@ export default function WorldCup() {
           <div className={`wc-score ${showPredictionPenalties ? 'has-penalties' : ''}`}>
             {match.result ? (
               <strong>{formatResultScore(match.result)}</strong>
+            ) : !matchReady ? (
+              <strong>Pendiente</strong>
             ) : !token ? (
               <button type="button" className="wc-score-login" onClick={goToLogin}>
                 Pronosticar
@@ -1053,14 +1135,14 @@ export default function WorldCup() {
           <Team team={match.awayTeam} align="right" />
         </div>
         <div className="wc-match-bottom">
-          <span>{match.result ? 'Resultado oficial cargado.' : matchIsLocked ? 'Pronostico cerrado: el partido ya empezo.' : 'Una vez guardado ya no se puede editar la prediccion.'}</span>
+          <span>{match.result ? 'Resultado oficial cargado.' : !matchReady ? 'Se habilita cuando esten definidos los equipos.' : matchIsLocked ? 'Pronostico cerrado: el partido ya empezo.' : 'Una vez guardado ya no se puede editar la prediccion.'}</span>
           {prediction?.points !== undefined && <small>{prediction.points} pts</small>}
-          {!match.result && token && (
+          {!match.result && token && matchReady && (
             <button type="button" disabled={predictionDisabled || savingId === match.id} onClick={() => savePrediction(match)}>
               {isPredictionSaved ? 'Guardado' : matchIsLocked ? 'Cerrado' : savingId === match.id ? 'Guardando...' : 'Guardar'}
             </button>
           )}
-          {!match.result && !token && (
+          {!match.result && !token && matchReady && (
             <button type="button" onClick={goToLogin}>Entrar para jugar</button>
           )}
         </div>
