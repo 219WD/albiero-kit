@@ -198,11 +198,14 @@ const getStoredLeadData = (eventName) => {
     return {};
   }
 
+  const codigo = localStorage.getItem("albiero_codigo") || "-";
+
   return {
     email: localStorage.getItem("albiero_email") || "-",
     nombre: localStorage.getItem("albiero_nombre") || "-",
     telefono: localStorage.getItem("albiero_telefono") || "-",
-    codigo: localStorage.getItem("albiero_codigo") || "-",
+    codigo,
+    lead_id: codigo,
     bienvenida_enviada: localStorage.getItem("albiero_subscribed") ? "Si" : "",
   };
 };
