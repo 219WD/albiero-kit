@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSecurityHeroGsap from "../../hooks/useSecurityHeroGsap";
 import "./HeroSecurity.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,6 +15,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import useFacebookPixel from "../../hooks/useFacebookPixel";
 import useGoogleAnalytics from "../../hooks/useGoogleAnalytics";
+import useToast from "../../hooks/useToast";
+import { Toaster } from "react-hot-toast";
 
 const VIDEO_MP4 =
   "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
@@ -41,6 +43,7 @@ const createLeadId = () => {
 
 const HeroSecurity = () => {
   useSecurityHeroGsap();
+  const { showToast } = useToast();
 
   const {
     trackTipoSelected,
@@ -62,6 +65,8 @@ const HeroSecurity = () => {
     ubicacion: "",
     sistema: "",
   });
+  const [stepHint, setStepHint] = useState("");
+  const hintTimerRef = useRef(null);
   const submittedLeadKey = useRef("");
 
   const handleOptionSelect = (field, value) => {
@@ -136,8 +141,80 @@ const HeroSecurity = () => {
       }
     }, 500);
   };
+
+  const scrollToSecurityForm = () => {
+    const element = document.querySelector(".security-form");
+    if (element) element.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
+  const showFormGuidance = (message = "Clickeá las opciones que necesites") => {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    setStepHint(message);
+    hintTimerRef.current = setTimeout(() => setStepHint(""), 3200);
+  };
+
+  const showConfigurePrompt = (
+    message = "Es fácil: elegí tus opciones con 3 clics y listo"
+  ) => {
+    showToast("Configura tu sistema primero");
+    showFormGuidance(message);
+    scrollToSecurityForm();
+  };
+
+  const handleMoreInfoClick = () => {
+    showConfigurePrompt();
+  };
+
+  const handleStepIndicatorClick = (event) => {
+    event?.stopPropagation();
+    showConfigurePrompt("Clickeá las opciones que necesites");
+  };
+
+  const handlePageGuidanceClick = (event) => {
+    if (typeof window === "undefined") return;
+
+    const isMobileViewport =
+      window.matchMedia?.("(max-width: 900px)").matches ||
+      document.documentElement.clientWidth <= 900 ||
+      window.innerWidth <= 900;
+
+    if (!isMobileViewport) return;
+
+    const ignoredSelector = [
+      "button",
+      "a",
+      "input",
+      "select",
+      "textarea",
+      "[role='button']",
+      ".security-form",
+      ".ec-modal",
+    ].join(",");
+
+    if (event.target.closest(ignoredSelector)) return;
+
+    showConfigurePrompt();
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handlePageGuidanceClick, true);
+
+    return () => {
+      document.removeEventListener("click", handlePageGuidanceClick, true);
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    };
+  });
+
+  const renderStepHint = () =>
+    stepHint ? (
+      <div className="form-options-hint" role="status">
+        {stepHint}
+      </div>
+    ) : null;
+
   return (
     <section className="hero-security">
+      <Toaster />
       <div className="security-video-fondo">
         <img
           src={VIDEO_POSTER}
@@ -194,11 +271,14 @@ const HeroSecurity = () => {
           <div className="security-form">
             <h3 className="form-titulo">Configurá tu Sistema en 3 Pasos</h3>
 
-            <div className="form-steps-indicator">
+            <div className="form-steps-indicator" onClick={handleStepIndicatorClick}>
               {[1, 2, 3].map((step) => (
-                <div
+                <button
                   key={step}
                   className={`step-dot ${currentStep >= step ? "active" : ""}`}
+                  type="button"
+                  aria-label="Configura tu sistema primero"
+                  onClick={handleStepIndicatorClick}
                 />
               ))}
             </div>
@@ -206,17 +286,18 @@ const HeroSecurity = () => {
             {currentStep === 1 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 1: ¿Es para?</h4>
+                {renderStepHint()}
                 <div className="step-opciones">
                   <button
                     onClick={() => handleOptionSelect("tipo", "casa")}
-                    className={`opcion-btn ${formData.tipo === "casa" ? "selected" : ""}`}
+                    className={`opcion-btn opcion-casa ${stepHint ? "hint-buzz" : ""} ${formData.tipo === "casa" ? "selected" : ""}`}
                     aria-pressed={formData.tipo === "casa"}
                   >
                     <FontAwesomeIcon icon={faHome} className="btn-icon" aria-hidden="true" />{" "}Casa
                   </button>
                   <button
                     onClick={() => handleOptionSelect("tipo", "comercio")}
-                    className={`opcion-btn ${formData.tipo === "comercio" ? "selected" : ""}`}
+                    className={`opcion-btn ${stepHint ? "hint-buzz hint-buzz-delay" : ""} ${formData.tipo === "comercio" ? "selected" : ""}`}
                     aria-pressed={formData.tipo === "comercio"}
                   >
                     <FontAwesomeIcon icon={faBuilding} className="btn-icon" aria-hidden="true" />{" "}Comercio
@@ -228,6 +309,7 @@ const HeroSecurity = () => {
             {currentStep === 2 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 2: ¿Dónde querés instalar?</h4>
+                {renderStepHint()}
                 <div className="step-opciones vertical">
                   {[
                     "Yerba Buena",
@@ -240,7 +322,7 @@ const HeroSecurity = () => {
                     <button
                       key={lugar}
                       onClick={() => handleOptionSelect("ubicacion", lugar)}
-                      className={`opcion-btn ${formData.ubicacion === lugar ? "selected" : ""}`}
+                      className={`opcion-btn ${stepHint ? "hint-buzz" : ""} ${formData.ubicacion === lugar ? "selected" : ""}`}
                       aria-pressed={formData.ubicacion === lugar}
                     >
                       <FontAwesomeIcon icon={faLocationDot} className="btn-icon" aria-hidden="true" />{" "}
@@ -261,6 +343,7 @@ const HeroSecurity = () => {
             {currentStep === 3 && (
               <div className="form-step">
                 <h4 className="step-titulo">Paso 3: Elegí tu kit y te llevamos a WhatsApp</h4>
+                {renderStepHint()}
                 <div className="step-opciones vertical">
                   {[
                     { value: "chico",         label: "Mini",    desc: "(ambientes reducidos)" },
@@ -271,7 +354,7 @@ const HeroSecurity = () => {
                     <button
                       key={opcion.value}
                       onClick={() => handleOptionSelect("sistema", opcion.value)}
-                      className={`opcion-btn sistema ${formData.sistema === opcion.value ? "selected" : ""}`}
+                      className={`opcion-btn sistema ${stepHint ? "hint-buzz" : ""} ${formData.sistema === opcion.value ? "selected" : ""}`}
                       aria-pressed={formData.sistema === opcion.value}
                     >
                       <span className="opcion-label">{opcion.label}</span>
@@ -295,10 +378,7 @@ const HeroSecurity = () => {
           <button
             className="scroll-btn"
             aria-label="Ver más información"
-            onClick={() => {
-              const element = document.getElementById("beneficios");
-              if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
+            onClick={handleMoreInfoClick}
           >
             <span>Más Información</span>
             <FontAwesomeIcon icon={faChevronDown} aria-hidden="true" />
