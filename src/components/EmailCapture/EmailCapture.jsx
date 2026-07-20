@@ -2,12 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./EmailCapture.css";
 import { sendMetaEvent, setMetaAdvancedMatching } from "../../utils/metaEvents";
 
-const FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
-const ENTRY_EMAIL = "entry.150801547";
-const ENTRY_NOMBRE = "entry.586312181";
-const ENTRY_CODIGO = "entry.1712587123";
-
 const PROD_API_BASE = "https://albi-backend-nine.vercel.app";
 const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 const configuredApiBase = import.meta.env.VITE_ANALYTICS_API_URL || "";
@@ -42,60 +36,6 @@ function generarCodigo() {
   return "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
 }
 
-function submitToGoogleSheet({ email, nombre = "", codigo = "" }) {
-  if (typeof document === "undefined") return;
-
-  const params = new URLSearchParams({
-    [ENTRY_EMAIL]: email,
-    [ENTRY_NOMBRE]: nombre || "-",
-    [ENTRY_CODIGO]: codigo || "-",
-    "entry.1390851687": "",
-    submit: "Submit",
-  });
-
-  const beaconSent =
-    typeof navigator !== "undefined" &&
-    typeof navigator.sendBeacon === "function" &&
-    navigator.sendBeacon(FORM_URL, params);
-
-  if (!beaconSent) {
-    fetch(FORM_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: params,
-      keepalive: true,
-    }).catch(() => {});
-  }
-
-  const iframeName = `albiero-email-sheet-${Date.now()}`;
-  const iframe = document.createElement("iframe");
-  iframe.name = iframeName;
-  iframe.style.display = "none";
-
-  const form = document.createElement("form");
-  form.method = "POST";
-  form.action = FORM_URL;
-  form.target = iframeName;
-  form.style.display = "none";
-
-  Array.from(params.entries()).forEach(([name, value]) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = name;
-    input.value = value;
-    form.appendChild(input);
-  });
-
-  document.body.appendChild(iframe);
-  document.body.appendChild(form);
-  form.submit();
-
-  setTimeout(() => {
-    form.remove();
-    iframe.remove();
-  }, 5000);
-}
-
 async function getActivePromo() {
   const response = await fetch(`${API_BASE}/api/promos/active`);
   const data = await response.json().catch(() => ({}));
@@ -120,7 +60,6 @@ function recordPromoEvent(promoId, type) {
 
 async function enviarEmail({ email, nombre = "", tipo, promoId = "" }) {
   const codigo = tipo === "descuento" ? generarCodigo() : null;
-  submitToGoogleSheet({ email, nombre, codigo });
 
   const subscribeResponse = await fetch(`${API_BASE}/api/emailmkt/subscribe`, {
     method: "POST",
