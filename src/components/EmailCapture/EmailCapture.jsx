@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./EmailCapture.css";
 import { sendMetaEvent, setMetaAdvancedMatching } from "../../utils/metaEvents";
-import sygnusA1Image from "../../assets/CygnusA1.png";
 
 const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSe-4GM8l5t2r7wMki0tspCV7OXoGd75BW9DaKovyBqXm6vHyg/formResponse";
@@ -19,29 +18,67 @@ const API_BASE =
 
 const MODAL_DELAY = 500;
 const DEFAULT_PROMO = {
-  id: "worldcup-2026",
-  title: "Participa del torneo Mundial Albiero 2026",
-  subtitle: "Hace tus predicciones, suma puntos en el ranking y competi por premios reales durante el Mundial.",
-  badge: "MUNDIAL ALBIERO",
-  discountValue: "2",
-  discountLabel: "CAMARAS",
-  offerText: "Primer premio: 2 camaras Cygnus A1 con vision nocturna HD, audio bidireccional y seguimiento automatico.",
+  id: "default",
+  title: "Beneficio exclusivo Albiero",
+  subtitle: "Dejanos tu email y recibí novedades, promos y beneficios para proteger tu casa o negocio.",
+  badge: "PROMO ALBIERO",
+  discountValue: "20%",
+  discountLabel: "OFF",
+  offerText: "Accedé a beneficios especiales para nuevas instalaciones y asesoramiento personalizado.",
   features: [
-    "Fixture completo del Mundial",
-    "Ranking de participantes",
-    "Premios para 1er, 2do y 3er puesto",
-    "Camara 2 MP con giro 360 y deteccion inteligente",
+    "Promociones activas",
+    "Novedades de seguridad",
+    "Asesoramiento para tu zona",
+    "Beneficios para nuevas instalaciones",
   ],
-  ctaText: "PARTICIPAR AHORA",
-  successTitle: "Listo. Ya estas participando",
-  successText: "Entra al fixture y guarda tus predicciones antes de cada partido.",
-  isWorldCup: true,
-  imageUrl: sygnusA1Image,
-  linkUrl: "/mundial",
+  ctaText: "QUIERO MI BENEFICIO",
+  successTitle: "Listo. Ya estas suscripto",
+  successText: "Guardamos tu email para enviarte novedades y beneficios Albiero.",
+  imageUrl: "",
+  linkUrl: "",
 };
 
 function generarCodigo() {
   return "ALB-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+}
+
+function submitToGoogleSheet({ email, nombre = "", codigo = "" }) {
+  if (typeof document === "undefined") return;
+
+  const iframeName = `albiero-email-sheet-${Date.now()}`;
+  const iframe = document.createElement("iframe");
+  iframe.name = iframeName;
+  iframe.style.display = "none";
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = FORM_URL;
+  form.target = iframeName;
+  form.style.display = "none";
+
+  const fields = {
+    [ENTRY_EMAIL]: email,
+    [ENTRY_NOMBRE]: nombre || "-",
+    [ENTRY_CODIGO]: codigo || "-",
+    "entry.1390851687": "",
+  };
+
+  Object.entries(fields).forEach(([name, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  });
+
+  document.body.appendChild(iframe);
+  document.body.appendChild(form);
+  form.submit();
+
+  setTimeout(() => {
+    form.remove();
+    iframe.remove();
+  }, 5000);
 }
 
 async function getActivePromo() {
@@ -68,6 +105,8 @@ function recordPromoEvent(promoId, type) {
 
 async function enviarEmail({ email, nombre = "", tipo, promoId = "" }) {
   const codigo = tipo === "descuento" ? generarCodigo() : null;
+  submitToGoogleSheet({ email, nombre, codigo });
+
   const subscribeResponse = await fetch(`${API_BASE}/api/emailmkt/subscribe`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -85,10 +124,6 @@ async function enviarEmail({ email, nombre = "", tipo, promoId = "" }) {
     const data = await subscribeResponse.json().catch(() => ({}));
     throw new Error(data.error || `Error ${subscribeResponse.status}`);
   }
-
-  const url = `${FORM_URL}?${ENTRY_EMAIL}=${encodeURIComponent(email)}&${ENTRY_NOMBRE}=${encodeURIComponent(nombre || "-")}&${ENTRY_CODIGO}=${encodeURIComponent(codigo || "-")}&entry.1390851687=&submit=Submit`;
-
-  fetch(url, { method: "POST", mode: "no-cors" }).catch(() => {});
 
   return { ok: true, codigo };
 }
@@ -160,22 +195,8 @@ function DiscountModal({ onClose, promo }) {
     });
   };
 
-  const goToPromo = () => {
-    sendMetaEvent("trackCustom", "Promo_Mundial_Click", {
-      content_name: promo.title,
-      promo_id: promo.id,
-    }, { warnPrefix: "Pixel Promo Mundial" });
-    recordPromoEvent(promo.id, "click");
-    window.location.href = promo.linkUrl || "/mundial";
-  };
-
   return (
     <div className={`ec-overlay ${visible ? "ec-overlay--in" : ""}`} onClick={cerrar}>
-      <div className="ec-confetti" aria-hidden="true">
-        {Array.from({ length: 28 }, (_, index) => (
-          <span key={index} />
-        ))}
-      </div>
       <div
         className={`ec-modal ${visible ? "ec-modal--in" : ""}`}
         onClick={(e) => e.stopPropagation()}
@@ -214,24 +235,7 @@ function DiscountModal({ onClose, promo }) {
         </div>
 
         <div className="ec-modal__right">
-          {promo.isWorldCup ? (
-            <div className="ec-worldcup">
-              <span className="ec-worldcup__eyebrow">Camino a la cuarta estrella</span>
-              <h2 className="ec-modal__title">{promo.title}</h2>
-              <p className="ec-modal__subtitle">{promo.subtitle}</p>
-              <div className="ec-worldcup__reward">
-                <span>Primer puesto</span>
-                <strong>2 camaras con vision nocturna HD</strong>
-                <small>Audio bidireccional, giro 360 y deteccion inteligente. Cygnus A1.</small>
-              </div>
-              <button type="button" className="ec-btn ec-btn--primary" onClick={goToPromo}>
-                {`${promo.ctaText} ->`}
-              </button>
-              <p className="ec-disclaimer">
-                Tambien hay premios para el segundo y tercer puesto.
-              </p>
-            </div>
-          ) : step === "form" ? (
+          {step === "form" ? (
             <>
               <h2 className="ec-modal__title">{promo.title}</h2>
               <p className="ec-modal__subtitle">{promo.subtitle}</p>
@@ -329,6 +333,22 @@ export default function EmailCapture() {
   const [promo, setPromo] = useState(DEFAULT_PROMO);
 
   useEffect(() => {
+    let cancelled = false;
+
+    getActivePromo()
+      .then((activePromo) => {
+        if (!cancelled) setPromo(activePromo);
+      })
+      .catch(() => {
+        if (!cancelled) setPromo(DEFAULT_PROMO);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setModalOpen(true);
     }, MODAL_DELAY);
@@ -339,10 +359,10 @@ export default function EmailCapture() {
   useEffect(() => {
     if (!modalOpen) return;
 
-    sendMetaEvent("trackCustom", "Promo_Mundial_View", {
+    sendMetaEvent("trackCustom", "Promo_View", {
       content_name: promo.title,
       promo_id: promo.id,
-    }, { warnPrefix: "Pixel Promo Mundial" });
+    }, { warnPrefix: "Pixel Promo" });
     recordPromoEvent(promo.id, "view");
   }, [modalOpen, promo.id, promo.title]);
 
