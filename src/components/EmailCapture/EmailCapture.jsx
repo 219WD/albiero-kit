@@ -45,6 +45,28 @@ function generarCodigo() {
 function submitToGoogleSheet({ email, nombre = "", codigo = "" }) {
   if (typeof document === "undefined") return;
 
+  const params = new URLSearchParams({
+    [ENTRY_EMAIL]: email,
+    [ENTRY_NOMBRE]: nombre || "-",
+    [ENTRY_CODIGO]: codigo || "-",
+    "entry.1390851687": "",
+    submit: "Submit",
+  });
+
+  const beaconSent =
+    typeof navigator !== "undefined" &&
+    typeof navigator.sendBeacon === "function" &&
+    navigator.sendBeacon(FORM_URL, params);
+
+  if (!beaconSent) {
+    fetch(FORM_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: params,
+      keepalive: true,
+    }).catch(() => {});
+  }
+
   const iframeName = `albiero-email-sheet-${Date.now()}`;
   const iframe = document.createElement("iframe");
   iframe.name = iframeName;
@@ -56,14 +78,7 @@ function submitToGoogleSheet({ email, nombre = "", codigo = "" }) {
   form.target = iframeName;
   form.style.display = "none";
 
-  const fields = {
-    [ENTRY_EMAIL]: email,
-    [ENTRY_NOMBRE]: nombre || "-",
-    [ENTRY_CODIGO]: codigo || "-",
-    "entry.1390851687": "",
-  };
-
-  Object.entries(fields).forEach(([name, value]) => {
+  Array.from(params.entries()).forEach(([name, value]) => {
     const input = document.createElement("input");
     input.type = "hidden";
     input.name = name;
