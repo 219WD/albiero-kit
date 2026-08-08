@@ -1,0 +1,104 @@
+.geo-authority {
+  background: #f6f6f6;
+  color: #141414;
+  font-family: "Bai Jamjuree", sans-serif;
+  padding: 5.5rem 2rem;
+}
+
+.geo-authority__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+  gap: 4rem;
+  max-width: 1180px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.geo-authority__eyebrow {
+  color: #961c2c;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  margin: 0 0 1rem;
+  text-transform: uppercase;
+}
+
+.geo-authority__title {
+  font-size: clamp(2rem, 4vw, 3.15rem);
+  line-height: 1.08;
+  letter-spacing: 0;
+  margin: 0 0 1.35rem;
+  max-width: 760px;
+}
+
+.geo-authority__text {
+  color: #4d4d4d;
+  font-size: 1rem;
+  line-height: 1.75;
+  margin: 0;
+}
+
+.geo-authority__text + .geo-authority__text {
+  margin-top: 1rem;
+}
+
+.geo-authority__facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.geo-authority__fact {
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 8px;
+  padding: 1.2rem;
+}
+
+.geo-authority__fact-label {
+  color: #961c2c;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.85rem;
+  text-transform: uppercase;
+}
+
+.geo-authority__list {
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.geo-authority__list li {
+  color: #242424;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.geo-authority__list li::before {
+  background: #961c2c;
+  border-radius: 999px;
+  content: "";
+  height: 0.34rem;
+  left: 0;
+  position: absolute;
+  top: 0.55rem;
+  width: 0.34rem;
+}
+
+@media (max-width: 900px) {
+  .geo-authority {
+    padding: 4rem 1.25rem;
+  }
+
+  .geo-authority__inner {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
