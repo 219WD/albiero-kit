@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "../Alarmas/HerosecurityAlarmas.css";
 import "../Alarmas/FinalCTA.css";
 import "../Alarmas/SecurityMarquee.css";
@@ -19,7 +19,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
-const BASE_URL = "https://albiero.com.ar";
 const WHATSAPP_NUMBER = "5493813522339";
 
 const heroVideo =
@@ -159,82 +158,6 @@ function buildMarqueeItems(service) {
   });
 }
 
-function upsertMeta(selector, attr, value, content) {
-  let element = document.head.querySelector(selector);
-  if (!element) {
-    element = document.createElement("meta");
-    const [name, metaValue] = attr;
-    element.setAttribute(name, metaValue);
-    document.head.appendChild(element);
-  }
-  element.setAttribute("content", content || value);
-}
-
-function upsertCanonical(href) {
-  let canonical = document.head.querySelector('link[rel="canonical"]');
-  if (!canonical) {
-    canonical = document.createElement("link");
-    canonical.setAttribute("rel", "canonical");
-    document.head.appendChild(canonical);
-  }
-  canonical.setAttribute("href", href);
-}
-
-function ServiceSeo({ service }) {
-  useEffect(() => {
-    const canonical = `${BASE_URL}${service.path}`;
-    document.title = service.seo.title;
-
-    upsertMeta('meta[name="description"]', ["name", "description"], service.seo.description);
-    upsertMeta('meta[property="og:title"]', ["property", "og:title"], service.seo.title);
-    upsertMeta(
-      'meta[property="og:description"]',
-      ["property", "og:description"],
-      service.seo.description
-    );
-    upsertMeta('meta[property="og:url"]', ["property", "og:url"], canonical);
-    upsertCanonical(canonical);
-
-    const schemaId = "service-landing-schema";
-    document.getElementById(schemaId)?.remove();
-    const schema = document.createElement("script");
-    schema.id = schemaId;
-    schema.type = "application/ld+json";
-    schema.textContent = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Service",
-      name: service.productName,
-      url: canonical,
-      description: service.seo.description,
-      provider: {
-        "@type": "LocalBusiness",
-        name: "Albiero Seguridad",
-        url: BASE_URL,
-        telephone: "+54 9 3813 52-2339",
-        areaServed: "Tucuman, Argentina",
-      },
-      mainEntityOfPage: canonical,
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: service.productName,
-        itemListElement: service.includes.map((item) => ({
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: item.title,
-            description: item.text,
-          },
-        })),
-      },
-    });
-    document.head.appendChild(schema);
-
-    return () => document.getElementById(schemaId)?.remove();
-  }, [service]);
-
-  return null;
-}
-
 function openWhatsApp(service) {
   const message = encodeURIComponent(service.whatsappText);
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, "_blank");
@@ -246,7 +169,6 @@ export default function ServiceLanding({ service }) {
 
   return (
     <div className="service-page">
-      <ServiceSeo service={service} />
       <HeroNavAlarmas />
 
       <main>
