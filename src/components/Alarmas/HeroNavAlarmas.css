@@ -368,6 +368,11 @@
   gap: 8px;
 }
 
+.hn__dropdown-panel {
+  max-height: min(72vh, 640px);
+  overflow-y: auto;
+}
+
 /* Iconos en sub-links móvil */
 .hn__sub-link-icon {
   margin-right: 8px;

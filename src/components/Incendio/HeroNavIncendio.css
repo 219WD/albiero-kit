@@ -350,3 +350,8 @@
 .hero-nav-mobile {
   will-change: transform, background-color;
 }
+
+.hn__dropdown-panel {
+  max-height: min(72vh, 640px);
+  overflow-y: auto;
+}

@@ -782,3 +782,8 @@
 .hn__link:hover .fa-question-circle {
   animation: shake 0.3s ease;
 }
+
+.hn__dropdown-panel {
+  max-height: min(72vh, 640px);
+  overflow-y: auto;
+}

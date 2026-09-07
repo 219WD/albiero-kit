@@ -62,6 +62,13 @@ const HeroNavKit = () => {
     { name: 'Seguimiento Vehicular',  path: '/seguimiento-vehicular', icon: faCar             },
     { name: 'Detección de Incendios', path: '/deteccion-incendios',   icon: faFireFlameCurved },
     { name: 'Seguridad Integral',     path: '/seguridad-integral',    icon: faLayerGroup      },
+    { name: 'Seguridad en Obras',     path: '/seguridad-en-obras',    icon: faBuilding        },
+    { name: 'Albiero Tótem',          path: '/totem',                 icon: faShieldHeart     },
+    { name: 'Control de Acceso',      path: '/control-de-acceso',     icon: faCog             },
+    { name: 'Monitoreo de Mascotas',  path: '/monitoreo-de-mascotas', icon: faBuilding        },
+    { name: 'Seguridad Perimetral',   path: '/seguridad-perimetral',  icon: faShieldAlt       },
+    { name: 'Seguridad Física',       path: '/seguridad-fisica',      icon: faUser            },
+    { name: 'Edificio Seguro',        path: '/edificio-seguro',       icon: faBuilding        },
   ];
 
   const navLinks = [
@@ -99,16 +106,18 @@ const HeroNavKit = () => {
             </button>
             <div className="hn__dropdown-panel">
               <div className="hn__dropdown-arrow" />
-              {serviceLinks.map((service, i) => (
-                <button
-                  key={i}
-                  className="hn__dropdown-item"
-                  onClick={() => navigateTo(service.path)}
-                >
-                  <FontAwesomeIcon icon={service.icon} className="hn__dropdown-item-icon" />
-                  <span>{service.name}</span>
-                </button>
-              ))}
+              <div className="hn__dropdown-scroll">
+                {serviceLinks.map((service, i) => (
+                  <button
+                    key={i}
+                    className="hn__dropdown-item"
+                    onClick={() => navigateTo(service.path)}
+                  >
+                    <FontAwesomeIcon icon={service.icon} className="hn__dropdown-item-icon" />
+                    <span>{service.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

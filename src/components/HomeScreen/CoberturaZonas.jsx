@@ -89,10 +89,14 @@ const CoberturaZonas = () => {
 
     mapInstance.current = map;
 
-    // Tiles oscuros (CartoDB Dark Matter)
+    // Tiles OSM sin API key. El look dark se aplica por CSS para evitar marcas de proveedor.
     L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-      { maxZoom: 19, subdomains: "abcd" }
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        subdomains: "abc",
+        attribution: "&copy; OpenStreetMap contributors",
+      }
     ).addTo(map);
 
     // Ícono rojo animado

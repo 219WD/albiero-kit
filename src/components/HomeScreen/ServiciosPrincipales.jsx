@@ -10,6 +10,7 @@ import {
   faFire,
   faShieldVirus,
   faArrowRight,
+  faBuilding,
 } from "@fortawesome/free-solid-svg-icons";
 
 const servicios = [
@@ -88,6 +89,86 @@ const servicios = [
     detail: "Sensores, alarmas y sistemas de detección temprana.",
     cta: "Ver sistemas contra incendios",
     href: "deteccion-incendios",
+  },
+  {
+    id: 7,
+    icon: faBuilding,
+    tag: "Obras y Proyectos",
+    title: "Seguridad en Obras",
+    description:
+      "Acompañamiento desde el inicio hasta la entrega con soluciones temporales y definitivas.",
+    detail:
+      "Equipos en comodato, monitoreo, controles, rondas y asesoramiento para cada etapa.",
+    cta: "Ver seguridad en obras",
+    href: "seguridad-en-obras",
+  },
+  {
+    id: 8,
+    icon: faVideo,
+    tag: "Portería Virtual",
+    title: "Albiero Tótem",
+    description:
+      "Portería virtual con operadores reales, cámaras, monitoreo y respaldo operativo.",
+    detail: "Atención, control y seguridad las 24 horas para accesos.",
+    cta: "Ver portería virtual",
+    href: "totem",
+  },
+  {
+    id: 9,
+    icon: faShieldVirus,
+    tag: "Accesos Inteligentes",
+    title: "Control de Acceso",
+    description:
+      "Soluciones para administrar accesos de personas y vehículos mediante tecnología integrada.",
+    detail: "Biometría, control facial, barreras vehiculares, molinetes y detectores.",
+    cta: "Ver control de acceso",
+    href: "control-de-acceso",
+  },
+  {
+    id: 10,
+    icon: faLocationDot,
+    tag: "Mascotas",
+    title: "Monitoreo de Mascotas",
+    description:
+      "Localización y monitoreo para conocer la ubicación de tu mascota desde el celular.",
+    detail: "Seguimiento, alertas, zonas seguras, historial y cobertura nacional.",
+    cta: "Ver monitoreo de mascotas",
+    href: "monitoreo-de-mascotas",
+  },
+  {
+    id: 11,
+    icon: faShieldHalved,
+    tag: "Countries y Perímetros",
+    title: "Seguridad Perimetral",
+    description:
+      "Protección integral para barrios privados, countries y grandes perímetros.",
+    detail:
+      "Guardias, rondas, motos, barreras, accesos, cámaras y monitoreo.",
+    cta: "Ver seguridad perimetral",
+    href: "seguridad-perimetral",
+  },
+  {
+    id: 12,
+    icon: faBell,
+    tag: "Guardias",
+    title: "Seguridad Física",
+    description:
+      "Personal capacitado para proteger personas, instalaciones y operaciones.",
+    detail: "Servicio presencial continuo o para eventos y situaciones específicas.",
+    cta: "Ver seguridad física",
+    href: "seguridad-fisica",
+  },
+  {
+    id: 13,
+    icon: faBuilding,
+    tag: "Edificios",
+    title: "Edificio Seguro",
+    description:
+      "Toda la seguridad del edificio conectada en una sola solución.",
+    detail:
+      "Portería virtual, monitoreo, control de accesos, emergencias, móviles y rondas.",
+    cta: "Ver Edificio Seguro",
+    href: "edificio-seguro",
   },
 ];
 

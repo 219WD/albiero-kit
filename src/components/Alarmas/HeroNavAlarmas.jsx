@@ -80,6 +80,13 @@ const HeroNavAlarmas = () => {
     { name: 'Seguimiento Vehicular',  path: '/seguimiento-vehicular', icon: faCar             },
     { name: 'Deteccion de Incendios', path: '/deteccion-incendios',   icon: faFireFlameCurved },
     { name: 'Seguridad Integral',     path: '/seguridad-integral',    icon: faLayerGroup      },
+    { name: 'Seguridad en Obras',     path: '/seguridad-en-obras',    icon: faBuilding        },
+    { name: 'Albiero Totem',          path: '/totem',                 icon: faShieldHeart     },
+    { name: 'Control de Acceso',      path: '/control-de-acceso',     icon: faCog             },
+    { name: 'Monitoreo de Mascotas',  path: '/monitoreo-de-mascotas', icon: faMapMarkerAlt    },
+    { name: 'Seguridad Perimetral',   path: '/seguridad-perimetral',  icon: faShieldAlt       },
+    { name: 'Seguridad Fisica',       path: '/seguridad-fisica',      icon: faUser            },
+    { name: 'Edificio Seguro',        path: '/edificio-seguro',       icon: faBuilding        },
   ];
 
   const generalLinks = [
@@ -135,6 +142,48 @@ const HeroNavAlarmas = () => {
       { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
       { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
     ],
+    '/seguridad-en-obras': [
+      { name: 'Asesoramiento',        section: 'hero-security',        icon: faCog            },
+      { name: 'Qué Incluye',          section: 'que-incluye',          icon: faBuilding       },
+      { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
+      { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    ],
+    '/totem': [
+      { name: 'Demostración',         section: 'hero-security',        icon: faCog            },
+      { name: 'Qué Incluye',          section: 'que-incluye',          icon: faBuilding       },
+      { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
+      { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    ],
+    '/control-de-acceso': [
+      { name: 'Asesoramiento',        section: 'hero-security',        icon: faCog            },
+      { name: 'Qué Incluye',          section: 'que-incluye',          icon: faBuilding       },
+      { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
+      { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    ],
+    '/monitoreo-de-mascotas': [
+      { name: 'Disponibilidad',       section: 'hero-security',        icon: faCog            },
+      { name: 'Qué Incluye',          section: 'que-incluye',          icon: faBuilding       },
+      { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
+      { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    ],
+    '/seguridad-perimetral': [
+      { name: 'Asesoramiento',        section: 'hero-security',        icon: faCog            },
+      { name: 'Qué Incluye',          section: 'que-incluye',          icon: faBuilding       },
+      { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
+      { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    ],
+    '/seguridad-fisica': [
+      { name: 'Propuesta',            section: 'hero-security',        icon: faCog            },
+      { name: 'Qué Incluye',          section: 'que-incluye',          icon: faBuilding       },
+      { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
+      { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    ],
+    '/edificio-seguro': [
+      { name: 'Asesoramiento',        section: 'hero-security',        icon: faCog            },
+      { name: 'Qué Incluye',          section: 'que-incluye',          icon: faBuilding       },
+      { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle     },
+      { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle },
+    ],
   };
 
   const currentPageLinks = pageSpecificLinks[location.pathname] || [];
@@ -163,18 +212,20 @@ const HeroNavAlarmas = () => {
             </button>
             <div className="hn__dropdown-panel">
               <div className="hn__dropdown-arrow" />
-              {serviceLinks.map((service, i) => (
-                <button
-                  key={i}
-                  className="hn__dropdown-item"
-                  onClick={() => navigateTo(service.path)}
-                >
-                  {service.icon && (
-                    <FontAwesomeIcon icon={service.icon} className="hn__dropdown-item-icon" />
-                  )}
-                  <span>{service.name}</span>
-                </button>
-              ))}
+              <div className="hn__dropdown-scroll">
+                {serviceLinks.map((service, i) => (
+                  <button
+                    key={i}
+                    className="hn__dropdown-item"
+                    onClick={() => navigateTo(service.path)}
+                  >
+                    {service.icon && (
+                      <FontAwesomeIcon icon={service.icon} className="hn__dropdown-item-icon" />
+                    )}
+                    <span>{service.name}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -391,6 +391,22 @@
   position: absolute;
   inset: 0;
   border-radius: 28px;
+  background: #080808;
+}
+
+.cz-leaflet-map .leaflet-tile {
+  filter: grayscale(1) invert(1) brightness(0.5) contrast(1.18) saturate(0.2);
+}
+
+.cz-leaflet-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 450;
+  background:
+    radial-gradient(circle at 62% 42%, rgba(150, 28, 44, 0.16), transparent 28%),
+    linear-gradient(135deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.48));
 }
 
 /* ── Pin personalizado rojo ── */

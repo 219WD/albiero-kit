@@ -20,6 +20,8 @@ import DeteccionIncendios from './pages/DeteccionIncendios.jsx';
 import SeguridadIntegral from './pages/SeguridadIntegral.jsx';
 import TerminosYCondiciones from './pages/TerminosYCondiciones.jsx';
 import PoliticaPrivacidad from './pages/PoliticaPrivacidad.jsx';
+import ServiceLanding from './components/ServiceLanding/ServiceLanding.jsx';
+import { servicePages } from './components/ServiceLanding/servicePagesData.js';
 
 function MetaPageViewTracker() {
     const location = useLocation();
@@ -50,6 +52,13 @@ function App() {
                 <Route path="/seguimiento-vehicular" element={<SeguimientoVehicular />} />
                 <Route path="/deteccion-incendios" element={<DeteccionIncendios />} />
                 <Route path="/seguridad-integral" element={<SeguridadIntegral />} />
+                <Route path="/seguridad-en-obras" element={<ServiceLanding service={servicePages.seguridadEnObras} />} />
+                <Route path="/totem" element={<ServiceLanding service={servicePages.totem} />} />
+                <Route path="/control-de-acceso" element={<ServiceLanding service={servicePages.controlDeAcceso} />} />
+                <Route path="/monitoreo-de-mascotas" element={<ServiceLanding service={servicePages.monitoreoDeMascotas} />} />
+                <Route path="/seguridad-perimetral" element={<ServiceLanding service={servicePages.seguridadPerimetral} />} />
+                <Route path="/seguridad-fisica" element={<ServiceLanding service={servicePages.seguridadFisica} />} />
+                <Route path="/edificio-seguro" element={<ServiceLanding service={servicePages.edificioSeguro} />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/analiticas" element={<Analiticas />} />
                 <Route path="/emailmkt" element={<EmailMkt />} />
