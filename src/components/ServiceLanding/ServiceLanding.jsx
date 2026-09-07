@@ -21,10 +21,12 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
 const WHATSAPP_NUMBER = "5493813522339";
 
-const heroVideo =
-  "https://res.cloudinary.com/dtxdv136u/video/upload/v1768316518/video-bg_d69qzx.mp4";
+const heroVideoMp4 =
+  "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto/v1772819547/video-bg-compr_a6c1oj.mp4";
+const heroVideoWebm =
+  "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,vc_vp9/v1772819547/video-bg-compr_a6c1oj.webm";
 const heroPoster =
-  "https://res.cloudinary.com/dtxdv136u/image/upload/w_1600,h_1000,c_fill,f_auto,q_auto/v1772815812/monitoreo_iqv0mn.jpg";
+  "https://res.cloudinary.com/dtxdv136u/video/upload/q_auto,f_auto,w_1280,so_0/v1772819547/video-bg-compr_a6c1oj.jpg";
 
 const iconCycle = [
   faShieldHalved,
@@ -177,13 +179,17 @@ export default function ServiceLanding({ service }) {
             <img src={heroPoster} alt="" className="video-poster" aria-hidden="true" />
             <video
               className="video-bg"
-              src={heroVideo}
               autoPlay
               muted
               loop
               playsInline
+              poster={heroPoster}
               preload="metadata"
-            />
+              aria-hidden="true"
+            >
+              <source src={heroVideoWebm} type="video/webm" />
+              <source src={heroVideoMp4} type="video/mp4" />
+            </video>
           </div>
           <div className="security-overlay service-hero__overlay" />
 
