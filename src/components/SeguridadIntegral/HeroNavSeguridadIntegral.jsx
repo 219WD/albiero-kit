@@ -57,7 +57,7 @@ const HeroNavSeguridadIntegral = () => {
   };
 
   const openClientAccess = () => {
-    window.open('https://clientes.albieroseguridad.com.ar:14443/welcome.php', '_blank');
+    window.open('https://swavl.albiero.com.ar/', '_blank');
     setMobileMenuOpen(false);
     setMobileServicesOpen(false);
   };
