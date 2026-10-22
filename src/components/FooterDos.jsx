@@ -114,7 +114,7 @@ const Footer = () => {
                   <FontAwesomeIcon icon={faInstagram} aria-hidden="true" />
                 </a>
                 <a
-                  href="https://wa.me/5493813522339?text=Quiero%20asesoramiento%20por%20el%20Kit%20de%20Alarma%20y%20Cámara"
+                  href="https://wa.me/5493812228265?text=Quiero%20asesoramiento%20por%20el%20Kit%20de%20Alarma%20y%20Cámara"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="footer-social-link"

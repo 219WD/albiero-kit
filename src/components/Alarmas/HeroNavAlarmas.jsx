@@ -91,7 +91,7 @@ const HeroNavAlarmas = () => {
 
   const generalLinks = [
     { name: 'Acceso a Clientes', type: 'external', icon: faUser,              highlight: true, action: openClientAccess },
-    { name: 'Paga tu factura',   type: 'external', icon: faFileInvoiceDollar, highlight: true, action: openPayBill      },
+    { name: 'Descargá o pagá tu factura', type: 'external', icon: faFileInvoiceDollar, highlight: true, action: openPayBill      },
     { name: 'Contacto',          type: 'hash',     hash: '#contacto',         icon: faPhone,   highlight: true          },
   ];
 

@@ -79,7 +79,7 @@ const HeroNavIncendio = () => {
     { name: 'Cómo Funciona',        section: 'como-funciona',        icon: faPlayCircle,     type: 'scroll'   },
     { name: 'Preguntas Frecuentes', section: 'preguntas-frecuentes', icon: faQuestionCircle, type: 'scroll'   },
     { name: 'Acceso a Clientes',    icon: faUser,                    type: 'external',       highlight: true, action: openClientAccess },
-    { name: 'Paga tu factura',      icon: faFileInvoiceDollar,       type: 'external',       highlight: true, action: openPayBill      },
+    { name: 'Descargá o pagá tu factura', icon: faFileInvoiceDollar, type: 'external', highlight: true, action: openPayBill      },
     { name: 'Contacto',             section: 'contacto',             icon: faPhone,          type: 'scroll',  highlight: true },
   ];
 

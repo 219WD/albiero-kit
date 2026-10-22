@@ -73,7 +73,7 @@ const HeroNavHome = () => {
     { name: 'Cómo Funciona',        type: 'hash',     hash: '#como-funciona',        icon: faPlayCircle         },
     { name: 'Preguntas Frecuentes', type: 'hash',     hash: '#preguntas-frecuentes', icon: faQuestionCircle     },
     { name: 'Acceso a Clientes',    type: 'external', icon: faUser,                  highlight: true, action: openClientAccess },
-    { name: 'Paga tu factura',      type: 'external', icon: faFileInvoiceDollar,     highlight: true, action: openPayBill      },
+    { name: 'Descargá o pagá tu factura', type: 'external', icon: faFileInvoiceDollar, highlight: true, action: openPayBill      },
     { name: 'Contacto',             type: 'hash',     hash: '#contacto',             icon: faPhone, highlight: true           },
   ];
 
