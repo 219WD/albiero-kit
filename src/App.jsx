@@ -23,6 +23,7 @@ import PoliticaPrivacidad from './pages/PoliticaPrivacidad.jsx';
 import ServiceLanding from './components/ServiceLanding/ServiceLanding.jsx';
 import { servicePages } from './components/ServiceLanding/servicePagesData.js';
 import GeoEntitySchema from './components/Seo/GeoEntitySchema.jsx';
+import FloatingWhatsApp from './components/FloatingWhatsApp/FloatingWhatsApp.jsx';
 
 function MetaPageViewTracker() {
     const location = useLocation();
@@ -46,6 +47,7 @@ function App() {
         <Router>
             <GeoEntitySchema />
             <MetaPageViewTracker />
+            <FloatingWhatsApp />
             <Routes>
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/alarmas" element={<Alarmas />} />
