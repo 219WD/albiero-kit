@@ -299,8 +299,11 @@
 .ec-modal__left {
   flex: 0 0 46%;
   background:
-    radial-gradient(circle at 50% 45%, rgba(245, 166, 35, 0.24) 0%, rgba(245, 166, 35, 0) 38%),
+    linear-gradient(150deg, rgba(16, 20, 38, 0.78) 0%, rgba(150, 28, 44, 0.68) 100%),
+    var(--ec-modal-cyber-bg),
     linear-gradient(150deg, #101426 0%, #961C2C 100%);
+  background-size: cover;
+  background-position: center 42%;
   padding: 2.35rem 1.85rem;
   display: flex;
   flex-direction: column;
@@ -334,21 +337,22 @@
 }
 
 .ec-modal__badge {
-  background: rgba(245, 166, 35, 0.96);
+  background: #f5a623;
   color: #1a1a1a;
-  font-size: 0.62rem;
+  font-size: 0.76rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  padding: 0.28rem 0.9rem;
+  letter-spacing: 0.2em;
+  padding: 0.42rem 1.15rem;
   border-radius: 100px;
   text-transform: uppercase;
   position: relative;
   z-index: 1;
+  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.3);
 }
 
 .ec-modal__circle {
-  width: 108px;
-  height: 108px;
+  width: 132px;
+  height: 132px;
   border-radius: 50%;
   background: rgba(16, 20, 38, 0.42);
   border: 2.5px solid rgba(255, 255, 255, 0.34);
@@ -406,7 +410,7 @@
 }
 
 .ec-modal__percent {
-  font-size: 2.6rem;
+  font-size: 3.15rem;
   font-weight: 900;
   color: white;
   line-height: 1;
@@ -422,10 +426,11 @@
 }
 
 .ec-modal__offer-text {
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 0.9rem;
   line-height: 1.5;
   max-width: 190px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.72);
   position: relative;
   z-index: 1;
 }
@@ -442,9 +447,10 @@
 }
 
 .ec-modal__features li {
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 0.82rem;
   text-align: left;
+  text-shadow: 0 2px 7px rgba(0, 0, 0, 0.8);
 }
 
 /* â”€â”€ Panel derecho (formulario) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -455,6 +461,27 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.ec-modal__right--config {
+  justify-content: flex-start;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.ec-configurator.security-form {
+  width: 100%;
+  padding: 1rem;
+  gap: 1rem;
+  box-shadow: none;
+}
+
+.ec-configurator .form-titulo {
+  font-size: 1.12rem;
+}
+
+.ec-configurator .form-step {
+  gap: 0.9rem;
 }
 
 .ec-worldcup {
@@ -733,6 +760,11 @@
   line-height: 1.45;
 }
 
+.ec-success .ec-btn--primary,
+.ec-success .ec-btn--ghost {
+  width: 100%;
+}
+
 /* â”€â”€ AnimaciÃ³n pop â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @keyframes ec-pop {
   from { transform: scale(0); }
@@ -803,8 +835,8 @@
 
   .ec-modal__circle {
     order: 4;
-    width: 116px;
-    height: 116px;
+    width: 124px;
+    height: 124px;
     margin-top: -0.15rem;
   }
 
@@ -814,7 +846,7 @@
     text-align: center;
   }
 
-  .ec-modal__percent { font-size: 2.35rem; }
+  .ec-modal__percent { font-size: 2.6rem; }
 
   .ec-modal__off {
     max-width: 82px;
@@ -848,9 +880,16 @@
     padding: 1.5rem 1.2rem;
   }
 
+  .ec-modal__right--config {
+    padding: 0.55rem;
+  }
+
+  .ec-configurator.security-form {
+    padding: 0.85rem;
+  }
+
   .ec-modal__title,
   .ec-worldcup .ec-modal__title {
     font-size: 1.45rem;
   }
 }
-
