@@ -96,7 +96,7 @@ const Footer = () => {
                   className="footer-address-icon"
                   aria-hidden="true"
                 />
-                <span>Av. Aconquija 364 - Yerba Buena</span>
+                <span>Salas y Valdez 1050 local 2 - Yerba Buena</span>
               </div>
               <div className="footer-address-item">
                 <FontAwesomeIcon
