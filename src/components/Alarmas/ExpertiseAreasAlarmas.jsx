@@ -7,7 +7,7 @@ import {
   faChevronDown,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-
+ 
 const ExpertiseAreasAlarmas = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const contentRefs = useRef([]);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './HeroNavAlarmas.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
+import { 
   faPhone,
   faTimes,
   faShieldHeart,
