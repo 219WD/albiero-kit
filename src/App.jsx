@@ -37,7 +37,7 @@ function MetaPageViewTracker() {
 
     return null;
 }
-
+ 
 function App() {
     useEffect(() => {
         Clarity.init('vt5t07r3a8');
