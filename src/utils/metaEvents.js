@@ -1,4 +1,4 @@
-const PROD_API_BASE = "https://albi-backend-nine.vercel.app";
+const PROD_API_BASE = "https://albi-backend-six.vercel.app";
 const configuredApiBase = import.meta.env.VITE_ANALYTICS_API_URL || "";
 const isLocalHost =
   typeof window !== "undefined" &&

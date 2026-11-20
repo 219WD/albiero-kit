@@ -3,7 +3,7 @@ import AdminNav from '../../components/AdminNav';
 import { ADMIN_TOKEN_KEY, getAdminFromToken } from '../../utils/adminSession';
 import './Promos.css';
 
-const PROD_API_BASE = 'https://albi-backend-nine.vercel.app';
+const PROD_API_BASE = 'https://albi-backend-six.vercel.app';
 const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const configuredApiBase = import.meta.env.VITE_ANALYTICS_API_URL || '';
 const API_BASE =

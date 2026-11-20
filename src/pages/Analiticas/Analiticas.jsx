@@ -17,7 +17,7 @@ import './Analiticas.css';
 
 const COLORES = ['#961C2C', '#c0394c', '#e8687a', '#f0a0aa', '#7b8fa1', '#d5a021'];
 const ROJO = '#961C2C';
-const PROD_API_BASE = 'https://albi-backend-nine.vercel.app';
+const PROD_API_BASE = 'https://albi-backend-six.vercel.app';
 const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const configuredApiBase = import.meta.env.VITE_ANALYTICS_API_URL || '';
 const API_BASE =
